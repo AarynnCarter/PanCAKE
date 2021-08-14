@@ -12,13 +12,13 @@ from os import path
 from sys import version_info
 
 here = path.abspath(path.dirname(__file__))
-NAME = 'jwst_pancake'
+NAME = 'pancake'
 
 python_major = version_info[0]
 if python_major >= 3:
     required=['numpy>=1.15','matplotlib>=2.2','pandeia.engine>=1.2', 'webbpsf>0.7',
-              'scikit-image>=0.14', 'pysynphot>=0.9', 'astropy>=2', 'photutils>=0.5',
-              'cython>=0.29', 'scipy>=1', 'poppy>0.7'],
+              'scikit-image>=0.14', 'astropy>=2', 'photutils>=0.5', 'cython>=0.29', 
+              'scipy>=1', 'poppy>0.7', 'pyklip>2.2', 'synphot>1'],
 else:
     required=['numpy>=1.15','matplotlib>=2.2','pandeia.engine>=1.2', 'webbpsf<0.7',
               'scikit-image>=0.14', 'pysynphot>=0.9', 'astropy<3', 'photutils>=0.4',
@@ -29,7 +29,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 # Get version
-with open(path.join(here, NAME, 'VERSION'), encoding='utf-8') as f:
+with open(path.join(here, NAME, 'VERSION.txt'), encoding='utf-8') as f:
     version = f.read().strip()
 
 setup(
@@ -40,15 +40,15 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version=version,
 
-    description='A simple wrapper around the Pandeia engine to facilitate coronagraphy calculations for JWST',
+    description='A wrapper around the Pandeia engine to facilitate coronagraphy calculations for JWST',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/spacetelescope/pandeia_coronagraphy',
+    url='https://github.com/AarynnCarter/PanCAKE',
 
     # Author details
-    author='Brian York',
-    author_email='york@stsci.edu',
+    author='Aarynn Carter',
+    author_email='aarynn.carter@ucsc.edu',
 
     # Choose your license
     license='BSD',
@@ -70,7 +70,7 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3',
 
     ],
 
@@ -80,7 +80,7 @@ setup(
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=find_packages(),
-    package_data={'jwst_pancake.templates' : ['*.json'], 'jwst_pancake' : ['VERSION']},
+    package_data={'pancake.templates' : ['*.json'], 'pancake' : ['VERSION.txt'], 'pancake.resources' : ['*']},
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
