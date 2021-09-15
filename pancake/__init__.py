@@ -11,7 +11,7 @@ from . import io
 import os, sys
 __version__ = "UNDEFINED"
 try:
-    version_file = os.path.join(os.path.split(__file__)[0], "VERSION")
+    version_file = os.path.join(os.path.split(__file__)[0], "VERSION.txt")
     with open(version_file, "r") as inf:
         __version__ = inf.readline().strip()
 except Exception as e:

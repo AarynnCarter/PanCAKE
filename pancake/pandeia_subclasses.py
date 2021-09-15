@@ -125,7 +125,8 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
         psf = {
             'int': psf,
             'wave': wave,
-            'pix_scl': pix_scl,
+            'pix_sclx': pix_scl,
+            'pix_scly': pix_scl,
             'diff_limit': diff_limit,
             'upsamp': upsamp,
             'instrument': instrument,
@@ -148,7 +149,8 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
             psf = {
                 'int': np.ones((1,1)),
                 'wave': wave,
-                'pix_scl': ins.pixelscale/oversample,
+                'pix_sclx': ins.pixelscale/oversample,
+                'pix_scly': ins.pixelscale/oversample,
                 'diff_limit': diff_limit,
                 'upsamp': oversample,
                 'instrument': instrument,
@@ -167,7 +169,8 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
                 psf = {
                     'int': psf_flux,
                     'wave': wave,
-                    'pix_scl': pix_scl,
+                    'pix_sclx': pix_scl,
+                    'pix_scly': pix_scl,
                     'diff_limit': diff_limit,
                     'upsamp': oversample,
                     'instrument': instrument,
@@ -205,7 +208,8 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
         psf_result = self.calc_psf(ins, wave, source_offset, oversample, pix_scl, fov_pixels, trim_fov_pixels=trim_fov_pixels)
 
         pupil_throughput = self._pupil_throughput(ins)
-        pix_scl = psf_result[0].header['PIXELSCL']
+        pix_scl_x = psf_result[0].header['PIXELSCL']
+        pix_scl_y = psf_result[0].header['PIXELSCL']
         upsamp = psf_result[0].header['OVERSAMP']
         diff_limit = psf_result[0].header['DIFFLMT']
         psf = psf_result[0].data
@@ -215,7 +219,8 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
         psf = {
             'int': psf,
             'wave': wave,
-            'pix_scl': pix_scl,
+            'pix_sclx': pix_scl_x,
+            'pix_scly': pix_scl_y,
             'diff_limit': diff_limit,
             'upsamp': upsamp,
             'instrument': instrument,
@@ -239,7 +244,9 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
         """
         aperture_dict = self.parse_aperture(aperture_name)
         upsample = self.get_upsamp(instrument, aperture_name)
-        return aperture_dict[4]/upsample
+        pix_scl = aperture_dict[4]/upsample #Return twice for x and y pixel scale
+        pix_sclx, pix_scly = pix_scl, pix_scl
+        return pix_sclx, pix_scly
 
     def _have_psf(self, psf_name):
         '''
@@ -426,6 +433,7 @@ class CoronagraphyConvolvedSceneCube(pandeia.engine.astro_spectrum.ConvolvedScen
     
     background=None, psf_library=None, webapp=False, empty_scene=False
     '''
+
     def __init__(self, scene, instrument, **kwargs):
         from .engine import options
         self.coronagraphy_options = options
@@ -595,6 +603,7 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         self.fraction_saturation = np.max(saturation_fraction)
         
         self.detector_pixels = self.current_instrument.get_detector_pixels(self.wave_pix)
+        self.brightest_pixel = np.max(self.rate_plus_bg)
 
         # Get the read noise correlation matrix and store it as an attribute.
         if self.det_pars['rn_correlation']:

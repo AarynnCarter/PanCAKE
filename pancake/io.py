@@ -119,7 +119,7 @@ def determine_exposure_time(subarray, pattern, groups, integrations):
         subarray_frame_time = nircam_config_dict['subarray_config']['default'][subarray]['tframe'] 
         subarray_tfffr = nircam_config_dict['subarray_config']['default'][subarray]['tfffr']
         nframe = nircam_config_dict['readout_pattern_config'][pattern]['nframe']
-        nskip = nircam_config_dict['readout_pattern_config'][pattern]['nskip']
+        nskip = nircam_config_dict['readout_pattern_config'][pattern]['ndrop2']
         exposure_time = (subarray_tfffr * integrations) + subarray_frame_time * (integrations + integrations * ((groups - 1) * (nframe + nskip) + nframe))
     else:
         raise ValueError('Provided readout pattern {} not recognised.'.format(pattern))
