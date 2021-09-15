@@ -566,7 +566,7 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1):
                 #Extract pattern config information from earlier loaded dict
                 pattern_config = config_dict['readout_pattern_config'][pattern]
                 nframe  = pattern_config['nframe']
-                nskip = pattern_config['nskip']
+                nskip = pattern_config['ndrop2']
 
                 #Time for a single integration with two groups (minimum possible)
                 one_integration_time = subarray_frame_time * ((nframe+nskip)+nframe)
