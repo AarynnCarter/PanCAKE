@@ -1,0 +1,59 @@
+:py:mod:`conf`
+==============
+
+.. py:module:: conf
+
+
+Module Contents
+---------------
+
+.. py:data:: project
+   :annotation: = PanCAKE
+
+   
+
+.. py:data:: copyright
+   :annotation: = 2021, Aarynn Carter
+
+   
+
+.. py:data:: author
+   :annotation: = Aarynn Carter
+
+   
+
+.. py:data:: release
+   :annotation: = Beta
+
+   
+
+.. py:data:: extensions
+   :annotation: = ['autoapi.extension', 'sphinx_rtd_theme', 'sphinx.ext.viewcode']
+
+   
+
+.. py:data:: templates_path
+   :annotation: = ['_templates']
+
+   
+
+.. py:data:: autoapi_dirs
+   :annotation: = ['../../pancake']
+
+   
+
+.. py:data:: exclude_patterns
+   :annotation: = ['doctrees', 'html', 'Thumbs.db', '.DS_Store']
+
+   
+
+.. py:data:: html_theme
+   :annotation: = sphinx_rtd_theme
+
+   
+
+.. py:data:: html_static_path
+   :annotation: = ['dirhtml/_static']
+
+   
+

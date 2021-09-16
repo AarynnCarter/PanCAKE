@@ -1,0 +1,133 @@
+:py:mod:`pancake.io`
+====================
+
+.. py:module:: pancake.io
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   pancake.io.determine_instrument
+   pancake.io.determine_aperture
+   pancake.io.determine_subarray
+   pancake.io.determine_pixel_scale
+   pancake.io.determine_exposure_time
+   pancake.io.determine_bar_offset
+   pancake.io.sequence_input_checks
+   pancake.io.read_bandpass
+   pancake.io.read_coronagraph_transmission
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   pancake.io.nircam_config_file
+   pancake.io.miri_config_file
+   pancake.io.nircam_config_dict
+   pancake.io.miri_config_dict
+   pancake.io.nircam_filters
+   pancake.io.miri_filters
+   pancake.io.nircam_coro_filters
+   pancake.io.miri_coro_filters
+   pancake.io.nircam_supported_subarrays
+   pancake.io.miri_supported_subarrays
+   pancake.io.nircam_readout_patterns
+   pancake.io.miri_readout_patterns
+
+
+.. py:data:: nircam_config_file
+   
+
+   
+
+.. py:data:: miri_config_file
+   
+
+   
+
+.. py:data:: nircam_config_dict
+   
+
+   
+
+.. py:data:: miri_config_dict
+   
+
+   
+
+.. py:data:: nircam_filters
+   
+
+   
+
+.. py:data:: miri_filters
+   
+
+   
+
+.. py:data:: nircam_coro_filters
+   
+
+   
+
+.. py:data:: miri_coro_filters
+   
+
+   
+
+.. py:data:: nircam_supported_subarrays
+   
+
+   
+
+.. py:data:: miri_supported_subarrays
+   
+
+   
+
+.. py:data:: nircam_readout_patterns
+   
+
+   
+
+.. py:data:: miri_readout_patterns
+   
+
+   
+
+.. py:function:: determine_instrument(filt)
+
+
+.. py:function:: determine_aperture(filt, nircam_aperture, mode)
+
+
+.. py:function:: determine_subarray(filt, mode, nircam_subarray, miri_subarray)
+
+
+.. py:function:: determine_pixel_scale(instrument, filt)
+
+
+.. py:function:: determine_exposure_time(subarray, pattern, groups, integrations)
+
+
+.. py:function:: determine_bar_offset(filt)
+
+
+.. py:function:: sequence_input_checks(exposures, mode, nircam_aperture, nircam_subarray, miri_subarray, telescope, rolls, nircam_sgd, miri_sgd)
+
+
+.. py:function:: read_bandpass(bandpass)
+
+
+.. py:function:: read_coronagraph_transmission(mask)
+
+

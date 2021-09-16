@@ -1,0 +1,6 @@
+:py:mod:`pancake.templates`
+===========================
+
+.. py:module:: pancake.templates
+
+

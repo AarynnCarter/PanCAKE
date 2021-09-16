@@ -1,0 +1,40 @@
+.. Installation guide for PanCAKE
+
+
+Installation 
+============
+
+To begin, it is strongly advised that you separate your PanCAKE installation within an `Anaconda <https://www.anaconda.com/products/individual>`_ environment. This is a flexible way to manage many Python environments at once to ensure packages don't clash, and that the installation of a new package doesn't break your entire Python installation. 
+
+To initialise an Anaconda environment for PanCAKE use the following::
+
+	conda create -n pcake python=3.7
+
+Note that Python 3.7 is being used specifically to avoid errors in dependency packages that arise with later versions of Python - this may change in the near future. 
+
+With the environment created, enter it ::
+
+	conda activate pcake
+
+and install the PanCAKE package and all relevant dependencies ::
+
+	pip install git+git://github.com/AarynnCarter/PanCAKE.git
+
+Necessary Data Files
+^^^^^^^^^^^^^^^^^^^^
+
+PanCAKE makes use the Pandeia and WebbPSF packages that require their own separate data files. You may find that certain aspects of PanCAKE will work without some of these data files, but to access all of PanCAKE's functionality, they must be downloaded.
+
+| **Pandeia:** `https://stsci.app.box.com/v/pandeia-refdata-v1p6p1 <https://stsci.app.box.com/v/pandeia-refdata-v1p6p1>`_ (~1.9 GB)
+| **WebbPSF:** `webbpsf-data-0.9.0.tar.gz <https://stsci.box.com/shared/static/qcptcokkbx7fgi3c00w2732yezkxzb99.gz>`_ (~250 MB, Direct Download Link)
+| **Synphot:** `synphot5_pheonix-models.tar <https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar>`_ (~1.7 GB, Direct Download Link)
+
+Put these folders somewhere sensible on your hard drive, and then adjust your ~/.bashrc file to include the following lines (adjusted accordingly)::
+
+	export pandeia_refdata="/path/to/pandeia/data/directory"
+	export WEBBPSF_PATH="/path/to/webbpsf/data/directory"
+	export PYSYN_CDBS="/path/to/synphot/data/redcat/trds"
+
+**NOTE:** The final export must map directly to the /redcat/trds/ directory, and *not* the encompassing /grp/ directory.
+
+With all the above done, you should have everything you need to start using PanCAKE!
