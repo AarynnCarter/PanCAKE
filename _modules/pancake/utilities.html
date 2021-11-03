@@ -1,0 +1,939 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pancake.utilities &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to PanCAKE’s documentation!</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pancake.html">pancake</a> &raquo;</li>
+        
+      <li>pancake.utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pancake.utilities</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file contains a number of pancake utilities which may be useful in running pancake.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">from</span> <span class="nn">pandeia.engine.psf_library</span> <span class="kn">import</span> <span class="n">PSFLibrary</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.source</span> <span class="kn">import</span> <span class="n">Source</span>
+<span class="kn">import</span> <span class="nn">pandeia.engine.sed</span> <span class="k">as</span> <span class="nn">psed</span>
+
+<span class="kn">from</span> <span class="nn">synphot</span> <span class="kn">import</span> <span class="n">SourceSpectrum</span><span class="p">,</span> <span class="n">SpectralElement</span><span class="p">,</span> <span class="n">Observation</span>
+<span class="kn">from</span> <span class="nn">synphot.models</span> <span class="kn">import</span> <span class="n">Empirical1D</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+
+<span class="kn">from</span> <span class="nn">.engine</span> <span class="kn">import</span> <span class="n">calculate_target</span>
+<span class="kn">from</span> <span class="nn">.io</span> <span class="kn">import</span> <span class="n">read_bandpass</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">requests.exceptions</span>
+<span class="kn">import</span> <span class="nn">re</span> 
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">astropy.utils.exceptions</span> <span class="kn">import</span> <span class="n">AstropyWarning</span><span class="p">,</span> <span class="n">AstropyUserWarning</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">AstropyWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">AstropyUserWarning</span><span class="p">)</span> 
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<div class="viewcode-block" id="determine_pandeia_offset"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.determine_pandeia_offset">[docs]</a><span class="k">def</span> <span class="nf">determine_pandeia_offset</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses Pandeia&#39;s PSF library to determine which PSF offset pandeia would use for a particular</span>
+<span class="sd">    configuration (for comparison with the offset that pancake would use in on-the-fly PSF</span>
+<span class="sd">    generation).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">instrument</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span>
+    <span class="n">aperture</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;aperture&#39;</span><span class="p">]</span>
+    <span class="n">scene_sources</span><span class="p">,</span> <span class="n">reference_sources</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]:</span>
+        <span class="n">scene_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Source</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">source</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s1">&#39;psf_subtraction_source&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]:</span>
+        <span class="n">reference_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Source</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction_source&#39;</span><span class="p">]))</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="s2">&quot;pandeia_refdata&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">tel</span> <span class="o">=</span> <span class="s1">&#39;jwst&#39;</span>
+        <span class="n">ins</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;pandeia_refdata&#39;</span><span class="p">],</span> <span class="n">tel</span><span class="p">,</span> <span class="n">ins</span><span class="p">,</span> <span class="s1">&#39;psfs&#39;</span><span class="p">)</span>
+    <span class="n">library</span> <span class="o">=</span> <span class="n">PSFLibrary</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">scene_offsets</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">associate_offset_to_source</span><span class="p">(</span><span class="n">scene_sources</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture</span><span class="p">)</span>
+    <span class="n">reference_offsets</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">associate_offset_to_source</span><span class="p">(</span><span class="n">reference_sources</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;scene&#39;</span><span class="p">:</span> <span class="n">scene_offsets</span><span class="p">,</span> <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="n">reference_offsets</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="stellar_spectrum"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.stellar_spectrum">[docs]</a><span class="k">def</span> <span class="nf">stellar_spectrum</span><span class="p">(</span><span class="n">stellar_type</span><span class="p">,</span> <span class="n">bandpass</span><span class="p">,</span> <span class="n">magnitude</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a spectrum dictionary that assumes a Phoenix model with a key found in pandeia, and set</span>
+<span class="sd">    the magnitude to the provided value in the provided bandpass (in ABMAG)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spectrum</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;spectrum_parameters&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;normalization&#39;</span><span class="p">,</span> <span class="s1">&#39;sed&#39;</span><span class="p">]}</span>
+    <span class="n">spectrum</span><span class="p">[</span><span class="s1">&#39;sed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sed_type&#39;</span><span class="p">:</span> <span class="s1">&#39;phoenix&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">stellar_type</span><span class="p">}</span>
+    <span class="k">if</span> <span class="s1">&#39;bessel&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span> <span class="ow">or</span> <span class="s1">&#39;johnson&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span><span class="p">:</span>
+        <span class="n">spectrum</span><span class="p">[</span><span class="s1">&#39;normalization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;photsys&#39;</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">:</span> <span class="n">bandpass</span><span class="p">,</span> 
+                                     <span class="s1">&#39;norm_flux&#39;</span><span class="p">:</span> <span class="n">magnitude</span><span class="p">,</span> <span class="s1">&#39;norm_fluxunit&#39;</span><span class="p">:</span> <span class="s1">&#39;abmag&#39;</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="s1">&#39;miri&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span> <span class="ow">or</span> <span class="s1">&#39;nircam&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span><span class="p">:</span>
+        <span class="n">spectrum</span><span class="p">[</span><span class="s1">&#39;normalization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;jwst&#39;</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">:</span> <span class="n">bandpass</span><span class="p">,</span> <span class="s1">&#39;norm_flux&#39;</span><span class="p">:</span> <span class="n">magnitude</span><span class="p">,</span>
+                                     <span class="s1">&#39;norm_fluxunit&#39;</span><span class="p">:</span> <span class="s1">&#39;abmag&#39;</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">spectrum</span><span class="p">[</span><span class="s1">&#39;normalization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;photsys&#39;</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">:</span> <span class="n">bandpass</span><span class="p">,</span> 
+                                     <span class="s1">&#39;norm_flux&#39;</span><span class="p">:</span> <span class="n">magnitude</span><span class="p">,</span> <span class="s1">&#39;norm_fluxunit&#39;</span><span class="p">:</span> <span class="s1">&#39;abmag&#39;</span><span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">spectrum</span></div>
+
+<div class="viewcode-block" id="pandeia_spectrum"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.pandeia_spectrum">[docs]</a><span class="k">def</span> <span class="nf">pandeia_spectrum</span><span class="p">(</span><span class="n">stellar_type</span><span class="p">):</span><span class="c1">#, norm_val=5, norm_unit=&#39;vegamag&#39;, norm_bandpass=&#39;2mass_ks&#39;, **kwargs):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a spectrum using the Pandeia Phoenix data files. </span>
+<span class="sd">    Returns two arrays containing the wavelength and flux values, unormalised. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pandeia_spectra</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;config&#39;</span><span class="p">:</span><span class="s1">&#39;phoenix/spectra.json&#39;</span><span class="p">}</span>
+    <span class="n">psed_wav</span><span class="p">,</span> <span class="n">psed_flux</span> <span class="o">=</span> <span class="n">psed</span><span class="o">.</span><span class="n">Phoenix</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">stellar_type</span><span class="p">,</span> <span class="n">spectra</span><span class="o">=</span><span class="n">pandeia_spectra</span><span class="p">,</span> <span class="n">webapp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">get_spectrum</span><span class="p">()</span> <span class="c1">#Webapp=True so that only SpT is required</span>
+    <span class="n">PandeiaSED</span> <span class="o">=</span> <span class="n">SourceSpectrum</span><span class="p">(</span><span class="n">Empirical1D</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">psed_wav</span><span class="p">,</span> <span class="n">lookup_table</span><span class="o">=</span><span class="n">psed_flux</span><span class="p">)</span> <span class="c1">#In format angstrom and flam </span>
+    
+    <span class="n">spectrum_wave</span> <span class="o">=</span> <span class="n">PandeiaSED</span><span class="o">.</span><span class="n">waveset</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;micron&#39;</span><span class="p">)</span>
+    <span class="n">spectrum_flux</span> <span class="o">=</span> <span class="n">PandeiaSED</span><span class="p">(</span><span class="n">spectrum_wave</span><span class="p">,</span> <span class="n">flux_unit</span><span class="o">=</span><span class="s1">&#39;mJy&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">spectrum_wave</span><span class="p">,</span> <span class="n">spectrum_flux</span></div>
+
+<div class="viewcode-block" id="user_spectrum"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.user_spectrum">[docs]</a><span class="k">def</span> <span class="nf">user_spectrum</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">wave_unit</span><span class="o">=</span><span class="s1">&#39;micron&#39;</span><span class="p">,</span> <span class="n">flux_unit</span><span class="o">=</span><span class="s1">&#39;mJy&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Read in a user spectrum from a specified file. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;File &quot;</span><span class="si">{}</span><span class="s1">&quot; not located, unable to extract spectrum.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">file_spectrum_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="n">file_spectrum_wave</span> <span class="o">=</span> <span class="n">file_spectrum_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">file_spectrum_flux</span> <span class="o">=</span> <span class="n">file_spectrum_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1">#Attempt to load in source spectrum and convert input units to the default &#39;angstrom&#39; and &#39;flam&#39; using &lt;&lt;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">UserSED</span> <span class="o">=</span> <span class="n">SourceSpectrum</span><span class="p">(</span><span class="n">Empirical1D</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">file_spectrum_wave</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">wave_unit</span><span class="p">),</span> <span class="n">lookup_table</span><span class="o">=</span><span class="n">file_spectrum_flux</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">flux_unit</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Error converting input wave_unit/flux_unit to the Pandeia flux units via Synphot.&#39;</span><span class="p">)</span>
+
+    <span class="c1">#This SED is in units &#39;angstrom&#39; and &#39;flam&#39;, need to assign to users units and then convert to the Pandeia units of &#39;micron&#39; and &#39;mjy&#39;</span>
+    <span class="n">spectrum_wave</span> <span class="o">=</span> <span class="n">UserSED</span><span class="o">.</span><span class="n">waveset</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;micron&#39;</span><span class="p">)</span>
+    <span class="n">spectrum_flux</span> <span class="o">=</span> <span class="n">UserSED</span><span class="p">(</span><span class="n">spectrum_wave</span><span class="p">,</span> <span class="n">flux_unit</span><span class="o">=</span><span class="s1">&#39;mJy&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">spectrum_wave</span><span class="p">,</span> <span class="n">spectrum_flux</span></div>
+
+<div class="viewcode-block" id="normalise_spectrum"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.normalise_spectrum">[docs]</a><span class="k">def</span> <span class="nf">normalise_spectrum</span><span class="p">(</span><span class="n">input_wave</span><span class="p">,</span> <span class="n">input_flux</span><span class="p">,</span> <span class="n">norm_val</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">norm_unit</span><span class="o">=</span><span class="s1">&#39;vegamag&#39;</span><span class="p">,</span> <span class="n">norm_bandpass</span><span class="o">=</span><span class="s1">&#39;2mass_ks&#39;</span><span class="p">):</span>
+
+    <span class="c1">#Get bandpass for normalisation</span>
+    <span class="n">NormBandpass</span> <span class="o">=</span> <span class="n">read_bandpass</span><span class="p">(</span><span class="n">norm_bandpass</span><span class="p">)</span>
+
+    <span class="c1">#Create SED, ensuring to specify the input units are the Pandeia defaults micron and mJy</span>
+    <span class="n">SED</span> <span class="o">=</span> <span class="n">SourceSpectrum</span><span class="p">(</span><span class="n">Empirical1D</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">input_wave</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;micron&#39;</span><span class="p">),</span> <span class="n">lookup_table</span><span class="o">=</span><span class="n">input_flux</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;mJy&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Normalize to input values, note that the units are retrieved from astropy, but some are explicitly defined in</span>
+    <span class="c1"># the synphot package such as vegamag, abmag, flam, fnu. By virtue of running the SourceSpectrum/SpectralElement </span>
+    <span class="c1"># classes these synphot units are loaded in but if things change in the future, this may break things. </span>
+    <span class="n">VegaSED</span> <span class="o">=</span> <span class="n">SourceSpectrum</span><span class="o">.</span><span class="n">from_vega</span><span class="p">()</span>
+    <span class="n">SED</span> <span class="o">=</span> <span class="n">SED</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">norm_val</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">norm_unit</span><span class="p">),</span> <span class="n">band</span><span class="o">=</span><span class="n">NormBandpass</span><span class="p">,</span> <span class="n">vegaspec</span><span class="o">=</span><span class="n">VegaSED</span><span class="p">)</span>
+
+    <span class="c1">#Return to Pandeia units</span>
+    <span class="n">spectrum_wave</span> <span class="o">=</span> <span class="n">SED</span><span class="o">.</span><span class="n">waveset</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;micron&#39;</span><span class="p">)</span>
+    <span class="n">spectrum_flux</span> <span class="o">=</span> <span class="n">SED</span><span class="p">(</span><span class="n">spectrum_wave</span><span class="p">,</span> <span class="n">flux_unit</span><span class="o">=</span><span class="s1">&#39;mJy&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">spectrum_wave</span><span class="p">,</span> <span class="n">spectrum_flux</span></div>
+
+<div class="viewcode-block" id="normalize_spectrum"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.normalize_spectrum">[docs]</a><span class="k">def</span> <span class="nf">normalize_spectrum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">normalise_spectrum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="query_simbad"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.query_simbad">[docs]</a><span class="k">def</span> <span class="nf">query_simbad</span><span class="p">(</span><span class="n">query_string</span><span class="p">,</span> <span class="n">query_timeout_sec</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">default_spt</span><span class="o">=</span><span class="s1">&#39;a0v&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query simbad for details on a target object, adapted from the JWST Coronagraphic Visibility Tool</span>
+<span class="sd">    Will in current state attempt to extract: RA, Dec, Spectral Type and Kmagnitude</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query_string</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Name of source must be a string type&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oF?&#39;</span> <span class="o">+</span> <span class="n">query_string</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">query_timeout_sec</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s1">&#39;Could not access Simbad. Most likely because source name not recognised, but also check internet connection/Simbad website.&#39;</span><span class="p">)</span>
+
+    <span class="n">body</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+    <span class="n">query_results</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ra&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;dec&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;canonical_id&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;norm_val&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;spt&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;norm_bandpass&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;norm_unit&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="c1"># RA and DEC</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;%J&#39;</span> <span class="ow">and</span> <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%J (\d+\.\d+) ([+\-]\d+\.\d+) .+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">],</span> <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;dec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+        <span class="c1"># Canonical ID / HD Number</span>
+        <span class="k">elif</span> <span class="n">line</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;%I.0&#39;</span> <span class="ow">and</span> <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;canonical_id&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;%I.0 (.+)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;canonical_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Spectral Type</span>
+        <span class="k">elif</span> <span class="n">line</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;%S&#39;</span> <span class="ow">and</span> <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;spt&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%S ([^\s\n]+)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;spt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># K Magnitude</span>
+        <span class="k">elif</span> <span class="n">line</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;%M.K&#39;</span> <span class="ow">and</span> <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_val&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%M.K (.?\d+\.\d+)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_val&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1">#Check that the magnitude is from the 2MASS catalogue</span>
+            <span class="k">if</span> <span class="s1">&#39;2003yCat.2246&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span> 
+                <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_bandpass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2mass_ks&#39;</span>
+            <span class="k">elif</span> <span class="s1">&#39;2002yCat.2237&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_bandpass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;johnson_k&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Did not recognise K-band magnitude catalogue, approximating with 2MASS Ks&#39;</span><span class="p">)</span>
+                <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_bandpass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2mass_ks&#39;</span>
+
+            <span class="c1">#Check that units are in Vegamag, if not check if in AB mag, if not assume Vega. </span>
+            <span class="k">if</span> <span class="s1">&#39;Vega&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_unit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;vegamag&#39;</span>
+            <span class="k">elif</span> <span class="s1">&#39;AB&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_unit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;abmag&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Couldn&#39;t determine magnitude system, assuming Vega magnitudes.&quot;</span><span class="p">)</span>
+                <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;norm_unit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;vegamag&#39;</span>
+
+    <span class="c1"># Check if there was no spectral type, if not just approximate </span>
+    <span class="k">if</span> <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;spt&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Failed to obtain spectral type from SIMBAD. Using spectral type </span><span class="si">{}</span><span class="s2"> instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default_spt</span><span class="p">))</span>
+        <span class="n">query_results</span><span class="p">[</span><span class="s1">&#39;spt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_spt</span>
+
+    <span class="c1"># Check if any of the other values didn&#39;t get assigned...</span>
+    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">query_results</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">none_keys</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">query_results</span> <span class="k">if</span> <span class="n">query_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Query to Simbad failed for </span><span class="si">{}</span><span class="s1">, could not obtain: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query_string</span><span class="p">,</span> <span class="n">none_keys</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">query_results</span></div>
+
+<div class="viewcode-block" id="convert_spt_to_pandeia"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.convert_spt_to_pandeia">[docs]</a><span class="k">def</span> <span class="nf">convert_spt_to_pandeia</span><span class="p">(</span><span class="n">raw_spectral_type</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function to take a spectral type string, either from Simbad or directly from the user, and return an approximation </span>
+<span class="sd">    that Pandeia can use. If the spectral type string cannot be understood, then the spectral type will be assumed as A0V</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">raw_spectral_type</span> <span class="o">=</span> <span class="n">raw_spectral_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">match_failed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">failed_spt</span> <span class="o">=</span> <span class="s1">&#39;a0v&#39;</span>
+    <span class="n">failure_message</span> <span class="o">=</span> <span class="s2">&quot;WARNING: Failed to approximate spectral type &#39;</span><span class="si">{}</span><span class="s2">&#39; to Pandeia compatible spectral type. Using spectral type </span><span class="si">{}</span><span class="s2"> instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_spectral_type</span><span class="p">,</span> <span class="n">failed_spt</span><span class="p">)</span>
+
+    <span class="c1">#Read in default spectral types file to check if there is a match to the input spectral type</span>
+    <span class="n">pandeia_valid_spectral_types_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pandeia_refdata&quot;</span><span class="p">),</span> <span class="s2">&quot;sed/phoenix/spectra.json&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pandeia_valid_spectral_types_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">pandeia_valid_spectral_types_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t locate Pandeia reference files and/or pandeia_data/sed/phoenix/spectra.json file.&quot;</span><span class="p">)</span>
+
+    <span class="n">pandeia_valid_spectral_types</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pandeia_valid_spectral_types_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+   
+    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">raw_spectral_type</span>
+    <span class="c1"># If there is a match, simply return the raw spectral type</span>
+    <span class="k">if</span> <span class="n">pandeia_spectral_type</span> <span class="ow">in</span> <span class="n">pandeia_valid_spectral_types</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pandeia_spectral_type</span>
+    <span class="c1"># If there is not a match, need to approximate one and notify the user. </span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">#Check if star is an O/B/A/F/G/K/M star</span>
+        <span class="n">compatible_temp_classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compatible_temp_classes</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">failed_spt</span>
+
+        <span class="c1">#Check for binary+ objects, only use the primary if so. </span>
+        <span class="k">if</span> <span class="s1">&#39;+&#39;</span> <span class="ow">in</span> <span class="n">pandeia_spectral_type</span><span class="p">:</span>
+            <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1">#Weirdest objects already removed, strip out simbad &#39;peculiarities&#39;, won&#39;t strip out &#39;v&#39; for variable spectrum </span>
+        <span class="c1">#as it clashes with luminosity class. This is maybe fixable but: very small number of objects affected and tricky</span>
+        <span class="c1">#to implement as it requires case sensitivity. </span>
+        <span class="k">for</span> <span class="n">peculiarity</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="s1">&#39;)&#39;</span><span class="p">]:</span>
+            <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">peculiarity</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1">#Also a bunch of &#39;I&#39; subclasses that can&#39;t be used, approximate all of them to just type &#39;I&#39;</span>
+        <span class="k">for</span> <span class="n">isubclass</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ia-0&#39;</span><span class="p">,</span> <span class="s1">&#39;ia-0/ia&#39;</span><span class="p">,</span> <span class="s1">&#39;ia&#39;</span><span class="p">,</span> <span class="s1">&#39;ia/iab&#39;</span><span class="p">,</span> <span class="s1">&#39;iab&#39;</span><span class="p">,</span> <span class="s1">&#39;iab-b&#39;</span><span class="p">,</span> <span class="s1">&#39;ib&#39;</span><span class="p">,</span> <span class="s1">&#39;ib-ii&#39;</span><span class="p">,</span> <span class="s1">&#39;_0-ia&#39;</span><span class="p">,</span> <span class="s1">&#39;_0-ia+&#39;</span><span class="p">]:</span>
+            <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">isubclass</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">)</span>
+
+        <span class="c1">#Check if &#39;m&#39; for metallic lines present, but not if the first character or a character after &#39;/&#39; or &#39;+&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;m&#39;</span> <span class="ow">in</span> <span class="n">pandeia_spectral_type</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span>
+            <span class="n">m_index</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span> <span class="c1">#Search for last &#39;m&#39; in the string</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="n">m_index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;+&#39;</span><span class="p">]:</span>
+                <span class="c1">#Should be just a metallic line signifier</span>
+                <span class="n">pandeia_spt_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span>
+                <span class="n">pandeia_spt_list</span><span class="p">[</span><span class="n">m_index</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pandeia_spt_list</span><span class="p">)</span>
+
+        <span class="c1"># Next need to check length of spectra, idea is to get everything a single temperature (O3-M9) and luminosity class (I/II/III/IV/V/VI)</span>
+        <span class="c1"># before further processing can be done. </span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1">#Must be one of previuosly checked temperature classes, with no subdivision, assume it is type *5V</span>
+            <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">5v&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> 
+            <span class="c1">#Check the second string value is a number (temperature signifier)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">failed_spt</span>
+            <span class="k">else</span><span class="p">:</span><span class="c1">#If it is a number, assume star is spectral type &#39;V&#39;. </span>
+                <span class="n">pandeia_spectral_type</span> <span class="o">+=</span> <span class="s1">&#39;v&#39;</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1">#Couple of options, most should be simple like &#39;a3v&#39;, but some complicated like &#39;K-M&#39; that we can still use</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1">#If not a number in the middle, must be something weird</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span> <span class="ow">or</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+                    <span class="c1">#Temperature class is uncertain with no luminosity classifer, approximate to the latter temperature class *0V</span>
+                    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">0v&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;:&#39;</span><span class="p">:</span>
+                    <span class="c1">#Just don&#39;t know what the temperature class subdivision is, approximate to 5</span>
+                    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#Whole host of options, some standard and some more complex. </span>
+            <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">pandeia_spectral_type</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;:&#39;</span><span class="p">:</span>
+                    <span class="c1">#Uncertainty in the last quantity, luminosity or temperature class</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="c1">#It could be the luminosity class</span>
+                        <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">]:</span>
+                            <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                            <span class="k">return</span> <span class="n">failed_spt</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1">#It&#39;s the temperature class and there is no luminosity class</span>
+                        <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">pandeia_spectral_type</span><span class="p">:</span>
+                <span class="c1"># if &#39;iii/v&#39; in pandeia_spectral_type:</span>
+                <span class="c1">#     pandeia_spectral_type = pandeia_spectral_type.replace(&#39;iii/v&#39;, &#39;v&#39;)</span>
+
+                <span class="c1">#Must be some uncertainity in either temperature or luminosity class, or both. </span>
+                <span class="n">split_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+                <span class="n">pandeia_spt_lumclass</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">pandeia_spt_tempclass</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_spectral_type</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="c1"># Too many splits, can handle at best 1 split in temperature and 1 split in luminosity</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">split_spectral_type</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1">#Check if the character just before the split is a number</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">split_spectral_type</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="c1">#If it isn&#39;t... Should be an uncertainty in luminosity class, approximate to I, III, or V</span>
+                        <span class="k">if</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span> <span class="ow">or</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ii&#39;</span><span class="p">:</span>
+                            <span class="n">pandeia_spt_lumclass</span> <span class="o">=</span> <span class="s1">&#39;i&#39;</span>
+                        <span class="k">elif</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;iii&#39;</span> <span class="ow">or</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;iv&#39;</span><span class="p">:</span>
+                            <span class="n">pandeia_spt_lumclass</span> <span class="o">=</span> <span class="s1">&#39;iii&#39;</span>
+                        <span class="k">elif</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;v&#39;</span> <span class="ow">or</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;vi&#39;</span><span class="p">:</span>
+                            <span class="n">pandeia_spt_lumclass</span> <span class="o">=</span> <span class="s1">&#39;v&#39;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                            <span class="k">return</span> <span class="n">failed_spt</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1">#If it is... Should be an uncertainty in temperature class, couple more options</span>
+                        <span class="k">try</span><span class="p">:</span> 
+                            <span class="c1">#Check if the character *after* the split is a number</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">split_spectral_type</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">except</span><span class="p">:</span>
+                            <span class="c1">#If it isn&#39;t... temperature class is uncertain between the actual divisions, e.g. K9/M0</span>
+                            <span class="n">subdiv_one</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">))</span>
+                            <span class="n">subdiv_two</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="mi">10</span>
+                            <span class="n">average_subdiv</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">subdiv_one</span><span class="o">+</span><span class="n">subdiv_two</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="n">average_subdiv</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+                                <span class="n">average_subdiv</span> <span class="o">-=</span> <span class="mi">10</span>
+                                <span class="n">pandeia_spt_tempclass</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split_spectral_type</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">average_subdiv</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">pandeia_spt_tempclass</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">average_subdiv</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1">#If it is... temperature class is uncertain between subdivisions, e.g. K8/9</span>
+                            <span class="n">subdiv_one</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">))</span>
+                            <span class="n">subdiv_two</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">))</span>
+                            <span class="n">average_subdiv</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">subdiv_one</span><span class="o">+</span><span class="n">subdiv_two</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+                            <span class="n">pandeia_spt_tempclass</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">average_subdiv</span><span class="p">)</span>
+
+                <span class="c1">#Combine average classes with each other or the base spectral type. </span>
+                <span class="k">if</span> <span class="n">pandeia_spt_tempclass</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pandeia_spt_lumclass</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spt_tempclass</span> <span class="o">+</span> <span class="n">pandeia_spt_lumclass</span>
+                <span class="k">elif</span> <span class="n">pandeia_spt_lumclass</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1">#Need to get luminosity class from the base spectral type, final character before lumclass should be a number</span>
+                    <span class="n">tempclass_final_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pandeia_spectral_type</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">tempclass_final_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1">#There is no information on the luminosity class, use &#39;v&#39;</span>
+                        <span class="n">pandeia_spt_lumclass</span> <span class="o">=</span> <span class="s1">&#39;v&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1">#There is spectral class information.</span>
+                        <span class="n">pandeia_spt_lumclass</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="n">tempclass_final_index</span><span class="p">:]</span>
+                    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spt_tempclass</span> <span class="o">+</span> <span class="n">pandeia_spt_lumclass</span>
+                <span class="k">elif</span> <span class="n">pandeia_spt_tempclass</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1">#Need to get the temperature class from the base spectral type</span>
+                    <span class="n">subdiv</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">split_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">subdiv</span> <span class="o">==</span> <span class="mf">9.5</span><span class="p">:</span>
+                        <span class="c1">#Will be best approximated by &#39;0&#39; of the next temperature class down i.e. K9.5-&gt;M0</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">div</span> <span class="o">=</span> <span class="n">compatible_temp_classes</span><span class="p">[</span><span class="n">compatible_temp_classes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="n">pandeia_spt_tempclass</span> <span class="o">=</span> <span class="n">div</span> <span class="o">+</span> <span class="s1">&#39;0&#39;</span>
+                            <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spt_tempclass</span> <span class="o">+</span> <span class="n">pandeia_spt_lumclass</span>
+                        <span class="k">except</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                            <span class="k">return</span> <span class="n">failed_spt</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1">#Simply round the temperature class to the nearest even value. </span>
+                        <span class="n">pandeia_spt_tempclass</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">subdiv</span><span class="p">)))</span>
+                        <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spt_tempclass</span> <span class="o">+</span> <span class="n">pandeia_spt_lumclass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+        
+        <span class="c1">#After that, check the luminosity class and convert to one Pandeia can use if necessary</span>
+        <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;ii&#39;</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
+            <span class="c1">#Luminosity class II, approximate to III</span>
+            <span class="n">pandeia_spectral_type</span> <span class="o">+=</span> <span class="s1">&#39;i&#39;</span>
+        <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;iv&#39;</span> <span class="ow">or</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;vi&#39;</span><span class="p">:</span>
+            <span class="c1">#Luminosity class IV or VI, approximate to V</span>
+            <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="n">pandeia_spectral_type</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">pandeia_spectral_type</span> <span class="o">+=</span> <span class="s1">&#39;v&#39;</span>
+        <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span> <span class="ow">or</span>  <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span>
+            <span class="c1">#Should only catch the remaining I, III and V, luminosity classes - just pass to avoid error</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">failed_spt</span>
+
+    <span class="k">if</span> <span class="n">pandeia_spectral_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pandeia_valid_spectral_types</span><span class="p">:</span>
+        <span class="c1">#Need to convert cleaned spectral type to the nearest one that Pandeia can use. But first, to ease with the</span>
+        <span class="c1">#adjustment of the strings we split up the spectral type string.</span>
+        <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
+            <span class="c1">#These are the &#39;i&#39; class stars</span>
+            <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span><span class="p">:</span>
+                <span class="c1"># O star conversions</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;6&#39;</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;9&#39;</span><span class="p">:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;8&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+            <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span>
+                <span class="c1"># M star conversions</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;2&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#BAFGK star convsersions</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;5&#39;</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">compatible_temp_classes</span><span class="p">[</span><span class="n">compatible_temp_classes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="c1">#These are &#39;iii&#39; class stars</span>
+            <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">]):</span>
+                <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;b0iii&#39;</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span>
+                <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;b5iii&#39;</span>
+            <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">]):</span>
+                <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;g0iii&#39;</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span> <span class="ow">or</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">,</span><span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">]:</span>
+                <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;5&#39;</span> <span class="c1">#Convert to g5iii or k5iii</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;k&#39;</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">]):</span>
+                <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;k0iii&#39;</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;k&#39;</span> <span class="ow">and</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span>
+                <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;m0iii&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">failed_spt</span>
+        <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span>
+            <span class="c1">#These are the &#39;v&#39; class stars, lots of possibilities:</span>
+            <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1">#O star conversions</span>
+                <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span>
+                <span class="c1">#B star conversions</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;8&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+            <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;7&#39;</span><span class="p">:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;5&#39;</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;f0v&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+            <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span> <span class="ow">or</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+            <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;4&#39;</span><span class="p">:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;5&#39;</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;9&#39;</span><span class="p">:</span>
+                    <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;m0v&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+            <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">]:</span>
+                    <span class="n">pandeia_spectral_type</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;m5v&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">failed_spt</span>
+        <span class="n">pandeia_spectral_type</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pandeia_spectral_type</span><span class="p">)</span>
+
+    <span class="c1"># Final check to ensure that the approximation worked, if not then set to failed spt. Unless there is a bug this shouldn&#39;t get called.     </span>
+    <span class="k">if</span> <span class="n">pandeia_spectral_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pandeia_valid_spectral_types</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">failed_spt</span>
+
+    <span class="c1"># Check if pandeia spectral type equals user provided, if not notify user. </span>
+    <span class="k">if</span> <span class="n">pandeia_spectral_type</span> <span class="o">!=</span> <span class="n">raw_spectral_type</span><span class="p">:</span>
+        <span class="n">approximated_spt_message</span> <span class="o">=</span> <span class="s2">&quot;WARNING: Spectral type &#39;</span><span class="si">{}</span><span class="s2">&#39; not compatible with Pandeia grid, using spectral type &#39;</span><span class="si">{}</span><span class="s2">&#39; instead.&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">approximated_spt_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_spectral_type</span><span class="p">,</span><span class="n">pandeia_spectral_type</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">pandeia_spectral_type</span></div>
+
+<div class="viewcode-block" id="optimise_readout"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.optimise_readout">[docs]</a><span class="k">def</span> <span class="nf">optimise_readout</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">,</span> <span class="n">t_exp</span><span class="p">,</span> <span class="n">optimise_margin</span><span class="p">,</span> <span class="n">min_sat</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">max_sat</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    
+    <span class="n">t_margin</span> <span class="o">=</span> <span class="n">t_exp</span> <span class="o">*</span> <span class="n">optimise_margin</span> <span class="c1">#Convert optimise margin to margin in seconds</span>
+
+    <span class="n">instrument</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span>
+    <span class="n">subarray</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;subarray&#39;</span><span class="p">]</span>
+
+    <span class="c1">#Need to extract subarray frame time from config files</span>
+    <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pandeia_refdata&quot;</span><span class="p">),</span> <span class="s1">&#39;jwst/</span><span class="si">{}</span><span class="s1">/config.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instrument</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">config_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t locate Pandeia reference files and/or pandeia_data/jwst/</span><span class="si">{}</span><span class="s2">/config.json file.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instrument</span><span class="p">))</span>
+    <span class="n">subarray_frame_time</span> <span class="o">=</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;subarray_config&#39;</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">][</span><span class="n">subarray</span><span class="p">][</span><span class="s1">&#39;tframe&#39;</span><span class="p">]</span> 
+
+    <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span><span class="p">:</span>
+        <span class="c1">#NIRCam optimisation tricky due to the variety of readout patterns. First rule out the BRIGHT1, SHALLOW2, MEDIUM2, and DEEP2</span>
+        <span class="c1">#patterns as their counterparts have more measured frames. 5 patterns left, in this naive optimisation we will try to use the</span>
+        <span class="c1">#longest possible ramp without saturating. Might be that better contrast can be obtained further out by letting the innermost</span>
+        <span class="c1">#region saturate, not going to try and approximate this effect.</span>
+
+        <span class="n">used_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;deep8&#39;</span><span class="p">,</span> <span class="s1">&#39;medium8&#39;</span><span class="p">,</span> <span class="s1">&#39;shallow4&#39;</span><span class="p">,</span> <span class="s1">&#39;bright2&#39;</span><span class="p">,</span> <span class="s1">&#39;rapid&#39;</span><span class="p">]</span> <span class="c1">#Descending order important as longest pattern checked first</span>
+        
+        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;ngroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>   <span class="c1">#If it saturates in  groups, tough to observe</span>
+        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;nint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;readout_pattern&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;rapid&#39;</span>  
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">calculate_target</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">)</span>
+        <span class="n">sat_frac</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;scalar&#39;</span><span class="p">][</span><span class="s1">&#39;fraction_saturation&#39;</span><span class="p">]</span>
+        <span class="n">sat_pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;saturation&#39;</span><span class="p">])</span>
+
+        <span class="c1">#Can&#39;t work with groups like MIRI, need to define a maximum integration time before saturation</span>
+        <span class="n">sat_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_sat</span><span class="o">/</span><span class="n">sat_frac</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="o">*</span> <span class="n">subarray_frame_time</span>
+
+        <span class="k">if</span> <span class="n">sat_frac</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1">#There is saturation, use fastest possible readout pattern and warn user.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: </span><span class="si">{:.1f}% s</span><span class="s1">aturation detected with the shortest possible readout settings. </span><span class="si">{}</span><span class="s1"> pixels affected.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">sat_frac</span><span class="p">,</span> <span class="n">sat_pix</span><span class="p">))</span>
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="s1">&#39;rapid&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#No saturation, optimise readout parameters</span>
+            <span class="n">best_pattern</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">used_patterns</span><span class="p">:</span>
+                <span class="c1">#Extract pattern config information from earlier loaded dict</span>
+                <span class="n">pattern_config</span> <span class="o">=</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;readout_pattern_config&#39;</span><span class="p">][</span><span class="n">pattern</span><span class="p">]</span>
+                <span class="n">nframe</span>  <span class="o">=</span> <span class="n">pattern_config</span><span class="p">[</span><span class="s1">&#39;nframe&#39;</span><span class="p">]</span>
+                <span class="n">nskip</span> <span class="o">=</span> <span class="n">pattern_config</span><span class="p">[</span><span class="s1">&#39;ndrop2&#39;</span><span class="p">]</span>
+
+                <span class="c1">#Time for a single integration with two groups (minimum possible)</span>
+                <span class="n">one_integration_time</span> <span class="o">=</span> <span class="n">subarray_frame_time</span> <span class="o">*</span> <span class="p">((</span><span class="n">nframe</span><span class="o">+</span><span class="n">nskip</span><span class="p">)</span><span class="o">+</span><span class="n">nframe</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">one_integration_time</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">t_exp</span><span class="o">+</span><span class="n">t_margin</span><span class="p">)</span> <span class="ow">or</span> <span class="n">one_integration_time</span> <span class="o">&gt;</span> <span class="n">sat_time</span><span class="p">:</span>
+                    <span class="c1">#This pattern is too long to be used, go to next pattern in the list</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#Pattern will fit into the desired exposure time, now find optimal parameters (if possible)</span>
+                    
+                    <span class="c1">#First need to calculate max number of groups, which is a little tricky. Official formula is</span>
+                    <span class="c1">#integration time = Tframe × [(Nframes + Nskip) × (Ngroups -1) + Nframes] and we can rearrange</span>
+                    <span class="c1">#to find the maximum number of groups given the exposure time. </span>
+                    <span class="n">max_groups_exp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((((</span><span class="n">t_exp</span> <span class="o">+</span> <span class="n">t_margin</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">nframe</span> <span class="o">*</span> <span class="n">subarray_frame_time</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">subarray_frame_time</span><span class="o">*</span><span class="p">(</span><span class="n">nframe</span><span class="o">+</span><span class="n">nskip</span><span class="p">)))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="n">max_groups_sat</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((((</span><span class="n">sat_time</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">nframe</span> <span class="o">*</span> <span class="n">subarray_frame_time</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">subarray_frame_time</span><span class="o">*</span><span class="p">(</span><span class="n">nframe</span><span class="o">+</span><span class="n">nskip</span><span class="p">)))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="n">max_groups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">max_groups_exp</span><span class="p">,</span> <span class="n">max_groups_sat</span><span class="p">])</span>
+
+                    <span class="k">if</span> <span class="s1">&#39;deep&#39;</span> <span class="ow">in</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="n">max_groups</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+                        <span class="n">max_groups</span> <span class="o">=</span> <span class="mi">20</span> <span class="c1">#Maximum number of allowed groups for DEEP readout</span>
+                    <span class="k">elif</span> <span class="n">max_groups</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+                        <span class="n">max_groups</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1">#Maximum number of allowed groups for all other readouts. </span>
+
+                    <span class="c1">#Now follow a similar methodology as with MIRI</span>
+                    <span class="n">best_ngroup</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="c1">#Start at highest possible number of groups and work our way down until one fits within the margin. </span>
+                    <span class="k">for</span> <span class="n">ngroup</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">max_groups</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+                        <span class="n">integration_time</span> <span class="o">=</span> <span class="n">subarray_frame_time</span> <span class="o">*</span> <span class="p">((</span><span class="n">nframe</span> <span class="o">+</span> <span class="n">nskip</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">ngroup</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">nframe</span><span class="p">)</span>
+                        <span class="n">min_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span> <span class="p">(</span><span class="n">t_exp</span><span class="o">-</span><span class="n">t_margin</span><span class="p">)</span> <span class="o">/</span> <span class="n">integration_time</span><span class="p">))</span>
+                        <span class="n">max_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="p">(</span><span class="n">t_exp</span><span class="o">+</span><span class="n">t_margin</span><span class="p">)</span> <span class="o">/</span> <span class="n">integration_time</span><span class="p">))</span>
+
+                        <span class="c1">#Range of possible ints for this number of groups, if one or more match find which one is closest </span>
+                        <span class="n">best_nint</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">best_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                        <span class="k">for</span> <span class="n">nint</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_int</span><span class="p">,</span> <span class="n">max_int</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                            <span class="n">t</span> <span class="o">=</span> <span class="n">nint</span><span class="o">*</span><span class="n">integration_time</span>
+                            <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t_exp</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t_exp</span><span class="o">-</span><span class="n">t_margin</span><span class="p">))</span> <span class="ow">and</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="n">best_diff</span><span class="p">:</span>
+                                <span class="c1">#Found a pattern that fits within our range</span>
+                                <span class="n">best_pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+                                <span class="n">best_ngroup</span> <span class="o">=</span> <span class="n">ngroup</span>
+                                <span class="n">best_nint</span> <span class="o">=</span> <span class="n">nint</span>
+                                <span class="n">best_diff</span> <span class="o">=</span> <span class="n">diff</span>
+
+                        <span class="k">if</span> <span class="n">best_nint</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1">#Have found optimised readout parameters for this pattern within the user defined range, exit optimisation loop. </span>
+                            <span class="k">break</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1">#Need to keep searching</span>
+                            <span class="k">pass</span>
+
+                <span class="k">if</span> <span class="n">best_pattern</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Optimised pattern and readout parameters have been found, break out of pattern loop</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#Need to move to the next pattern down</span>
+                    <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="n">best_ngroup</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_nint</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_pattern</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1">#Optimisation has failed</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Unable to identify optimal readout parameters. Increase &quot;optimise_margin&quot; or manually define readout.&#39;</span><span class="p">)</span>
+
+            <span class="c1">#Otherwise, the optimisation was succesful </span>
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="n">best_pattern</span><span class="p">,</span> <span class="n">best_ngroup</span><span class="p">,</span> <span class="n">best_nint</span>
+
+    <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span>
+        <span class="c1">#MIRI optimisation is relatively straightforward, always use FAST readout pattern, so we just need to find the largest number of </span>
+        <span class="c1">#groups that a) doesn&#39;t saturate the detector, and b) is within th margin around the submitted time. </span>
+
+        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;ngroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>   <span class="c1">#If it saturates in 5 groups, tough to observe</span>
+        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;nint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;readout_pattern&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;fast&#39;</span>  
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">calculate_target</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">)</span>
+        <span class="n">sat_frac</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;scalar&#39;</span><span class="p">][</span><span class="s1">&#39;fraction_saturation&#39;</span><span class="p">]</span>
+        <span class="n">sat_pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;saturation&#39;</span><span class="p">])</span>
+ 
+        <span class="k">if</span> <span class="n">sat_frac</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1">#There is saturation, use fastest possible readout pattern and warn user.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: </span><span class="si">{:.1f}% s</span><span class="s1">aturation detected with the shortest possible readout settings. </span><span class="si">{}</span><span class="s1"> pixels affected.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">sat_frac</span><span class="p">,</span> <span class="n">sat_pix</span><span class="p">))</span>
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="s1">&#39;fast&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#No saturation, optimise readout parameters. </span>
+            <span class="n">max_groups</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">max_sat</span><span class="o">/</span><span class="n">sat_frac</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">cosmic_ray_groups</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">300</span><span class="o">/</span><span class="n">subarray_frame_time</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">max_groups</span> <span class="o">&gt;</span> <span class="n">cosmic_ray_groups</span><span class="p">:</span> 
+                <span class="c1">#Above balanced cosmic ray limit of 300s, force maximum down to the highest number of groups</span>
+                <span class="n">max_groups</span> <span class="o">=</span> <span class="n">cosmic_ray_groups</span>
+
+            <span class="n">best_ngroup</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1">#Start at highest possible number of groups and work our way down until one fits within the margin. </span>
+            <span class="k">for</span> <span class="n">ngroup</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">max_groups</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+                <span class="n">min_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span> <span class="p">(</span><span class="n">t_exp</span><span class="o">-</span><span class="n">t_margin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">subarray_frame_time</span><span class="o">*</span><span class="n">ngroup</span><span class="p">)))</span>
+                <span class="n">max_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span> <span class="p">(</span><span class="n">t_exp</span><span class="o">+</span><span class="n">t_margin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">subarray_frame_time</span><span class="o">*</span><span class="n">ngroup</span><span class="p">)))</span>
+                
+                <span class="c1">#Range of possible ints for this number of groups, if one or more match find which one is closest </span>
+                <span class="n">best_nint</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">best_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                <span class="k">for</span> <span class="n">nint</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_int</span><span class="p">,</span> <span class="n">max_int</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">t</span> <span class="o">=</span> <span class="n">subarray_frame_time</span><span class="o">*</span><span class="n">ngroup</span><span class="o">*</span><span class="n">nint</span>
+                    <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t_exp</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t_exp</span><span class="o">-</span><span class="n">t_margin</span><span class="p">))</span> <span class="ow">and</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="n">best_diff</span><span class="p">:</span>
+                        <span class="c1">#Found a pattern that fits within our range</span>
+                        <span class="n">best_ngroup</span> <span class="o">=</span> <span class="n">ngroup</span>
+                        <span class="n">best_nint</span> <span class="o">=</span> <span class="n">nint</span>
+                        <span class="n">best_diff</span> <span class="o">=</span> <span class="n">diff</span>
+
+                <span class="k">if</span> <span class="n">best_nint</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1">#Have found an optimised readout pattern within the user defined range, exit optimisation loop. </span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#Need to keep searching</span>
+                    <span class="k">pass</span> 
+
+            <span class="k">if</span> <span class="n">best_ngroup</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_nint</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1">#Optimisation has failed</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Unable to identify optimal readout parameters. Increase &quot;optimise_margin&quot; or manually define readout.&#39;</span><span class="p">)</span>
+
+            <span class="c1">#Otherwise, the optimisation was succesful </span>
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="s1">&#39;fast&#39;</span><span class="p">,</span> <span class="n">best_ngroup</span><span class="p">,</span> <span class="n">best_nint</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Instrument </span><span class="si">{}</span><span class="s1"> is not supported, please select NIRCam or MIRI&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instrument</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span></div>
+
+<div class="viewcode-block" id="optimize_readout"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.optimize_readout">[docs]</a><span class="k">def</span> <span class="nf">optimize_readout</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">optimise_readout</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="compute_magnitude"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.compute_magnitude">[docs]</a><span class="k">def</span> <span class="nf">compute_magnitude</span><span class="p">(</span><span class="n">spectrum_wave</span><span class="p">,</span> <span class="n">spectrum_flux</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">wave_unit</span><span class="o">=</span><span class="s1">&#39;micron&#39;</span><span class="p">,</span> <span class="n">flux_unit</span><span class="o">=</span><span class="s1">&#39;mJy&#39;</span><span class="p">):</span>
+
+    <span class="n">Bandpass</span> <span class="o">=</span> <span class="n">read_bandpass</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
+    <span class="n">SED</span> <span class="o">=</span> <span class="n">SourceSpectrum</span><span class="p">(</span><span class="n">Empirical1D</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">spectrum_wave</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">wave_unit</span><span class="p">),</span> <span class="n">lookup_table</span><span class="o">=</span><span class="n">spectrum_flux</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">flux_unit</span><span class="p">))</span>
+    <span class="n">VegaSED</span> <span class="o">=</span> <span class="n">SourceSpectrum</span><span class="o">.</span><span class="n">from_vega</span><span class="p">()</span>
+
+    <span class="n">Obs</span> <span class="o">=</span> <span class="n">Observation</span><span class="p">(</span><span class="n">SED</span><span class="p">,</span> <span class="n">Bandpass</span><span class="p">,</span> <span class="n">binset</span><span class="o">=</span><span class="n">Bandpass</span><span class="o">.</span><span class="n">waveset</span><span class="p">)</span>
+    <span class="n">magnitude</span> <span class="o">=</span> <span class="n">Obs</span><span class="o">.</span><span class="n">effstim</span><span class="p">(</span><span class="n">flux_unit</span><span class="o">=</span><span class="s1">&#39;vegamag&#39;</span><span class="p">,</span> <span class="n">vegaspec</span><span class="o">=</span><span class="n">VegaSED</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">return</span> <span class="n">magnitude</span></div>
+
+<div class="viewcode-block" id="equatorial_to_ecliptic"><a class="viewcode-back" href="../../autoapi/pancake/utilities/index.html#pancake.utilities.equatorial_to_ecliptic">[docs]</a><span class="k">def</span> <span class="nf">equatorial_to_ecliptic</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">ecl</span> <span class="o">=</span> <span class="mf">23.43</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;degrees&#39;</span><span class="p">:</span>
+        <span class="n">ra</span> <span class="o">*=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+        <span class="n">dec</span> <span class="o">*=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Assuming angles are in radians&#39;</span><span class="p">)</span>
+
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ecl</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ecl</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ra</span><span class="p">))</span>
+    <span class="n">lamb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">beta</span><span class="p">))</span> 
+
+    <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;degrees&#39;</span><span class="p">:</span>
+        <span class="n">beta</span> <span class="o">*=</span> <span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">lamb</span> <span class="o">*=</span>  <span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="k">return</span> <span class="n">lamb</span><span class="p">,</span> <span class="n">beta</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

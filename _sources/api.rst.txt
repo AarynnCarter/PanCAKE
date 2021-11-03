@@ -1,0 +1,93 @@
+PanCAKE package
+==============
+
+Module contents
+---------------
+
+.. automodule:: pancake
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pancake.analysis module
+-----------------------
+
+.. automodule:: pancake.analysis
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pancake.config module
+---------------------
+
+.. automodule:: pancake.config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pancake.engine module
+--------------------
+
+.. automodule:: pancake.engine
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pancake.io module
+-----------------
+
+.. automodule:: pancake.io
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+pancake.opds module
+-------------------
+
+.. automodule:: pancake.opds
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+pancake.pandeia_subclasses module
+---------------------------------
+
+.. automodule:: pancake.pandeia_subclasses
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+pancake.scene module
+--------------------
+
+.. automodule:: pancake.scene
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pancake.sequence module
+-----------------------
+
+.. automodule:: pancake.scene
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pancake.transformations module
+------------------------------
+
+.. automodule:: pancake.transformations
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pancake.utilities module
+------------------------
+
+.. automodule:: pancake.utilities
+    :members:
+    :undoc-members:
+    :show-inheritance:

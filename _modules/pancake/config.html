@@ -1,0 +1,529 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pancake.config &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to PanCAKE’s documentation!</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pancake.html">pancake</a> &raquo;</li>
+        
+      <li>pancake.config</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pancake.config</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<div class="viewcode-block" id="EngineConfiguration"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration">[docs]</a><span class="k">class</span> <span class="nc">EngineConfiguration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A class to consolidate the options for customizing</span>
+<span class="sd">    calculations made with the Pandiea engine.</span>
+
+<span class="sd">    Users aren&#39;t expected to interact with this class</span>
+<span class="sd">    directly. Use the engine.options object instead.</span>
+
+<span class="sd">    Could add type checking in the @property.setter</span>
+<span class="sd">    methods.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_noise</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;crs&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;darkcurrent&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;ffnoise&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;readnoise&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> 
+                              <span class="s1">&#39;rn_correlation&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_effects</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;background&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;ipc&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;saturation&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;wave_sampling&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;on_the_fly_PSFs&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                               <span class="s1">&#39;on_the_fly_webbpsf_options&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;on_the_fly_webbpsf_opd&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                               <span class="s1">&#39;on_the_fly_oversample&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;pandeia_fixed_seed&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> 
+                               <span class="s1">&#39;cache&#39;</span><span class="p">:</span> <span class="s1">&#39;ram&#39;</span><span class="p">,</span> <span class="s1">&#39;noise&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_noise</span><span class="p">,</span> 
+                               <span class="s1">&#39;effects&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_effects</span><span class="p">,</span> <span class="s1">&#39;verbose&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;cache_path&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">item</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_params</span><span class="p">[</span><span class="n">item</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_options</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.current_config"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.current_config">[docs]</a>    <span class="k">def</span> <span class="nf">current_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A space to store a pandeia configuration dictionary for inspection at runtime.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span></div>
+    
+    <span class="nd">@current_config</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">current_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows you to store a pandeia configuration dictionary for runtime inspection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.verbose"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.verbose">[docs]</a>    <span class="k">def</span> <span class="nf">verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span></div>
+    
+    <span class="nd">@verbose</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">value</span>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.current_options"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.current_options">[docs]</a>    <span class="k">def</span> <span class="nf">current_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stores all configuration options in a dictionary, and returns that dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">config_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">config_dict</span></div>
+    
+    <span class="nd">@current_options</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">current_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If supplied with a dictionary, attempts to set all configuration options from that</span>
+<span class="sd">        dictionary, with the following precedence:</span>
+<span class="sd">            - parameter name used by the object</span>
+<span class="sd">            - current value of the configuration option</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)))</span>
+    
+<div class="viewcode-block" id="EngineConfiguration.save_options"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.save_options">[docs]</a>    <span class="k">def</span> <span class="nf">save_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The configuration object has room for a single backed-up option set. This is useful for</span>
+<span class="sd">        storing a default set before running a calculation, so that you can fiddle with the </span>
+<span class="sd">        parameters, run the calculation, and then restore everything to what it was before you</span>
+<span class="sd">        started fiddling. Note that there is *only* one such built-in save, so if you want to save</span>
+<span class="sd">        a set of parameters you&#39;ve created without overwriting that save, you should call the</span>
+<span class="sd">        current_options parameter and store the resulting dictionary somewhere.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_options</span></div>
+    
+<div class="viewcode-block" id="EngineConfiguration.restore_options"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.restore_options">[docs]</a>    <span class="k">def</span> <span class="nf">restore_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This restores whatever is stored in self._saved_options. If there&#39;s nothing there, it will </span>
+<span class="sd">        have no effect (rather than crashing your program, so there&#39;s that at least). Note that it </span>
+<span class="sd">        does *not* delete the configuration stored in self._saved_options.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_options</span></div>
+    
+<div class="viewcode-block" id="EngineConfiguration.restore_defaults"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.restore_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">restore_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restore all parameters to their default values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_params</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_params</span><span class="p">[</span><span class="n">item</span><span class="p">])</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="EngineConfiguration.pandeia_instrument_config"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.pandeia_instrument_config">[docs]</a>    <span class="k">def</span> <span class="nf">pandeia_instrument_config</span><span class="p">(</span><span class="n">aperture</span><span class="p">):</span>
+        <span class="n">aperture_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;mask210r&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;CIRCLYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;nircam_sw&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;mask335r&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;CIRCLYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;nircam_lw&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;mask430r&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;CIRCLYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;nircam_lw&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;masklwb&#39;</span>  <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;WEDGELYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;nircam_lw&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;maskswb&#39;</span>  <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;WEDGELYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;nircam_sw&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;fqpm1065&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> <span class="s1">&#39;miri&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;fqpm1140&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> <span class="s1">&#39;miri&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;fqpm1550&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> <span class="s1">&#39;miri&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;lyot2300&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MASKLYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;miri&#39;</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">aperture_dict</span><span class="p">[</span><span class="n">aperture</span><span class="p">]</span></div>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.cache"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.cache">[docs]</a>    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Caching can currently be done one of three ways:</span>
+<span class="sd">            - LRU RAM cache (&#39;ram&#39;)</span>
+<span class="sd">            - On-disk cache (&#39;disk&#39;)</span>
+<span class="sd">            - No caching (&#39;none&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span></div>
+    
+    <span class="nd">@cache</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;disk&#39;</span><span class="p">,</span> <span class="s1">&#39;ram&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">value</span>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.noise"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.noise">[docs]</a>    <span class="k">def</span> <span class="nf">noise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets noise parameters. The default is for everything to be turned on.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span></div>
+    
+    <span class="nd">@noise</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span> <span class="o">=</span> <span class="n">value</span>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.effects"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.effects">[docs]</a>    <span class="k">def</span> <span class="nf">effects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets pandeia effects (background, saturation, IPC). The default is for everything to be turned on.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effects</span></div>
+    
+    <span class="nd">@effects</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">effects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_effects</span> <span class="o">=</span> <span class="n">value</span>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.wave_sampling"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.wave_sampling">[docs]</a>    <span class="k">def</span> <span class="nf">wave_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Pandeia defaults to ~200 wavelength samples for imaging</span>
+<span class="sd">        This is slow and unlikely to significantly improve the</span>
+<span class="sd">        accuracy of coronagraphic performance predictions.</span>
+<span class="sd">        Setting wave_sampling to 10-20 should be sufficient,</span>
+<span class="sd">        and translates to a time savings of about 10.</span>
+<span class="sd">        Leaving it at None sets it to Pandeia&#39;s default.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wave_sampling</span></div>
+    
+    <span class="nd">@wave_sampling</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">wave_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wave_sampling</span> <span class="o">=</span> <span class="n">value</span>
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.on_the_fly_PSFs"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.on_the_fly_PSFs">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly_PSFs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Avoid Pandeia&#39;s precomputed PSFs and recompute in WebbPSF as needed?</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_PSFs</span></div>
+    
+    <span class="nd">@on_the_fly_PSFs</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">on_the_fly_PSFs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_PSFs</span> <span class="o">=</span> <span class="n">value</span>
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.on_the_fly_webbpsf_options"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.on_the_fly_webbpsf_options">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly_webbpsf_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A dictionary of extra options for configuring the PSF </span>
+<span class="sd">        calculation ad hoc. Note some options are overridden </span>
+<span class="sd">        in get_psf_on_the_fly().</span>
+<span class="sd">        </span>
+<span class="sd">        See WebbPSF documentation for more details.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_webbpsf_options</span></div>
+    
+    <span class="nd">@on_the_fly_webbpsf_options</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">on_the_fly_webbpsf_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_webbpsf_options</span> <span class="o">=</span> <span class="n">value</span>
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.on_the_fly_webbpsf_opd"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.on_the_fly_webbpsf_opd">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly_webbpsf_opd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allow overriding the default OPD selection when </span>
+<span class="sd">        computing PSFs on the fly.</span>
+<span class="sd">        </span>
+<span class="sd">        See the WebbPSF documentation.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_webbpsf_opd</span></div>
+    
+    <span class="nd">@on_the_fly_webbpsf_opd</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">on_the_fly_webbpsf_opd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_webbpsf_opd</span> <span class="o">=</span> <span class="n">value</span>
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.on_the_fly_oversample"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.on_the_fly_oversample">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly_oversample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A dictionary of extra options for configuring the PSF </span>
+<span class="sd">        calculation ad hoc. Note some options are overridden </span>
+<span class="sd">        in get_psf_on_the_fly().</span>
+<span class="sd">        </span>
+<span class="sd">        See WebbPSF documentation for more details.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_oversample</span></div>
+    
+    <span class="nd">@on_the_fly_oversample</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">on_the_fly_oversample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">var_types</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">var_types</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">var_types</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_the_fly_oversample</span> <span class="o">=</span> <span class="n">value</span>
+        
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.pandeia_fixed_seed"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.pandeia_fixed_seed">[docs]</a>    <span class="k">def</span> <span class="nf">pandeia_fixed_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        By default, the pandeia engine uses a fixed seed.</span>
+<span class="sd">        This has undesirable results for many coronagraphy</span>
+<span class="sd">        applications. Pandeia-Coronagraphy disables this</span>
+<span class="sd">        by default. Restore the fixed seed by toggling</span>
+<span class="sd">        this to True.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pandeia_fixed_seed</span></div>
+    
+    <span class="nd">@pandeia_fixed_seed</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pandeia_fixed_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pandeia_fixed_seed</span> <span class="o">=</span> <span class="n">value</span>
+    
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.pandeia_noise"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.pandeia_noise">[docs]</a>    <span class="k">def</span> <span class="nf">pandeia_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows access to the pandeia noise configuration</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span></div>
+    
+    <span class="nd">@pandeia_noise</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pandeia_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="EngineConfiguration.pandeia_effects"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.pandeia_effects">[docs]</a>    <span class="k">def</span> <span class="nf">pandeia_effects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows access to the pandeia noise configuration</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effects</span></div>
+    
+    <span class="nd">@pandeia_effects</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pandeia_effects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_effects</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="EngineConfiguration.set_crs"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_crs">[docs]</a>    <span class="k">def</span> <span class="nf">set_crs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for cosmic rays to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span><span class="p">[</span><span class="s1">&#39;crs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="EngineConfiguration.set_darkcurrent"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_darkcurrent">[docs]</a>    <span class="k">def</span> <span class="nf">set_darkcurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for dark current to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span><span class="p">[</span><span class="s1">&#39;darkcurrent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="EngineConfiguration.set_ffnoise"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_ffnoise">[docs]</a>    <span class="k">def</span> <span class="nf">set_ffnoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for flatfield noise to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span><span class="p">[</span><span class="s1">&#39;ffnoise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="EngineConfiguration.set_readnoise"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_readnoise">[docs]</a>    <span class="k">def</span> <span class="nf">set_readnoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for readnoise to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span><span class="p">[</span><span class="s1">&#39;readnoise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="EngineConfiguration.set_rn_correlation"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_rn_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">set_rn_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for readnoise correlation to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noise</span><span class="p">[</span><span class="s1">&#39;rn_correlation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="EngineConfiguration.set_background"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_background">[docs]</a>    <span class="k">def</span> <span class="nf">set_background</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for background counts to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_effects</span><span class="p">[</span><span class="s1">&#39;background&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="EngineConfiguration.set_ipc"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_ipc">[docs]</a>    <span class="k">def</span> <span class="nf">set_ipc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for inter-pixel capacitance to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_effects</span><span class="p">[</span><span class="s1">&#39;ipc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="EngineConfiguration.set_saturation"><a class="viewcode-back" href="../../autoapi/pancake/config/index.html#pancake.config.EngineConfiguration.set_saturation">[docs]</a>    <span class="k">def</span> <span class="nf">set_saturation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Allows for detector saturation to be turned on or off in the simulation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_effects</span><span class="p">[</span><span class="s1">&#39;saturation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

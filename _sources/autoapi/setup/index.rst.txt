@@ -1,0 +1,47 @@
+:py:mod:`setup`
+===============
+
+.. py:module:: setup
+
+.. autoapi-nested-parse::
+
+   A setuptools based setup module.
+   See:
+   https://packaging.python.org/en/latest/distributing.html
+   https://github.com/pypa/sampleproject
+
+
+
+Module Contents
+---------------
+
+.. py:data:: here
+   
+
+   
+
+.. py:data:: NAME
+   :annotation: = pancake
+
+   
+
+.. py:data:: python_major
+   
+
+   
+
+.. py:data:: required
+   :annotation: = [['numpy>=1.15', 'matplotlib>=2.2', 'pandeia.engine>=1.2', 'webbpsf>0.7', 'scikit-image>=0.14',...
+
+   
+
+.. py:data:: long_description
+   
+
+   
+
+.. py:data:: version
+   
+
+   
+

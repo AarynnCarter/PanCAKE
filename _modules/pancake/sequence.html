@@ -1,0 +1,959 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pancake.sequence &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to PanCAKE’s documentation!</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pancake.html">pancake</a> &raquo;</li>
+        
+      <li>pancake.sequence</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pancake.sequence</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.calc_utils</span> <span class="kn">import</span> <span class="n">build_default_calc</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">.utilities</span> <span class="kn">import</span> <span class="n">optimise_readout</span><span class="p">,</span> <span class="n">compute_magnitude</span><span class="p">,</span> <span class="n">equatorial_to_ecliptic</span>
+<span class="kn">from</span> <span class="nn">.engine</span> <span class="kn">import</span> <span class="n">calculate_target</span><span class="p">,</span> <span class="n">options</span>
+<span class="kn">from</span> <span class="nn">.scene</span> <span class="kn">import</span> <span class="n">Scene</span><span class="p">,</span> <span class="n">create_SGD</span>
+<span class="kn">from</span> <span class="nn">.opds</span> <span class="kn">import</span> <span class="n">OPDFile_to_HDUList</span><span class="p">,</span> <span class="n">OTE_WFE_Drift_Model</span>
+<span class="kn">from</span> <span class="nn">.io</span> <span class="kn">import</span> <span class="n">determine_instrument</span><span class="p">,</span> <span class="n">determine_aperture</span><span class="p">,</span> <span class="n">determine_subarray</span><span class="p">,</span> <span class="n">determine_aperture</span><span class="p">,</span> <span class="n">determine_pixel_scale</span><span class="p">,</span> <span class="n">sequence_input_checks</span><span class="p">,</span> <span class="n">determine_exposure_time</span>
+
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+
+<span class="kn">import</span> <span class="nn">webbpsf</span>
+
+<span class="c1">#####################################################################################################################</span>
+<span class="c1">#####################################################################################################################</span>
+<span class="c1">#####################################################################################################################</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Sequence class used to construct an observational sequence from invidual specified</span>
+<span class="sd">observations of user defined scenes. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Sequence"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence">[docs]</a><span class="k">class</span> <span class="nc">Sequence</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1">#Add observation does the heavy lifting, with a wide variety of input options. </span>
+<div class="viewcode-block" id="Sequence.add_observation"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence.add_observation">[docs]</a>    <span class="k">def</span> <span class="nf">add_observation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">exposures</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;coronagraphy&#39;</span><span class="p">,</span> <span class="n">nircam_mask</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">nircam_subarray</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">miri_subarray</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">telescope</span><span class="o">=</span><span class="s1">&#39;jwst&#39;</span><span class="p">,</span> <span class="n">optimise_margin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">optimize_margin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_sat</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">rolls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nircam_sgd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">miri_sgd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale_exposures</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1">#First copy scene so that the user provided scene isn&#39;t modified</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+
+        <span class="c1">#If there is only one exposure, convert it to a list.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exposures</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">exposures</span> <span class="o">=</span> <span class="p">[</span><span class="n">exposures</span><span class="p">]</span>
+        <span class="c1">#Check if max roll angle requested. </span>
+        <span class="k">if</span> <span class="n">rolls</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="c1"># Use an initial roll of 0 (i.e. what the input as the planet PA) and then a second roll of 14 degrees</span>
+            <span class="n">rolls</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span>
+        <span class="c1">#Perform remaining checks on input parameters</span>
+        <span class="n">sequence_input_checks</span><span class="p">(</span><span class="n">exposures</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">nircam_mask</span><span class="p">,</span> <span class="n">nircam_subarray</span><span class="p">,</span> <span class="n">miri_subarray</span><span class="p">,</span> <span class="n">telescope</span><span class="p">,</span> <span class="n">rolls</span><span class="p">,</span> <span class="n">nircam_sgd</span><span class="p">,</span> <span class="n">miri_sgd</span><span class="p">)</span>
+
+        <span class="c1">#Loop over each exposure to build independent observation dictionaries. </span>
+        <span class="n">temp_obs_dict_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">exposure</span> <span class="ow">in</span> <span class="n">exposures</span><span class="p">:</span>
+            <span class="c1">#Extract filter from exposure</span>
+            <span class="n">filt</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="c1">#Identify the instrument, aperture, and subarray from the filter and mode</span>
+            <span class="n">instrument</span> <span class="o">=</span> <span class="n">determine_instrument</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
+            <span class="n">aperture</span> <span class="o">=</span> <span class="n">determine_aperture</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">nircam_mask</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">subarray</span> <span class="o">=</span> <span class="n">determine_subarray</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">nircam_subarray</span><span class="p">,</span> <span class="n">miri_subarray</span><span class="p">)</span>
+
+            <span class="c1"># Construct observation configuration dictionary for Pandeia input</span>
+            <span class="n">obs_dict</span> <span class="o">=</span> <span class="n">build_default_calc</span><span class="p">(</span><span class="n">telescope</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">pandeia_scene</span>
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">scene_name</span>
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;subarray&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subarray</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;aperture&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aperture</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="c1">#Extract readout information from exposure settings</span>
+            <span class="k">if</span> <span class="n">optimize_margin</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="n">optimise_margin</span> <span class="o">=</span> <span class="n">optimize_margin</span> <span class="c1">#Check for US spelling</span>
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_readout</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">subarray</span><span class="p">,</span> <span class="n">obs_dict</span><span class="p">,</span> <span class="n">optimise_margin</span><span class="p">,</span> <span class="n">scale_exposures</span><span class="p">,</span> <span class="n">max_sat</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;readout_pattern&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;ngroup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span>
+            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;nint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrations</span>
+
+            <span class="c1">#Check if dithers are meant to be performed.</span>
+            <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span> <span class="ow">and</span> <span class="n">nircam_sgd</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;dither_strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nircam_sgd</span>
+            <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span> <span class="ow">and</span> <span class="n">miri_sgd</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;dither_strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">miri_sgd</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;dither_strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;SINGLE-POINT&#39;</span>
+
+            <span class="n">temp_obs_dict_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">)</span>
+
+        <span class="c1">#Check if any rolls were requested</span>
+        <span class="k">if</span> <span class="n">rolls</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1">#There are no rolls, just add the obs_dicts to the sequence as they are. </span>
+            <span class="k">for</span> <span class="n">obs_dict</span> <span class="ow">in</span> <span class="n">temp_obs_dict_array</span><span class="p">:</span>
+                <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="c1">#We need to add each of the roll exposures, making sure that things are grouped by the coronagraph used. </span>
+            <span class="n">prev_inst_index</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obs_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">temp_obs_dict_array</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp_obs_dict_array</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="c1">#First observation, just append with first roll</span>
+                        <span class="n">temp_scene</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+                        <span class="n">temp_scene</span><span class="o">.</span><span class="n">rotate_scene</span><span class="p">(</span><span class="n">rolls</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_scene</span><span class="o">.</span><span class="n">pandeia_scene</span>
+                        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rolls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">))</span> <span class="c1">#Deepcopy otherwise roll will adjust all obs_dicts</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1">#There is only a single filter in the obs dict array, no coronagraph changes.</span>
+                        <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="n">rolls</span><span class="p">:</span>
+                            <span class="n">temp_scene</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+                            <span class="n">temp_scene</span><span class="o">.</span><span class="n">rotate_scene</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span>
+                            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_scene</span><span class="o">.</span><span class="n">pandeia_scene</span>
+                            <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">roll</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#Up to but excluding the last observation. </span>
+                    <span class="n">prev_aperture</span> <span class="o">=</span> <span class="n">temp_obs_dict_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;aperture&#39;</span><span class="p">]</span>
+                    <span class="n">curr_aperture</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;aperture&#39;</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">prev_aperture</span> <span class="o">==</span> <span class="n">curr_aperture</span><span class="p">:</span>
+                        <span class="c1">#Coronagraphs are the same, don&#39;t want to roll yet. </span>
+                        <span class="n">temp_scene</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+                        <span class="n">temp_scene</span><span class="o">.</span><span class="n">rotate_scene</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span>
+                        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_scene</span><span class="o">.</span><span class="n">pandeia_scene</span>
+                        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rolls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1">#Coronagraphs must be different, need to append the other rolls now before the switch</span>
+                        <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="n">rolls</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                            <span class="k">for</span> <span class="n">temp_obs_dict</span> <span class="ow">in</span> <span class="n">temp_obs_dict_array</span><span class="p">[</span><span class="n">prev_inst_index</span><span class="p">:</span><span class="n">i</span><span class="p">]:</span>
+                                <span class="n">temp_scene</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+                                <span class="n">temp_scene</span><span class="o">.</span><span class="n">rotate_scene</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span>
+                                <span class="n">temp_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_scene</span><span class="o">.</span><span class="n">pandeia_scene</span>
+                                <span class="n">temp_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">roll</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">temp_obs_dict</span><span class="p">))</span>
+                        <span class="c1">#Set an index for the first observation with the next instrument. </span>
+                        <span class="n">prev_inst_index</span> <span class="o">=</span> <span class="n">i</span>
+
+                        <span class="c1">#Now append the new coronagraphs first roll</span>
+                        <span class="n">temp_scene</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+                        <span class="n">temp_scene</span><span class="o">.</span><span class="n">rotate_scene</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span>
+                        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_scene</span><span class="o">.</span><span class="n">pandeia_scene</span>
+                        <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rolls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">))</span>
+
+                    <span class="c1">#Check if this is the last observation</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">temp_obs_dict_array</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="c1">#Append all the rolls for the current working coronagraph</span>
+                        <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="n">rolls</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                            <span class="k">for</span> <span class="n">temp_obs_dict</span> <span class="ow">in</span> <span class="n">temp_obs_dict_array</span><span class="p">[</span><span class="n">prev_inst_index</span><span class="p">:]:</span>
+                                <span class="n">temp_scene</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+                                <span class="n">temp_scene</span><span class="o">.</span><span class="n">rotate_scene</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span>
+                                <span class="n">temp_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_scene</span><span class="o">.</span><span class="n">pandeia_scene</span>
+                                <span class="n">temp_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">roll</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">temp_obs_dict</span><span class="p">))</span></div>
+
+            <span class="c1"># #We need to add each of the roll exposures, making sure that things are grouped by the coronagraph used. </span>
+            <span class="c1"># prev_inst_index = 0</span>
+            <span class="c1"># for i, obs_dict in enumerate(temp_obs_dict_array):</span>
+            <span class="c1">#     if i == 0:</span>
+            <span class="c1">#         if len(temp_obs_dict_array) &gt; 1:</span>
+            <span class="c1">#             #First observation, just append with first roll</span>
+            <span class="c1">#             obs_dict[&#39;strategy&#39;][&#39;scene_rotation&#39;] = rolls[0]</span>
+            <span class="c1">#             self.observation_sequence.append(deepcopy(obs_dict)) #Deepcopy otherwise roll will adjust all obs_dicts</span>
+            <span class="c1">#         else:</span>
+            <span class="c1">#             #There is only a single filter in the obs dict array, no coronagraph changes.</span>
+            <span class="c1">#             for roll in rolls:</span>
+            <span class="c1">#                 obs_dict[&#39;strategy&#39;][&#39;scene_rotation&#39;] = roll</span>
+            <span class="c1">#                 self.observation_sequence.append(deepcopy(obs_dict))</span>
+            <span class="c1">#     else:</span>
+            <span class="c1">#         #Up to but excluding the last observation. </span>
+            <span class="c1">#         prev_aperture = temp_obs_dict_array[i-1][&#39;configuration&#39;][&#39;instrument&#39;][&#39;aperture&#39;]</span>
+            <span class="c1">#         curr_aperture = obs_dict[&#39;configuration&#39;][&#39;instrument&#39;][&#39;aperture&#39;]</span>
+
+            <span class="c1">#         if prev_aperture == curr_aperture:</span>
+            <span class="c1">#             #Coronagraphs are the same, don&#39;t want to roll yet. </span>
+            <span class="c1">#             obs_dict[&#39;strategy&#39;][&#39;scene_rotation&#39;] = rolls[0]</span>
+            <span class="c1">#             self.observation_sequence.append(deepcopy(obs_dict))</span>
+            <span class="c1">#         else:</span>
+            <span class="c1">#             #Coronagraphs must be different, need to append the other rolls now before the switch</span>
+            <span class="c1">#             for roll in rolls[1:]:</span>
+            <span class="c1">#                 for temp_obs_dict in temp_obs_dict_array[prev_inst_index:i]:</span>
+            <span class="c1">#                     temp_obs_dict[&#39;strategy&#39;][&#39;scene_rotation&#39;] = roll</span>
+            <span class="c1">#                     self.observation_sequence.append(deepcopy(temp_obs_dict))</span>
+            <span class="c1">#             #Set an index for the first observation with the next instrument. </span>
+            <span class="c1">#             prev_inst_index = i</span>
+
+            <span class="c1">#             #Now append the new coronagraphs first roll</span>
+            <span class="c1">#             obs_dict[&#39;strategy&#39;][&#39;scene_rotation&#39;] = rolls[0]</span>
+            <span class="c1">#             self.observation_sequence.append(deepcopy(obs_dict))</span>
+
+            <span class="c1">#         #Check if this is the last observation</span>
+            <span class="c1">#         if i == (len(temp_obs_dict_array)-1):</span>
+            <span class="c1">#             #Append all the rolls for the current working coronagraph</span>
+            <span class="c1">#             for roll in rolls[1:]:</span>
+            <span class="c1">#                 for temp_obs_dict in temp_obs_dict_array[prev_inst_index:]:</span>
+            <span class="c1">#                     temp_obs_dict[&#39;strategy&#39;][&#39;scene_rotation&#39;] = roll</span>
+            <span class="c1">#                     self.observation_sequence.append(deepcopy(temp_obs_dict))</span>
+
+<div class="viewcode-block" id="Sequence.run"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta_error</span><span class="o">=</span><span class="s1">&#39;saved&#39;</span><span class="p">,</span> <span class="n">wavefront_evolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">on_the_fly_PSFs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wave_sampling</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">save_file</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">cache_path</span><span class="o">=</span><span class="s1">&#39;default&#39;</span> <span class="p">,</span><span class="n">offaxis_nircam</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">offaxis_miri</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">debug_verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial_wavefront_realisation</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="c1">#PanCAKE adjustable options</span>
+        <span class="n">pancake_options</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="n">pancake_options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">debug_verbose</span>
+        <span class="n">pancake_options</span><span class="o">.</span><span class="n">wave_sampling</span> <span class="o">=</span> <span class="n">wave_sampling</span>
+        <span class="n">pancake_options</span><span class="o">.</span><span class="n">on_the_fly_PSFs</span> <span class="o">=</span> <span class="n">on_the_fly_PSFs</span>
+        <span class="n">pancake_options</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span> 
+
+        <span class="k">if</span> <span class="n">cache</span> <span class="o">!=</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cache_path</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+                <span class="n">cache_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/PSF_CACHE/&#39;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cache_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">pancake_options</span><span class="o">.</span><span class="n">cache_path</span> <span class="o">=</span> <span class="n">cache_path</span>
+
+
+        <span class="c1">#Create the HDUList for saving our results to. </span>
+        <span class="n">primary_header</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">()</span>
+        <span class="n">hdu_array</span> <span class="o">=</span> <span class="p">[</span><span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">primary_header</span><span class="p">)]</span>
+        <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">(</span><span class="n">hdu_array</span><span class="p">)</span>
+
+        <span class="c1">#Set the index of the first observation to simulate. </span>
+        <span class="n">start_index</span> <span class="o">=</span> <span class="mi">0</span> 
+
+        <span class="c1"># If we are saving the results to a file, set this up.</span>
+        <span class="k">if</span> <span class="n">save_file</span> <span class="o">!=</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resume</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="c1">#If we pass the checks, overwrite any existing file with the same name. </span>
+                <span class="c1">#Check provided directory exists and is the right format before running all the simulations</span>
+                <span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_dir</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Provided save directory &quot;</span><span class="si">{}</span><span class="s1">&quot; not found.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">save_dir</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">save_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;fits&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Provided save file &quot;</span><span class="si">{}</span><span class="s1">&quot; not of &quot;*.fits&quot; format.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">save_file</span><span class="p">))</span>
+
+                <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">save_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#Need to carry on from where a saved simulation last ended. Figure out where that is...</span>
+                <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">save_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">save_hdul</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">save_hdul</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">):</span>
+                        <span class="c1">#All simulations already completed.</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: All observation simulations have been completed, nothing to resume.&#39;</span><span class="p">)</span>
+                        <span class="k">return</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Resuming previous observation sequence...&#39;</span><span class="p">)</span>
+                        <span class="c1">#Change the start index to the correct value. </span>
+                        <span class="n">start_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">save_hdul</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+
+        <span class="c1">#Calculate OPD&#39;s throughout the observation if requested and on_the_fly_PSFs are being used. </span>
+        <span class="k">if</span> <span class="n">wavefront_evolution</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">on_the_fly_PSFs</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Computing OPD Maps...&#39;</span><span class="p">)</span>
+            <span class="n">opd_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_opds</span><span class="p">(</span><span class="n">opd_realisation</span><span class="o">=</span><span class="n">initial_wavefront_realisation</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">opd_res</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
+                <span class="n">wavefront_evolution</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nircam_opds</span><span class="p">,</span> <span class="n">miri_opds</span> <span class="o">=</span> <span class="n">opd_res</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#Don&#39;t use an OPD drift if we aren&#39;t using on_the_fly_PSFs or only a single observation. </span>
+            <span class="n">wavefront_evolution</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1">#Next, we loop over all the observations within the sequence and simulate each one individually. </span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running Simulations...&#39;</span><span class="p">)</span>
+        <span class="n">observation_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">unocculted_images</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i_raw</span><span class="p">,</span> <span class="n">base_obs_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">[</span><span class="n">start_index</span><span class="p">:]):</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i_raw</span> <span class="o">+</span> <span class="n">start_index</span>
+            <span class="n">scene_name</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]</span>
+            <span class="n">filt</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;filter&#39;</span><span class="p">]</span>
+            <span class="n">instrument</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span>
+                <span class="n">offaxis_x</span><span class="p">,</span> <span class="n">offaxis_y</span> <span class="o">=</span> <span class="n">offaxis_miri</span>
+            <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span><span class="p">:</span>
+                <span class="n">offaxis_x</span><span class="p">,</span> <span class="n">offaxis_y</span> <span class="o">=</span> <span class="n">offaxis_nircam</span>
+
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--&gt; Observation </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> // </span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">),</span> <span class="n">scene_name</span><span class="p">,</span> <span class="n">filt</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
+
+            <span class="c1">##### First let&#39;s calculate an unocculted image to compute the contrast curve with</span>
+            <span class="n">offaxis_dict</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">base_obs_dict</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">offaxis_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">])):</span>
+                <span class="c1">#Offset all the sources </span>
+                <span class="n">offaxis_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offaxis_x</span>
+                <span class="n">offaxis_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offaxis_y</span>
+
+            <span class="c1"># Ignore any saturation, allowing counts above full well, and turn off on_the_fly_PSFs for speed. </span>
+            <span class="n">pancake_options</span><span class="o">.</span><span class="n">set_saturation</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">pancake_options</span><span class="o">.</span><span class="n">on_the_fly_PSFs</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># Ensure the scene isn&#39;t rotated to make extracting the PSF center easier</span>
+            <span class="n">offaxis_dict</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;scene_rotation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> 
+            
+            <span class="c1"># Calculate off-axis image. </span>
+            <span class="n">offaxis_result</span> <span class="o">=</span> <span class="n">calculate_target</span><span class="p">(</span><span class="n">offaxis_dict</span><span class="p">)</span>
+            
+            <span class="c1"># Return settings to original values</span>
+            <span class="n">pancake_options</span><span class="o">.</span><span class="n">set_saturation</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">pancake_options</span><span class="o">.</span><span class="n">on_the_fly_PSFs</span> <span class="o">=</span> <span class="n">on_the_fly_PSFs</span>
+
+            <span class="c1">##### Now we will compute the actual observations</span>
+            <span class="c1"># Assemble small grid dither array. Even without any SGD this will happen, it will just use a single dither point. </span>
+            <span class="c1"># This is also where the random target acquisition error is added.</span>
+            <span class="n">sgds</span> <span class="o">=</span> <span class="n">create_SGD</span><span class="p">(</span><span class="n">ta_error</span><span class="o">=</span><span class="n">ta_error</span><span class="p">,</span> <span class="n">pattern_name</span><span class="o">=</span><span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;dither_strategy&#39;</span><span class="p">],</span> <span class="n">sim_num</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">sgd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sgds</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sgds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1">#Print the small grid dither step we are on</span>
+                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----&gt; Small Grid Dither </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">sgds</span><span class="p">)))</span>
+
+                <span class="c1">#Begin by making a new copy of the obs_dict so that shifts in source offsets only happen once. </span>
+                <span class="n">obs_dict</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">base_obs_dict</span><span class="p">)</span>
+
+                <span class="c1">#Offset all the sources in the scene by the necessary dither + target acquisition amounts. </span>
+                <span class="n">xoff</span><span class="p">,</span> <span class="n">yoff</span> <span class="o">=</span> <span class="n">sgd</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">])):</span>
+                    <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">xoff</span>
+                    <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">yoff</span>
+
+                <span class="k">if</span> <span class="n">wavefront_evolution</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="c1">#Use the calculated OPD for this specific observation. </span>
+                    <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span><span class="p">:</span>
+                        <span class="n">options</span><span class="o">.</span><span class="n">on_the_fly_webbpsf_opd</span> <span class="o">=</span> <span class="n">nircam_opds</span><span class="p">[</span><span class="n">observation_counter</span><span class="p">]</span> 
+                    <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span>
+                        <span class="n">options</span><span class="o">.</span><span class="n">on_the_fly_webbpsf_opd</span> <span class="o">=</span> <span class="n">miri_opds</span><span class="p">[</span><span class="n">observation_counter</span><span class="p">]</span>
+
+                <span class="c1">######## RUN OBSERVATION ########</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">calculate_target</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">)</span> 
+                <span class="c1">#################################</span>
+
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1">#We are on the first simulation, so lets make the right size array now.</span>
+                    <span class="n">first_detector_image</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">]</span>
+                    <span class="c1"># Shape is SGDs + 1 as we also need to include the unocculted image from earlier. </span>
+                    <span class="n">detector_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">sgds</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">first_detector_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="n">first_detector_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                    <span class="n">detector_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">first_detector_image</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#We are on a simulation due to dithering, add it to the already defined array</span>
+                    <span class="n">detector_images</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">]</span>
+
+                <span class="n">observation_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1">##### Append the unocculted image to the array</span>
+            <span class="n">detector_images</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">offaxis_result</span><span class="p">[</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">]</span>
+
+            <span class="c1">#We need to create a HDU for this observation, first make the header</span>
+            <span class="n">image_header</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">()</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;aperture&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;filter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;TARGET&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;INSTRMNT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;FILTER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;filter&#39;</span><span class="p">]</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;APERTURE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;aperture&#39;</span><span class="p">]</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;SUBARRAY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;subarray&#39;</span><span class="p">]</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;PATTERN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;readout_pattern&#39;</span><span class="p">]</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;NGROUP&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;ngroup&#39;</span><span class="p">]</span> 
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;NINT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;nint&#39;</span><span class="p">]</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;TEXP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">determine_exposure_time</span><span class="p">(</span><span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;SUBARRAY&#39;</span><span class="p">],</span> <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;PATTERN&#39;</span><span class="p">],</span> <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;NGROUP&#39;</span><span class="p">],</span> <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;NINT&#39;</span><span class="p">]),</span> <span class="s1">&#39;seconds&#39;</span><span class="p">)</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;PIXSCALE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">determine_pixel_scale</span><span class="p">(</span><span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;INSTRMNT&#39;</span><span class="p">],</span> <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;FILTER&#39;</span><span class="p">]),</span> <span class="s1">&#39;arcsec/pixel&#39;</span><span class="p">)</span>
+            <span class="c1">#image_header[&#39;ROLLANG&#39;] = (base_obs_dict[&#39;strategy&#39;][&#39;scene_rotation&#39;], &#39;degrees&#39;)</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;ROLLANG&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_rollang&#39;</span><span class="p">],</span> <span class="s1">&#39;degrees&#39;</span><span class="p">)</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;DITHER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;dither_strategy&#39;</span><span class="p">]</span>
+            
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;NSOURCES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">sgd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sgds</span><span class="p">):</span>
+                    <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;SOURCE</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;pancake_parameters&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                    <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;S</span><span class="si">{}</span><span class="s1">XOFF</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sgd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;S</span><span class="si">{}</span><span class="s1">YOFF</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sgd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;S</span><span class="si">{}</span><span class="s1">OFFAX&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">offaxis_x</span>
+                <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;S</span><span class="si">{}</span><span class="s1">OFFAY&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">offaxis_y</span>
+                <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;S</span><span class="si">{}</span><span class="s1">VGAMG&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span>  <span class="o">=</span> <span class="n">compute_magnitude</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;spectrum&#39;</span><span class="p">][</span><span class="s1">&#39;sed&#39;</span><span class="p">][</span><span class="s1">&#39;spectrum&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;spectrum&#39;</span><span class="p">][</span><span class="s1">&#39;sed&#39;</span><span class="p">][</span><span class="s1">&#39;spectrum&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">base_obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;filter&#39;</span><span class="p">])</span>
+                <span class="n">image_header</span><span class="o">.</span><span class="n">add_blank</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">before</span><span class="o">=</span><span class="s1">&#39;SOURCE</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
+
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;PCOTFPSF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_the_fly_PSFs</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;PCWAVSAM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">wave_sampling</span><span class="p">,</span> <span class="s1">&#39;Only valid if PCOTFPSF==True&#39;</span><span class="p">)</span>
+            <span class="n">image_header</span><span class="p">[</span><span class="s1">&#39;PCOPDDRF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wavefront_evolution</span>
+            <span class="n">image_header</span><span class="o">.</span><span class="n">add_blank</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">before</span><span class="o">=</span><span class="s1">&#39;PCOTFPSF&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Append the images and header information to the initial HDUList. </span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="n">detector_images</span>
+            <span class="n">hdulist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="o">.</span><span class="n">ImageHDU</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">image_header</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">save_file</span> <span class="o">!=</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="c1"># Then we also want to append the data to our saved file, doing it this way means if there is a crash</span>
+                <span class="c1"># halfway through then things are still saved.  </span>
+                <span class="n">fits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">save_file</span><span class="p">,</span> <span class="n">image_data</span><span class="p">,</span> <span class="n">image_header</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hdulist</span></div>
+
+<div class="viewcode-block" id="Sequence._relative_exposure_time"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence._relative_exposure_time">[docs]</a>    <span class="k">def</span> <span class="nf">_relative_exposure_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">master_scene</span><span class="p">,</span> <span class="n">master_exposure_time</span><span class="o">=</span><span class="mi">3600</span><span class="p">):</span>
+        <span class="c1">#Figure out how much longer (or shorter) an observation should be with reference to the relative flux of the</span>
+        <span class="c1">#brightest sources between two scenes. Inaccurate if the flux of the brightest source isn&#39;t &gt;&gt; than other sources. </span>
+        <span class="n">magnitude</span><span class="o">=</span><span class="mi">50</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">source_list</span><span class="p">)):</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">pandeia_scene</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">spec_wave</span><span class="p">,</span> <span class="n">spec_flux</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;spectrum&#39;</span><span class="p">][</span><span class="s1">&#39;sed&#39;</span><span class="p">][</span><span class="s1">&#39;spectrum&#39;</span><span class="p">]</span>
+            <span class="n">temp_magnitude</span> <span class="o">=</span> <span class="n">compute_magnitude</span><span class="p">(</span><span class="n">spec_wave</span><span class="p">,</span> <span class="n">spec_flux</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">temp_magnitude</span> <span class="o">&lt;</span> <span class="n">magnitude</span><span class="p">:</span>
+                <span class="n">magnitude</span> <span class="o">=</span> <span class="n">temp_magnitude</span>
+
+        <span class="n">master_magnitude</span><span class="o">=</span><span class="mi">50</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">master_scene</span><span class="o">.</span><span class="n">source_list</span><span class="p">)):</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">master_scene</span><span class="o">.</span><span class="n">pandeia_scene</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">spec_wave</span><span class="p">,</span> <span class="n">spec_flux</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;spectrum&#39;</span><span class="p">][</span><span class="s1">&#39;sed&#39;</span><span class="p">][</span><span class="s1">&#39;spectrum&#39;</span><span class="p">]</span>
+            <span class="n">temp_magnitude</span> <span class="o">=</span> <span class="n">compute_magnitude</span><span class="p">(</span><span class="n">spec_wave</span><span class="p">,</span> <span class="n">spec_flux</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">temp_magnitude</span> <span class="o">&lt;</span> <span class="n">master_magnitude</span><span class="p">:</span>
+                <span class="n">master_magnitude</span> <span class="o">=</span> <span class="n">temp_magnitude</span>
+
+        <span class="n">flux_ratio</span> <span class="o">=</span> <span class="mi">100</span><span class="o">**</span><span class="p">((</span><span class="n">magnitude</span><span class="o">-</span><span class="n">master_magnitude</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">exposure_time</span> <span class="o">=</span> <span class="n">flux_ratio</span> <span class="o">*</span> <span class="n">master_exposure_time</span>
+
+        <span class="k">return</span> <span class="n">exposure_time</span></div>
+
+<div class="viewcode-block" id="Sequence._extract_readout"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence._extract_readout">[docs]</a>    <span class="k">def</span> <span class="nf">_extract_readout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">exposure</span><span class="p">,</span> <span class="n">subarray</span><span class="p">,</span> <span class="n">obs_dict</span><span class="p">,</span> <span class="n">optimise_margin</span><span class="p">,</span> <span class="n">scale_exposures</span><span class="p">,</span> <span class="n">max_sat</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="s1">&#39;optimize&#39;</span><span class="p">]:</span>
+            <span class="c1">#Need to optimise the exposure readouts</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Optimising Readout // </span><span class="si">{}</span><span class="s1"> // Exposure: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1"> seconds&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_name&#39;</span><span class="p">],</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">exposure</span><span class="p">[</span><span class="mi">2</span><span class="p">])))</span>
+            <span class="n">exposure_time</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">scale_exposures</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale_exposures</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                    <span class="c1">#Scale exposure time by a numeric value. </span>
+                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--&gt; Scaling provided exposure times by </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scale_exposures</span><span class="p">))</span>
+                    <span class="n">exposure_time</span> <span class="o">*=</span> <span class="n">scale_exposures</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale_exposures</span><span class="p">,</span> <span class="n">Scene</span><span class="p">):</span>
+                    <span class="c1">#Scale exposure time to match flux of another scene. </span>
+                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--&gt; Scaling provided exposure times by relative flux of: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scale_exposures</span><span class="o">.</span><span class="n">scene_name</span><span class="p">))</span>
+                    <span class="n">master_scene</span> <span class="o">=</span> <span class="n">scale_exposures</span>
+                    <span class="n">exposure_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relative_exposure_time</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">master_scene</span><span class="p">,</span> <span class="n">master_exposure_time</span><span class="o">=</span><span class="n">exposure_time</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen &quot;scale_exposures&quot; setting not recognised. Select int/float scaling factor or defined Scene.&#39;</span><span class="p">)</span>
+            
+            <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="n">optimise_readout</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">,</span> <span class="n">exposure_time</span><span class="p">,</span> <span class="n">optimise_margin</span><span class="p">,</span> <span class="n">max_sat</span><span class="o">=</span><span class="n">max_sat</span><span class="p">)</span>
+            <span class="n">exposure_time</span> <span class="o">=</span> <span class="n">determine_exposure_time</span><span class="p">(</span><span class="n">subarray</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span><span class="p">)</span>
+            <span class="c1">#Notify user of the optimised readout parameters</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--&gt; Pattern: </span><span class="si">{}</span><span class="s1">, Number of Groups: </span><span class="si">{}</span><span class="s1">, Number of Integrations: </span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">exposure_time</span><span class="o">+</span><span class="mf">0.5</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#Parameters have been specified explicitly</span>
+            <span class="k">if</span> <span class="n">scale_exposures</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">exposure_time</span> <span class="o">=</span> <span class="n">determine_exposure_time</span><span class="p">(</span><span class="n">subarray</span><span class="p">,</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale_exposures</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                    <span class="c1">#Scale readout parameters by a numeric value</span>
+                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--&gt; Scaling provided exposure times by </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scale_exposures</span><span class="p">))</span>
+                    <span class="n">exposure_time</span> <span class="o">*=</span> <span class="n">scale_exposures</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale_exposures</span><span class="p">,</span> <span class="n">Scene</span><span class="p">):</span>
+                    <span class="c1">#Scale readout to match the flux of another scene. </span>
+                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--&gt; Scaling provided exposure times by relative flux of: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scale_exposures</span><span class="o">.</span><span class="n">scene_name</span><span class="p">))</span>
+                    <span class="n">master_scene</span> <span class="o">=</span> <span class="n">scale_exposures</span>
+                    <span class="n">exposure_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relative_exposure_time</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">master_scene</span><span class="p">,</span> <span class="n">master_exposure_time</span><span class="o">=</span><span class="n">exposure_time</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen &quot;scale_exposures&quot; setting not recognised. Select int/float scaling factor or defined Scene.&#39;</span><span class="p">)</span>
+
+                <span class="c1">#&quot;Re&quot;-optimise readout patterns using the new exposure time </span>
+                <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="n">optimise_readout</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">,</span> <span class="n">exposure_time</span><span class="p">,</span> <span class="n">optimise_margin</span><span class="p">,</span> <span class="n">max_sat</span><span class="o">=</span><span class="n">max_sat</span><span class="p">)</span>
+                <span class="n">exposure_time</span> <span class="o">=</span> <span class="n">determine_exposure_time</span><span class="p">(</span><span class="n">subarray</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span><span class="p">)</span>
+                <span class="c1">#Notify user of the optimised readout parameters</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&gt; Pattern: </span><span class="si">{}</span><span class="s1">, Number of Groups: </span><span class="si">{}</span><span class="s1">, Number of Integrations: </span><span class="si">{}</span><span class="s1"> = </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">exposure_time</span><span class="o">+</span><span class="mf">0.5</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span></div>
+
+<div class="viewcode-block" id="Sequence._calculate_opds"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence._calculate_opds">[docs]</a>    <span class="k">def</span> <span class="nf">_calculate_opds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opd_estimate</span><span class="o">=</span><span class="s1">&#39;requirements&#39;</span><span class="p">,</span> <span class="n">opd_realisation</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pa_range</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        We want to calculate a range of optical path difference (OPD) maps dependent on how the observatory</span>
+<span class="sd">        moves throughout the sequenced observations. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># First thing we need to do is gather the geometric properties of the scenes in the sequence so that we </span>
+        <span class="c1"># know what the ra, dec, lambda, beta, and pitch angle should be for each observation. </span>
+        <span class="n">geom_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_geom_props</span><span class="p">(</span><span class="n">pa_range</span><span class="o">=</span><span class="n">pa_range</span><span class="p">)</span>
+        <span class="c1"># Check that the properties were received correctly, if not we can&#39;t perform the OPD drift </span>
+        <span class="k">if</span> <span class="n">geom_props</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">obs_times</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pitch_angles</span> <span class="o">=</span> <span class="p">[</span><span class="n">geom_props</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]][</span><span class="s1">&#39;pitch_angle&#39;</span><span class="p">]]</span>
+        <span class="n">skip_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#OPDs that we don&#39;t need for the sequence, but are needed to more accurately estimate the OPD changes overall</span>
+        <span class="c1">#Loops over observations to identify changes in observation time and slews</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obs_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1">###########This is the second observation onwards, potential for a slew </span>
+                <span class="c1">#####First, find out if we have slewed to a different scene. </span>
+                <span class="n">previous_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]</span>
+                <span class="n">current_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">previous_scene</span> <span class="o">!=</span> <span class="n">current_scene</span><span class="p">:</span>
+                    <span class="c1">#Need to determine how large a slew</span>
+
+                    <span class="c1">#Calculate the angular offset between the two scenes</span>
+                    <span class="c1">#Let&#39;s work in an ecliptic coordinate system rather than equatorial, where lamb and beta are the</span>
+                    <span class="c1">#ecliptic longitudes and latitudes respectively. </span>
+                    <span class="n">previous_lamb</span><span class="p">,</span> <span class="n">previous_beta</span> <span class="o">=</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">previous_scene</span><span class="p">][</span><span class="s1">&#39;lamb&#39;</span><span class="p">],</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">previous_scene</span><span class="p">][</span><span class="s1">&#39;beta&#39;</span><span class="p">]</span>
+                    <span class="n">current_lamb</span><span class="p">,</span> <span class="n">current_beta</span> <span class="o">=</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">current_scene</span><span class="p">][</span><span class="s1">&#39;lamb&#39;</span><span class="p">],</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">current_scene</span><span class="p">][</span><span class="s1">&#39;beta&#39;</span><span class="p">]</span>
+
+                    <span class="n">previous_lamb_rad</span><span class="p">,</span> <span class="n">previous_beta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">previous_lamb</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">previous_beta</span><span class="p">)</span> 
+                    <span class="n">current_lamb_rad</span><span class="p">,</span> <span class="n">current_beta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">current_lamb</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">current_beta</span><span class="p">)</span>
+
+                    <span class="c1">#Absolute slew is just the distance between the two points</span>
+                    <span class="n">scene_slew_angdist_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">previous_beta_rad</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">current_beta_rad</span><span class="p">)</span> <span class="o">+</span> \
+                        <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">previous_beta_rad</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">current_beta_rad</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">previous_lamb_rad</span><span class="o">-</span><span class="n">current_lamb_rad</span><span class="p">))</span>
+                    <span class="n">scene_slew_angdist</span> <span class="o">=</span> <span class="n">scene_slew_angdist_rad</span> <span class="o">*</span> <span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+                    <span class="n">scene_pitch_angle</span> <span class="o">=</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">current_scene</span><span class="p">][</span><span class="s1">&#39;pitch_angle&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#There is no slew between scenes</span>
+                    <span class="n">scene_slew_angdist</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">scene_pitch_angle</span> <span class="o">=</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">previous_scene</span><span class="p">][</span><span class="s1">&#39;pitch_angle&#39;</span><span class="p">]</span>
+                
+                <span class="c1">##### Now find out if the instrument has changed. </span>
+                <span class="n">previous_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span>
+                <span class="n">current_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">previous_inst</span> <span class="o">!=</span> <span class="n">current_inst</span><span class="p">:</span>
+
+                    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                    The instrument has changed, so some time will have passed to perform the slew. In reality</span>
+<span class="sd">                    this depends on the exact subarray / aperture being used. Here we approximate to 500&quot; </span>
+<span class="sd">                    based on the overall offset between NIRCam and MIRI from:</span>
+
+<span class="sd">                    https://jwst-docs.stsci.edu/jwst-observatory-hardware/jwst-field-of-view</span>
+
+<span class="sd">                    This is roughly equivalent to 10 minutes of slew time. </span>
+<span class="sd">                    &#39;&#39;&#39;</span>
+                    <span class="k">if</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">previous_inst</span><span class="p">,</span> <span class="n">current_inst</span><span class="p">])</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;miri&#39;</span><span class="p">,</span> <span class="s1">&#39;nircam&#39;</span><span class="p">]:</span>
+                        <span class="n">inst_slew_angdist</span> <span class="o">=</span> <span class="mi">500</span> <span class="o">/</span> <span class="mi">3600</span> <span class="c1">#Potential for this to be negative, but assume positive for now. </span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Unable to process angular distance change between instruments.&#39;</span><span class="p">)</span>
+
+                    <span class="c1">#From the same link above, change in pitch angle (V3) is ~100&quot;, also could be negative.</span>
+                    <span class="k">if</span> <span class="n">current_inst</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span> 
+                        <span class="n">inst_delta_pitch_angle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span> <span class="o">/</span> <span class="mi">3600</span>
+                    <span class="k">elif</span> <span class="n">current_inst</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span><span class="p">:</span>
+                        <span class="n">inst_delta_pitch_angle</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">/</span> <span class="mi">3600</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">inst_slew_angdist</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">inst_delta_pitch_angle</span> <span class="o">=</span> <span class="mi">0</span>
+                
+                <span class="k">if</span> <span class="n">inst_slew_angdist</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">scene_slew_angdist</span> <span class="o">!=</span><span class="mi">0</span> <span class="p">:</span> 
+                    <span class="c1">#There has been a slew</span>
+                    <span class="c1">#Now turn a slew distance into a slew time. </span>
+                    <span class="n">slew_angdist</span> <span class="o">=</span> <span class="n">scene_slew_angdist</span> <span class="o">+</span> <span class="n">inst_slew_angdist</span>
+                    <span class="n">pitch_angle</span> <span class="o">=</span> <span class="n">scene_pitch_angle</span> <span class="o">+</span> <span class="n">inst_delta_pitch_angle</span>
+
+                    <span class="n">slew_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slew_angdist_to_time</span><span class="p">(</span><span class="n">slew_angdist</span><span class="p">)</span>
+
+                    <span class="n">obs_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">slew_time</span><span class="p">)</span>
+                    <span class="n">pitch_angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pitch_angle</span><span class="p">)</span>
+                    <span class="c1">#Log the index so that we don&#39;t use its OPD for later calculations</span>
+                    <span class="n">skip_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pitch_angles</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1">#Now that slews are accounted for, append observations as normal</span>
+            <span class="k">if</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;dither_strategy&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;SINGLE-POINT&#39;</span><span class="p">:</span>
+                <span class="n">dither_points</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dither_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;dither_strategy&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dither_points</span><span class="p">):</span>
+                <span class="n">subarray</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;subarray&#39;</span><span class="p">]</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;readout_pattern&#39;</span><span class="p">]</span>
+                <span class="n">groups</span> <span class="o">=</span>  <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;ngroup&#39;</span><span class="p">]</span> 
+                <span class="n">integrations</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;nint&#39;</span><span class="p">]</span>
+                
+                <span class="n">exposure_time</span> <span class="o">=</span> <span class="n">determine_exposure_time</span><span class="p">(</span><span class="n">subarray</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span><span class="p">)</span> 
+
+                <span class="c1">#Append the centre time of the observation, these are the OPD&#39;s we actually want.</span>
+                <span class="n">pitch_angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pitch_angles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">obs_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">exposure_time</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+
+                <span class="c1">#Also add the end observation time, but make sure it is skipped.</span>
+                <span class="n">pitch_angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pitch_angles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">obs_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">exposure_time</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+                <span class="n">skip_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pitch_angles</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
+
+        <span class="c1"># Now that we know the pitch angle at specific times throughout our observation, we can load in the base OPD</span>
+        <span class="c1"># files from WebbPSF, evolve them, delete the ones we don&#39;t need, and return the specific OPD for each observation.</span>
+        <span class="n">all_opd_estimates</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;predicted&#39;</span><span class="p">,</span> <span class="s1">&#39;requirements&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">opd_estimate</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_opd_estimates</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen OPD estimate &quot;</span><span class="si">{}</span><span class="s1">&quot; not recognised. Compatible options are : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opd_estimate</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">all_opd_estimates</span><span class="p">)))</span>
+
+        <span class="n">base_opd</span> <span class="o">=</span>  <span class="s1">&#39;OPD_RevW_ote_for_</span><span class="si">{}</span><span class="s1">_&#39;</span><span class="o">+</span><span class="n">opd_estimate</span><span class="o">+</span><span class="s1">&#39;.fits.gz&#39;</span>
+
+        <span class="c1">#Get Base OPD for NIRCam and MIRI (or just one if only one in sequence).</span>
+        <span class="n">nircam_opd_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">webbpsf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_webbpsf_data_path</span><span class="p">(),</span> <span class="s1">&#39;NIRCam&#39;</span><span class="p">,</span> <span class="s1">&#39;OPD&#39;</span><span class="p">,</span> <span class="n">base_opd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;NIRCam&#39;</span><span class="p">))</span>
+        <span class="n">miri_opd_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">webbpsf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_webbpsf_data_path</span><span class="p">(),</span> <span class="s1">&#39;MIRI&#39;</span><span class="p">,</span> <span class="s1">&#39;OPD&#39;</span><span class="p">,</span> <span class="n">base_opd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;MIRI&#39;</span><span class="p">))</span>
+
+        <span class="n">nircam_opd_hdu</span> <span class="o">=</span> <span class="n">OPDFile_to_HDUList</span><span class="p">(</span><span class="n">nircam_opd_file</span><span class="p">,</span> <span class="n">slice_to_use</span><span class="o">=</span><span class="n">opd_realisation</span><span class="p">)</span>
+        <span class="n">miri_opd_hdu</span> <span class="o">=</span> <span class="n">OPDFile_to_HDUList</span><span class="p">(</span><span class="n">miri_opd_file</span><span class="p">,</span> <span class="n">slice_to_use</span><span class="o">=</span><span class="n">opd_realisation</span><span class="p">)</span>
+
+        <span class="n">BaseNIRCamOPD</span> <span class="o">=</span> <span class="n">OTE_WFE_Drift_Model</span><span class="p">(</span><span class="n">opd</span><span class="o">=</span><span class="n">nircam_opd_hdu</span><span class="p">)</span>
+        <span class="n">BaseMIRIOPD</span> <span class="o">=</span>  <span class="n">OTE_WFE_Drift_Model</span><span class="p">(</span><span class="n">opd</span><span class="o">=</span><span class="n">miri_opd_hdu</span><span class="p">)</span>
+
+        <span class="n">nircam_opd_hdul</span> <span class="o">=</span> <span class="n">BaseNIRCamOPD</span><span class="o">.</span><span class="n">opds_as_hdul</span><span class="p">(</span><span class="n">obs_times</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pitch_angles</span><span class="p">),</span> <span class="n">slew_averages</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">miri_opd_hdul</span> <span class="o">=</span> <span class="n">BaseMIRIOPD</span><span class="o">.</span><span class="n">opds_as_hdul</span><span class="p">(</span><span class="n">obs_times</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pitch_angles</span><span class="p">),</span> <span class="n">slew_averages</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1">#Remove OPD&#39;s that we no longer need, leaving just those at the centre of each of our observations. </span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">skip_indices</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">nircam_opd_hdul</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">miri_opd_hdul</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+        <span class="c1">#Now need to restructure as a list of HDULists for integration with WebbPSF</span>
+        <span class="n">nircam_opd_lhdul</span> <span class="o">=</span> <span class="p">[</span><span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">hdu</span><span class="p">])</span> <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">nircam_opd_hdul</span><span class="p">]</span>
+        <span class="n">miri_opd_lhdul</span> <span class="o">=</span> <span class="p">[</span><span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">hdu</span><span class="p">])</span> <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">miri_opd_hdul</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">nircam_opd_lhdul</span><span class="p">,</span> <span class="n">miri_opd_lhdul</span></div>
+
+<div class="viewcode-block" id="Sequence._get_geom_props"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence._get_geom_props">[docs]</a>    <span class="k">def</span> <span class="nf">_get_geom_props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pa_range</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">):</span>
+        <span class="c1">##### First get the RA, Dec</span>
+        <span class="n">geom_props</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">obs_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">[:]:</span>
+            <span class="n">scene_name</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_name&#39;</span><span class="p">]</span> 
+            <span class="k">if</span> <span class="n">scene_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geom_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_ra_dec</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">]:</span>
+                    <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;failed_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;failed_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ra</span>
+                    <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;dec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dec</span> 
+                
+        <span class="c1">##### Now need to check whether all RA&#39;s or Dec&#39;s have values</span>
+        <span class="n">scene_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">geom_props</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;failed_flag&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">scene_name</span> <span class="ow">in</span> <span class="n">scene_names</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">:</span>
+            <span class="c1">#Something failed</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">):</span>
+                <span class="c1">#They all failed</span>
+                <span class="n">base_ra</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">base_dec</span> <span class="o">=</span> <span class="mi">45</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#At least one didn&#39;t fail </span>
+                <span class="n">base_ra</span> <span class="o">=</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_names</span><span class="p">[</span><span class="n">flags</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="kc">False</span><span class="p">)]][</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
+                <span class="n">base_dec</span> <span class="o">=</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_names</span><span class="p">[</span><span class="n">flags</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="kc">False</span><span class="p">)]][</span><span class="s1">&#39;dec&#39;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scene_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scene_names</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">flags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">ra</span> <span class="o">=</span> <span class="n">base_ra</span> <span class="o">+</span> <span class="mi">5</span><span class="o">*</span><span class="n">i</span>  
+                    <span class="n">dec</span> <span class="o">=</span>  <span class="n">base_ra</span> <span class="o">+</span> <span class="mi">5</span><span class="o">*</span><span class="n">i</span>
+                    <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ra</span>
+                    <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;dec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dec</span> 
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: RA and/or Dec value not present for Scene &quot;</span><span class="si">{}</span><span class="s1">&quot;, assuming values of RA=</span><span class="si">{}</span><span class="s1"> and Dec=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene_name</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">))</span>
+        <span class="c1">#Calculate ecliptic longitude (lamb) and latitude (beta)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scene_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scene_names</span><span class="p">):</span>
+            <span class="n">lamb</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">equatorial_to_ecliptic</span><span class="p">(</span><span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;ra&#39;</span><span class="p">],</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;dec&#39;</span><span class="p">],</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;degrees&#39;</span><span class="p">)</span>
+            <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;lamb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lamb</span>
+            <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;beta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta</span> 
+
+        <span class="c1">##### Get the pitch angles for all of the scenes. </span>
+        <span class="c1">#Look at every orientation throughout the year</span>
+        <span class="n">orientations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">all_pitch_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">orientations</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">geom_props</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+        <span class="n">all_pitch_angle_ranges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">orientations</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ostep</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">orientations</span><span class="p">):</span>
+            <span class="n">temp_pitch_angles</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1">#Loop over the scene names to preserve the order for later</span>
+            <span class="k">for</span> <span class="n">scene_name</span> <span class="ow">in</span> <span class="n">scene_names</span><span class="p">:</span>
+
+                <span class="c1">#Get the ecliptic latitude and longitude in radians</span>
+                <span class="n">beta_rad</span> <span class="o">=</span> <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;beta&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+                <span class="n">lamb_rad</span> <span class="o">=</span> <span class="p">((</span><span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;lamb&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ostep</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">)</span>
+    
+                <span class="c1">#Identify the latitude after a rotation of the coordinate system by 90 degrees</span>
+                <span class="c1">#--&gt; This is equivalent to the pitch angle: AC has saved the derivation to DayOne on Feb 16 2021. </span>
+                <span class="n">pitch_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">beta_rad</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lamb_rad</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                <span class="n">temp_pitch_angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pitch_angle</span><span class="p">)</span>
+            
+            <span class="c1">#Save the pitch angles</span>
+            <span class="n">all_pitch_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_pitch_angles</span>
+
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="o">-</span><span class="mi">5</span> <span class="o">&lt;</span> <span class="n">pa</span> <span class="o">&lt;</span> <span class="mi">45</span> <span class="k">for</span> <span class="n">pa</span> <span class="ow">in</span> <span class="n">temp_pitch_angles</span><span class="p">]):</span>
+                <span class="c1">#Then at this orientation all scenes can be slewed to</span>
+                <span class="n">pitch_angle_range</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">temp_pitch_angles</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">temp_pitch_angles</span><span class="p">)</span>
+                <span class="n">all_pitch_angle_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">pitch_angle_range</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#It is not possible to observe everything at this slew</span>
+                <span class="n">all_pitch_angle_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1">#Need to check if any of the orientations were viable. </span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">all_pitch_angle_ranges</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="c1">#There is no orientation where all scenes lie within the FOV.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Specified scenes always span a pitch angle range of greater than 50 degrees and cannot be scheduled in sequence. No OPD drift can be calculated for this simulation.&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Now we can use the pitch angle range to specify what the PA location of each Scene is for this sequence. </span>
+        <span class="k">if</span> <span class="n">pa_range</span> <span class="o">==</span> <span class="s1">&#39;minimum&#39;</span><span class="p">:</span>
+            <span class="n">pa_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanargmin</span><span class="p">(</span><span class="n">all_pitch_angle_ranges</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">pa_range</span> <span class="o">==</span> <span class="s1">&#39;maximum&#39;</span><span class="p">:</span>
+            <span class="n">pa_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanargmax</span><span class="p">(</span><span class="n">all_pitch_angle_ranges</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">pa_range</span> <span class="o">==</span> <span class="s1">&#39;median&#39;</span><span class="p">:</span>
+            <span class="n">valid_pa_ranges</span> <span class="o">=</span> <span class="n">all_pitch_angle_ranges</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">all_pitch_angle_ranges</span><span class="p">))]</span>
+            <span class="n">median_pa_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">valid_pa_ranges</span><span class="p">)[</span><span class="nb">len</span><span class="p">(</span><span class="n">valid_pa_ranges</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">pa_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">all_pitch_angle_ranges</span> <span class="o">==</span> <span class="n">median_pa_range</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1">#Set the pitch angles for this Sequence</span>
+        <span class="n">pitch_angles</span> <span class="o">=</span> <span class="n">all_pitch_angles</span><span class="p">[</span><span class="n">pa_index</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scene_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scene_names</span><span class="p">):</span>
+            <span class="n">geom_props</span><span class="p">[</span><span class="n">scene_name</span><span class="p">][</span><span class="s1">&#39;pitch_angle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pitch_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> 
+
+        <span class="k">return</span> <span class="n">geom_props</span></div>
+
+<div class="viewcode-block" id="Sequence._find_ra_dec"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence._find_ra_dec">[docs]</a>    <span class="k">def</span> <span class="nf">_find_ra_dec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_dict</span><span class="p">):</span>
+        <span class="c1">#Search for RA and DEC values</span>
+        <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span> 
+                <span class="n">ra</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;pancake_parameters&#39;</span><span class="p">][</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
+                <span class="n">dec</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;pancake_parameters&#39;</span><span class="p">][</span><span class="s1">&#39;dec&#39;</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1">#These values haven&#39;t been assigned. </span>
+                <span class="k">continue</span>
+        <span class="k">return</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span></div>
+
+<div class="viewcode-block" id="Sequence._slew_angdist_to_time"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence._slew_angdist_to_time">[docs]</a>    <span class="k">def</span> <span class="nf">_slew_angdist_to_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slew_angdist</span><span class="p">):</span>
+        <span class="c1">#Slew distance must be in degrees. </span>
+        
+        <span class="c1">#Slew distance and time costs taken from https://jwst-docs.stsci.edu/jppom/visit-overheads-timing-model/slew-times</span>
+        <span class="n">slew_angdists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0000000</span><span class="p">,</span> <span class="mf">0.0600000</span><span class="p">,</span> <span class="mf">0.0600001</span><span class="p">,</span> <span class="mf">15.0000000</span><span class="p">,</span> <span class="mf">20.0000000</span><span class="p">,</span> <span class="mf">20.0000001</span><span class="p">,</span> <span class="mf">30.0000000</span><span class="p">,</span> <span class="mf">50.0000000</span><span class="p">,</span> <span class="mf">100.0000000</span><span class="p">,</span>
+            <span class="mf">150.0000000</span><span class="p">,</span> <span class="mf">300.0000000</span><span class="p">,</span> <span class="mf">1000.0000000</span><span class="p">,</span> <span class="mf">3600.0000000</span><span class="p">,</span> <span class="mf">4000.0000000</span><span class="p">,</span> <span class="mf">10000.0000000</span><span class="p">,</span> <span class="mf">10800.0000000</span><span class="p">,</span> <span class="mf">10800.0000001</span><span class="p">,</span> <span class="mf">14400.0000000</span><span class="p">,</span>
+            <span class="mf">18000.0000000</span><span class="p">,</span> <span class="mf">21600.0000000</span><span class="p">,</span> <span class="mf">25200.0000000</span><span class="p">,</span> <span class="mf">28800.0000000</span><span class="p">,</span> <span class="mf">32400.0000000</span><span class="p">,</span> <span class="mf">36000.0000000</span><span class="p">,</span> <span class="mf">39600.0000000</span><span class="p">,</span> <span class="mf">43200.0000000</span><span class="p">,</span>
+            <span class="mf">46800.0000000</span><span class="p">,</span> <span class="mf">50400.0000000</span><span class="p">,</span> <span class="mf">54000.0000000</span><span class="p">,</span> <span class="mf">57600.0000000</span><span class="p">,</span> <span class="mf">61200.0000000</span><span class="p">,</span> <span class="mf">64800.0000000</span><span class="p">,</span> <span class="mf">68400.0000000</span><span class="p">,</span> <span class="mf">72000.0000000</span><span class="p">,</span>
+            <span class="mf">108000.0000000</span><span class="p">,</span> <span class="mf">144000.0000000</span><span class="p">,</span> <span class="mf">180000.0000000</span><span class="p">,</span> <span class="mf">216000.0000000</span><span class="p">,</span> <span class="mf">252000.0000000</span><span class="p">,</span> <span class="mf">288000.0000000</span><span class="p">,</span> <span class="mf">324000.0000000</span><span class="p">,</span> <span class="mf">360000.0000000</span><span class="p">,</span>
+            <span class="mf">396000.0000000</span><span class="p">,</span> <span class="mf">432000.0000000</span><span class="p">,</span> <span class="mf">468000.0000000</span><span class="p">,</span> <span class="mf">504000.0000000</span><span class="p">,</span> <span class="mf">540000.0000000</span><span class="p">,</span> <span class="mf">576000.0000000</span><span class="p">,</span> <span class="mf">612000.0000000</span><span class="p">,</span> <span class="mf">648000.0000000</span><span class="p">])</span>
+        <span class="n">slew_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">20.480</span><span class="p">,</span> <span class="mf">20.480</span><span class="p">,</span> <span class="mf">23.296</span><span class="p">,</span> <span class="mf">101.632</span><span class="p">,</span> <span class="mf">116.224</span><span class="p">,</span> <span class="mf">137.728</span><span class="p">,</span> <span class="mf">173.568</span><span class="p">,</span> <span class="mf">198.656</span><span class="p">,</span> <span class="mf">250.112</span><span class="p">,</span> <span class="mf">373.504</span><span class="p">,</span> <span class="mf">572.416</span><span class="p">,</span>
+            <span class="mf">592.896</span><span class="p">,</span> <span class="mf">804.864</span><span class="p">,</span> <span class="mf">825.600</span><span class="p">,</span> <span class="mf">521.216</span><span class="p">,</span> <span class="mf">578.048</span><span class="p">,</span> <span class="mf">628.608</span><span class="p">,</span> <span class="mf">674.560</span><span class="p">,</span> <span class="mf">716.928</span><span class="p">,</span> <span class="mf">756.608</span><span class="p">,</span> <span class="mf">793.856</span><span class="p">,</span> <span class="mf">829.184</span><span class="p">,</span> <span class="mf">862.848</span><span class="p">,</span> <span class="mf">894.976</span><span class="p">,</span> <span class="mf">925.824</span><span class="p">,</span>
+            <span class="mf">955.648</span><span class="p">,</span> <span class="mf">984.320</span><span class="p">,</span> <span class="mf">1012.224</span><span class="p">,</span> <span class="mf">1039.104</span><span class="p">,</span> <span class="mf">1065.344</span><span class="p">,</span> <span class="mf">1090.816</span><span class="p">,</span> <span class="mf">1115.648</span><span class="p">,</span> <span class="mf">1336.448</span><span class="p">,</span> <span class="mf">1537.408</span><span class="p">,</span> <span class="mf">1744.000</span><span class="p">,</span> <span class="mf">1939.328</span><span class="p">,</span> <span class="mf">2112.192</span><span class="p">,</span> <span class="mf">2278.272</span><span class="p">,</span>
+            <span class="mf">2440.320</span><span class="p">,</span> <span class="mf">2599.936</span><span class="p">,</span> <span class="mf">2757.632</span><span class="p">,</span> <span class="mf">2914.240</span><span class="p">,</span> <span class="mf">3069.888</span><span class="p">,</span> <span class="mf">3224.832</span><span class="p">,</span> <span class="mf">3379.328</span><span class="p">,</span> <span class="mf">3533.376</span><span class="p">,</span> <span class="mf">3687.104</span><span class="p">,</span> <span class="mf">3840.512</span><span class="p">])</span>
+
+        <span class="n">slew_angdists_deg</span> <span class="o">=</span> <span class="n">slew_angdists</span> <span class="o">/</span><span class="mi">3600</span> 
+        <span class="n">time_angdist_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">slew_angdists_deg</span><span class="p">,</span> <span class="n">slew_times</span><span class="p">)</span>
+
+        <span class="n">slew_time</span> <span class="o">=</span> <span class="n">time_angdist_interp</span><span class="p">(</span><span class="n">slew_angdist</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">slew_time</span></div>
+
+
+<div class="viewcode-block" id="Sequence._get_ordered_scene_names"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.Sequence._get_ordered_scene_names">[docs]</a>    <span class="k">def</span> <span class="nf">_get_ordered_scene_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">scene_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">obs_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observation_sequence</span><span class="p">:</span>
+            <span class="n">scene_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs_dict</span><span class="p">[</span><span class="s1">&#39;scene_name&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">duplicates</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">scene_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">scene_names</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scene_names</span></div></div>
+
+<div class="viewcode-block" id="load_run"><a class="viewcode-back" href="../../autoapi/pancake/sequence/index.html#pancake.sequence.load_run">[docs]</a><span class="k">def</span> <span class="nf">load_run</span><span class="p">(</span><span class="n">save_file</span><span class="p">):</span>
+    <span class="c1">#Load in a recently performed and saved run</span>
+    <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">save_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">save_data</span><span class="p">:</span>
+        <span class="n">hdul</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">save_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hdul</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

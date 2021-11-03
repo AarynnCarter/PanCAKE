@@ -1,0 +1,103 @@
+:py:mod:`pancake.transformations`
+=================================
+
+.. py:module:: pancake.transformations
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   pancake.transformations.cart_to_polar
+   pancake.transformations.polar_to_cart
+   pancake.transformations.affine_transform
+   pancake.transformations.rotate
+   pancake.transformations.align_fourierLSQ
+   pancake.transformations.shift_subtract
+   pancake.transformations.fourier_imshift
+
+
+
+.. py:function:: cart_to_polar(xy)
+
+   convert separations into offset, theta
+
+
+.. py:function:: polar_to_cart(r, theta)
+
+   convert from polar to cartesian,
+   assuming theta in degrees
+
+
+.. py:function:: affine_transform(theta, center)
+
+   theta = deg
+   center = x, y
+
+
+.. py:function:: rotate(xy, theta, center)
+
+
+.. py:function:: align_fourierLSQ(reference, target, mask=None)
+
+   LSQ optimization with Fourier shift alignment
+
+   :param reference: nd array
+                     N x K image to be aligned to
+   :param target: nd array
+                  N x K image to align to reference
+   :param mask: nd array, optional
+                N x K image indicating pixels to ignore when
+                performing the minimization. The masks acts as
+                a weighting function in performing the fit.
+
+   :returns:
+
+             list
+                 [x, y, beta] values from LSQ optimization, where (x, y)
+                 are the misalignment of target from reference and beta
+                 is the fraction by which the target intensity must be
+                 reduced to match the intensity of the reference.
+   :rtype: results
+
+
+.. py:function:: shift_subtract(params, reference, target, mask=None)
+
+   Use Fourier Shift theorem for subpixel shifts.
+
+   :param params: tuple
+                  xshift, yshift, beta
+   :param reference: nd array
+                     See align_fourierLSQ
+   :param target: nd array
+                  See align_fourierLSQ
+   :param mask: nd array, optional
+                See align_fourierLSQ
+
+   :returns: 1D nd array of target-reference residual after
+             applying shift and intensity fraction.
+
+
+.. py:function:: fourier_imshift(image, xshift, yshift)
+
+   Shift an image by use of Fourier shift theorem
+
+   :param image: nd array
+                 N x K image
+   :param xshift: float
+                  Pixel value by which to shift image in the x direction
+   :param yshift: float
+                  Pixel value by which to shift image in the y direction
+
+   :returns:
+
+             nd array
+                 Shifted image
+   :rtype: offset
+
+

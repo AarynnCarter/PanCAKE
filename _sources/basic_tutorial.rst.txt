@@ -1,0 +1,58 @@
+.. Basic Tutorial for PanCAKE
+
+Basic Tutorial 
+==============
+
+All simulations with the PanCAKE package are performed through four primary stages: Astrophysical Scene Construction, Observational Sequence Construction, Simulation Execution, and Postprocessing. In this tutorial we will cover a basic implementation of each of these stages. For more advanced use cases, please refer to the relevant tabs in the contents (coming soon).
+
+To begin, like all other Python packages, we must import PanCAKE::
+
+	import pancake
+
+From here we have full access to PanCAKE's functionality, and can begin by performing the Astrophysical Scene Constuction. In this case, we would like two separate scenes of a 'Target' scene (HIP 65426) and a 'Reference' scene (HIP 68245)::
+
+	# Define the target scene
+	target = pancake.scene.Scene('Target')
+	target.add_source('HIP 65426', kind='simbad')
+
+	# Define the reference scene
+	reference = pancake.scene.Scene('Reference')
+	reference.add_source('HIP 68245', kind='simbad')
+
+Here we have simply initialised both scenes, provided a descriptive name for each, and then added sources to these scenes using `SIMBAD <http://simbad.u-strasbg.fr/simbad/>`_ queries based on their names. In this case, no other user information is required. Alternative methods of adding sources to scenes, such as an input file, are described in the Astrophysical Scene Construction tab. 
+
+With all the necessary scenes defined, we can move on to the Observational Sequence Construction. To do this we simply initialise a sequence, and then add observations of our scenes in the chronological order in which we would like them to occur. In this case, we will be performing an observation in the NIRCam F444W and MIRI F1550C filters for both the Target and Reference scenes::
+
+	# Initialise an observational sequence
+	seq = pancake.sequence.Sequence()
+
+	# Add target and reference observations
+	seq.add_observation(target, exposures=[('F444W', 'optimise', 3600), ('F1550C', 'optimise', 3600)], nircam_mask='MASK335R', rolls=[0,14])
+	seq.add_observation(reference, exposures=[('F444W', 'optimise', 3600), ('F1550C', 'optimise', 3600)], scale_exposures=target, nircam_mask='MASK335R', nircam_sgd='9-POINT-CIRCLE', miri_sgd='9-POINT-SMALL-GRID')
+
+Here the exposures have been defined using an 'optimise' string, followed by the duration of the observation in seconds. In such a case, PanCAKE will attempt to compute 'optimal' readout parameters for this observation, report these back to the user, and use these for future simulations. Note that the instrument does not need to be provided, as this can be identified by the input filter. Defining exposures using precise readout parameters is also possible, and follows the construction (FILTER, PATTERN, NGROUP, NINT). 
+
+For all NIRCam simulations the desired coronagraphic mask must be specified, whereas for MIRI these are tied to the chosen filter, and do not need to be specified. For the target, multiple roll angles have been defined to allow for ADI PSF subtraction, and for the reference small-grid dither patterns have been specified to allow for RDI PSF subtraction. Finally, in this case we will scale the reference exposures relative to the target to account for the flux difference between the two stars. 
+
+At this stage it is important to note that (aside from computational restrictions) there is no limit to the number of scenes, or number of observations, that can be included within a given sequence.
+
+With the sequence fully defined, all relevant simulations can be performed with a single line of code::
+
+	results = seq.run(save_file='simulations.fits')
+
+In this case, we are performing the most basic simulation possible, with no wavefront evolution, or on-the-fly PSF calculation. We have also specified a file to save the simulations to as they are performed. Further description of advanced simulation capabilities and considerations is provided in the Simulation Execution tab.
+
+.. image:: figures/raw_images_website.png
+
+Finally, with the simulations completed, we can perform postprocessing within PanCAKE and compute contrast curves based on different PSF subtraction strategies::
+
+	pancake.analysis.contrast_curve(results, target='Target', references='Reference', subtraction='ADI')
+	pancake.analysis.contrast_curve(results, target='Target', references='Reference', subtraction='RDI')
+	pancake.analysis.contrast_curve(results, target='Target', references='Reference', subtraction='ADI+RDI')
+
+This PSF subtraction process utilises `pyKLIP <https://pyklip.readthedocs.io/en/latest/>`_ to perform all the heavy lifting. Specificity in how the KLIP algorithm is implemented can also be provided, and is described in more detail in the Postprocessing tab. This process will also save the PSF subtracted images and contrast curves for further inspection.  
+
+.. image:: figures/sub_images_website.png
+
+.. image:: figures/contrast_curves_website.png
+

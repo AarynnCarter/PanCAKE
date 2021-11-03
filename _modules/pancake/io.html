@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pancake.io &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to PanCAKE’s documentation!</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pancake.html">pancake</a> &raquo;</li>
+        
+      <li>pancake.io</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pancake.io</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">pandeia.engine.instrument_factory</span> <span class="k">as</span> <span class="nn">pif</span>
+
+<span class="kn">from</span> <span class="nn">synphot</span> <span class="kn">import</span> <span class="n">SourceSpectrum</span><span class="p">,</span> <span class="n">SpectralElement</span>
+<span class="kn">from</span> <span class="nn">synphot.models</span> <span class="kn">import</span> <span class="n">Empirical1D</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+
+<span class="c1">#Load configuration files for NIRCam and MIRI to extract details from. </span>
+<div class="viewcode-block" id="nircam_config_file"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.nircam_config_file">[docs]</a><span class="n">nircam_config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pandeia_refdata&quot;</span><span class="p">),</span> <span class="s1">&#39;jwst/nircam/config.json&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="miri_config_file"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.miri_config_file">[docs]</a><span class="n">miri_config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pandeia_refdata&quot;</span><span class="p">),</span> <span class="s1">&#39;jwst/miri/config.json&#39;</span><span class="p">)</span></div>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nircam_config_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class="viewcode-block" id="nircam_config_dict"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.nircam_config_dict">[docs]</a>        <span class="n">nircam_config_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+<span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t locate Pandeia reference files and/or pandeia_data/jwst/nircam/config.json file.&quot;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">miri_config_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class="viewcode-block" id="miri_config_dict"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.miri_config_dict">[docs]</a>        <span class="n">miri_config_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+<span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t locate Pandeia reference files and/or pandeia_data/jwst/miri/config.json file.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="nircam_filters"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.nircam_filters">[docs]</a><span class="n">nircam_filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">]]</span></div>
+<div class="viewcode-block" id="miri_filters"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.miri_filters">[docs]</a><span class="n">miri_filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">miri_config_dict</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="nircam_coro_filters"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.nircam_coro_filters">[docs]</a><span class="n">nircam_coro_filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nircam_filters</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;wlp4&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">17</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">))]</span></div>
+<div class="viewcode-block" id="miri_coro_filters"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.miri_coro_filters">[docs]</a><span class="n">miri_coro_filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">miri_filters</span> <span class="k">if</span> <span class="s1">&#39;c&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="nircam_supported_subarrays"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.nircam_supported_subarrays">[docs]</a><span class="n">nircam_supported_subarrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;subarrays&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;grism&#39;</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;tats&#39;</span><span class="p">])]</span></div>
+<div class="viewcode-block" id="miri_supported_subarrays"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.miri_supported_subarrays">[docs]</a><span class="n">miri_supported_subarrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">miri_config_dict</span><span class="p">[</span><span class="s1">&#39;subarrays&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;slitlessprism&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="nircam_readout_patterns"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.nircam_readout_patterns">[docs]</a><span class="n">nircam_readout_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;readout_patterns&#39;</span><span class="p">]]</span></div>
+<div class="viewcode-block" id="miri_readout_patterns"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.miri_readout_patterns">[docs]</a><span class="n">miri_readout_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">miri_config_dict</span><span class="p">[</span><span class="s1">&#39;readout_patterns&#39;</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="determine_instrument"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.determine_instrument">[docs]</a><span class="k">def</span> <span class="nf">determine_instrument</span><span class="p">(</span><span class="n">filt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">nircam_filters</span><span class="p">:</span>
+        <span class="n">instrument</span> <span class="o">=</span> <span class="s1">&#39;nircam&#39;</span>
+    <span class="k">elif</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">miri_filters</span><span class="p">:</span>
+        <span class="n">instrument</span> <span class="o">=</span> <span class="s1">&#39;miri&#39;</span>
+    
+    <span class="k">return</span> <span class="n">instrument</span></div>
+
+<div class="viewcode-block" id="determine_aperture"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.determine_aperture">[docs]</a><span class="k">def</span> <span class="nf">determine_aperture</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">nircam_aperture</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;imaging&#39;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">nircam_filters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
+                <span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;sw&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;lw&#39;</span>
+        <span class="k">elif</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">miri_filters</span><span class="p">:</span>
+            <span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;imager&#39;</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;coronagraphy&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">nircam_coro_filters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nircam_aperture</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+                <span class="n">aperture</span> <span class="o">=</span> <span class="n">nircam_aperture</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">17</span><span class="p">:</span>
+                    <span class="c1">#Short wavelength</span>
+                    <span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;mask210r&#39;</span>
+                <span class="k">elif</span> <span class="n">filt</span> <span class="o">==</span> <span class="s1">&#39;f277w&#39;</span><span class="p">:</span>
+                    <span class="c1">#This filter can only be done by the LWB</span>
+                    <span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;lwb&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#Remaining filters</span>
+                    <span class="n">aperture</span>  <span class="o">=</span> <span class="s1">&#39;mask335r&#39;</span>
+        <span class="k">elif</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">miri_coro_filters</span><span class="p">:</span>
+            <span class="c1">#Each MIRI coronagraphic filter uniquely tied to a aperture</span>
+            <span class="k">if</span> <span class="s1">&#39;2300&#39;</span> <span class="ow">in</span> <span class="n">filt</span><span class="p">:</span>
+                <span class="c1">#Must be Lyot aperture</span>
+                <span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;lyot2300&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;fqpm&#39;</span> <span class="o">+</span> <span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">aperture</span></div>
+
+<div class="viewcode-block" id="determine_subarray"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.determine_subarray">[docs]</a><span class="k">def</span> <span class="nf">determine_subarray</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">nircam_subarray</span><span class="p">,</span> <span class="n">miri_subarray</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">nircam_filters</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">nircam_subarray</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+            <span class="n">subarray</span> <span class="o">=</span> <span class="n">nircam_subarray</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;coronagraphy&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
+                <span class="n">subarray</span> <span class="o">=</span> <span class="s1">&#39;sub640&#39;</span> <span class="c1">#Short wavelength channel</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">subarray</span> <span class="o">=</span> <span class="s1">&#39;sub320&#39;</span> <span class="c1">#Long wavelength channel</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;imaging&#39;</span><span class="p">:</span>
+            <span class="n">subarray</span> <span class="o">=</span> <span class="s1">&#39;sub640&#39;</span> <span class="c1">#This is just an arbitrary imaging subarrray</span>
+    <span class="k">elif</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">miri_filters</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">miri_subarray</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+            <span class="n">subarray</span> <span class="o">=</span> <span class="n">miri_subarray</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;coronagraphy&#39;</span><span class="p">:</span>
+            <span class="n">subarray</span> <span class="o">=</span> <span class="s1">&#39;mask&#39;</span><span class="o">+</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;imaging&#39;</span><span class="p">:</span>
+            <span class="n">subarray</span> <span class="o">=</span> <span class="s1">&#39;brightsky&#39;</span> <span class="c1">#Again, just arbitrary imaging subarray</span>
+    
+    <span class="k">return</span> <span class="n">subarray</span></div>
+
+<div class="viewcode-block" id="determine_pixel_scale"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.determine_pixel_scale">[docs]</a><span class="k">def</span> <span class="nf">determine_pixel_scale</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">filt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span>
+        <span class="n">pixel_scale</span> <span class="o">=</span> <span class="mf">0.11</span>
+    <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
+        <span class="n">pixel_scale</span> <span class="o">=</span> <span class="mf">0.0311</span>
+    <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">24</span><span class="p">:</span>
+        <span class="n">pixel_scale</span> <span class="o">=</span> <span class="mf">0.063</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unable to estimate pixel scale from instrument &quot;</span><span class="si">{}</span><span class="s1">&quot; and filter &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">filt</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">pixel_scale</span></div>
+
+<div class="viewcode-block" id="determine_exposure_time"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.determine_exposure_time">[docs]</a><span class="k">def</span> <span class="nf">determine_exposure_time</span><span class="p">(</span><span class="n">subarray</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">integrations</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">miri_readout_patterns</span><span class="p">:</span>
+        <span class="c1">#Must be MIRI</span>
+        <span class="n">nframe</span> <span class="o">=</span>  <span class="n">miri_config_dict</span><span class="p">[</span><span class="s1">&#39;readout_pattern_config&#39;</span><span class="p">][</span><span class="n">pattern</span><span class="p">][</span><span class="s1">&#39;nframe&#39;</span><span class="p">]</span>
+        <span class="n">subarray_frame_time</span> <span class="o">=</span> <span class="n">miri_config_dict</span><span class="p">[</span><span class="s1">&#39;subarray_config&#39;</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">][</span><span class="n">subarray</span><span class="p">][</span><span class="s1">&#39;tframe&#39;</span><span class="p">]</span> 
+        <span class="n">exposure_time</span> <span class="o">=</span> <span class="n">subarray_frame_time</span> <span class="o">*</span> <span class="n">nframe</span> <span class="o">*</span> <span class="n">groups</span> <span class="o">*</span> <span class="n">integrations</span> 
+    <span class="k">elif</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">nircam_readout_patterns</span><span class="p">:</span>
+        <span class="c1">#Must be NIRCam</span>
+        <span class="n">subarray_frame_time</span> <span class="o">=</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;subarray_config&#39;</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">][</span><span class="n">subarray</span><span class="p">][</span><span class="s1">&#39;tframe&#39;</span><span class="p">]</span> 
+        <span class="n">subarray_tfffr</span> <span class="o">=</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;subarray_config&#39;</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">][</span><span class="n">subarray</span><span class="p">][</span><span class="s1">&#39;tfffr&#39;</span><span class="p">]</span>
+        <span class="n">nframe</span> <span class="o">=</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;readout_pattern_config&#39;</span><span class="p">][</span><span class="n">pattern</span><span class="p">][</span><span class="s1">&#39;nframe&#39;</span><span class="p">]</span>
+        <span class="n">nskip</span> <span class="o">=</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;readout_pattern_config&#39;</span><span class="p">][</span><span class="n">pattern</span><span class="p">][</span><span class="s1">&#39;ndrop2&#39;</span><span class="p">]</span>
+        <span class="n">exposure_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">subarray_tfffr</span> <span class="o">*</span> <span class="n">integrations</span><span class="p">)</span> <span class="o">+</span> <span class="n">subarray_frame_time</span> <span class="o">*</span> <span class="p">(</span><span class="n">integrations</span> <span class="o">+</span> <span class="n">integrations</span> <span class="o">*</span> <span class="p">((</span><span class="n">groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">nframe</span> <span class="o">+</span> <span class="n">nskip</span><span class="p">)</span> <span class="o">+</span> <span class="n">nframe</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Provided readout pattern </span><span class="si">{}</span><span class="s1"> not recognised.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">exposure_time</span></div>
+
+<div class="viewcode-block" id="determine_bar_offset"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.determine_bar_offset">[docs]</a><span class="k">def</span> <span class="nf">determine_bar_offset</span><span class="p">(</span><span class="n">filt</span><span class="p">):</span>
+    <span class="c1"># Returns the bar offset in arcsseconds for the nircam coronagraphs</span>
+    <span class="n">all_offsets</span> <span class="o">=</span> <span class="n">nircam_config_dict</span><span class="p">[</span><span class="s1">&#39;bar_offsets&#39;</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">all_offsets</span><span class="p">[</span><span class="n">filt</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid filter selection: </span><span class="si">{}</span><span class="s1">, could not identify bar offset&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filt</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">offset</span></div>
+
+<div class="viewcode-block" id="sequence_input_checks"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.sequence_input_checks">[docs]</a><span class="k">def</span> <span class="nf">sequence_input_checks</span><span class="p">(</span><span class="n">exposures</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">nircam_aperture</span><span class="p">,</span> <span class="n">nircam_subarray</span><span class="p">,</span> <span class="n">miri_subarray</span><span class="p">,</span> <span class="n">telescope</span><span class="p">,</span> <span class="n">rolls</span><span class="p">,</span> <span class="n">nircam_sgd</span><span class="p">,</span> <span class="n">miri_sgd</span><span class="p">):</span>
+    <span class="c1">#Check each exposure has been formatted correctly by the user, and filter/pattern selection is valid.</span>
+    <span class="k">for</span> <span class="n">exposure</span> <span class="ow">in</span> <span class="n">exposures</span><span class="p">:</span>
+        <span class="n">exposure_error_message</span> <span class="o">=</span> <span class="s1">&#39;Exposure (</span><span class="si">{}</span><span class="s1">) not understood. Exposures must be of format (*filt*, &quot;optimise&quot;, *duration_seconds*) OR (*filt*, *pattern*, *ngroups*, *nints*)&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">exposure_error_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">exposure</span><span class="p">))))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exposure</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">str</span><span class="p">))</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">exposure_error_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">exposure</span><span class="p">))))</span>
+
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">exposure_error_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">exposure</span><span class="p">))))</span>
+
+        <span class="c1">####</span>
+        <span class="c1">#Ensure filter input is correct for each exposure.</span>
+        <span class="c1">####</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">nircam_filters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;coronagraphy&#39;</span> <span class="ow">and</span> <span class="n">filt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nircam_coro_filters</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen filter &quot;</span><span class="si">{}</span><span class="s1">&quot; not compatible with NIRCam coronagraphy. Compatible filters are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nircam_coro_filters</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">pattern</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nircam_readout_patterns</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen pattern </span><span class="si">{}</span><span class="s1"> not compatible with NIRCam. Compatible patterns are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nircam_readout_patterns</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">miri_filters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;coronagraphy&#39;</span> <span class="ow">and</span> <span class="n">filt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">miri_coro_filters</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen filter &quot;</span><span class="si">{}</span><span class="s1">&quot; not compatible with MIRI coronagraphy. Compatible filters are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">miri_coro_filters</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exposure</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">exposure</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">pattern</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">miri_readout_patterns</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen pattern </span><span class="si">{}</span><span class="s1"> not compatible with MIRI. Compatible patterns are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">miri_readout_patterns</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Chosen filter &quot;</span><span class="si">{}</span><span class="s1">&quot; incompatible with NIRCam and MIRI, options are: NIRCam (</span><span class="si">{}</span><span class="s1">) and MIRI (</span><span class="si">{}</span><span class="s1">).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nircam_filters</span><span class="p">),</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">miri_filters</span><span class="p">)))</span>
+    
+    <span class="c1">#Other input checks</span>
+    <span class="c1">#Ensure selected mode is supported</span>
+    <span class="n">supported_modes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;coronagraphy&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_modes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid mode selected. Supported modes are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">supported_modes</span><span class="p">)))</span>
+
+    <span class="c1">#Ensure selected nircam_aperture is supported</span>
+    <span class="n">nircam_coro_apertures</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mask210r&#39;</span><span class="p">,</span> <span class="s1">&#39;mask335r&#39;</span><span class="p">,</span> <span class="s1">&#39;mask430r&#39;</span><span class="p">,</span> <span class="s1">&#39;maskswb&#39;</span><span class="p">,</span> <span class="s1">&#39;masklwb&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">nircam_aperture</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span> <span class="ow">and</span> <span class="n">nircam_aperture</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nircam_coro_apertures</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid NIRCam aperture selected. Supported apertures are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nircam_coro_apertures</span><span class="p">)))</span>
+
+    <span class="c1">#Ensure subarray is supporte</span>
+    <span class="k">if</span> <span class="n">nircam_subarray</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nircam_supported_subarrays</span> <span class="ow">and</span> <span class="n">nircam_subarray</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid NIRCam subarray selected. Available subarrays are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nircam_supported_subarrays</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">miri_subarray</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">miri_supported_subarrays</span> <span class="ow">and</span> <span class="n">miri_subarray</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid MIRI subarray selected. Available subarrays are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">miri_supported_subarrays</span><span class="p">)))</span>
+
+    <span class="c1">#Ensure telescopes is supported</span>
+    <span class="k">if</span> <span class="n">telescope</span> <span class="o">!=</span> <span class="s1">&#39;jwst&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;jwst&quot; is currently the only supported telescope.&#39;</span><span class="p">)</span>
+
+    <span class="c1">#Ensure rolls are all floats or ints, warn if roll is too large</span>
+    <span class="k">if</span> <span class="n">rolls</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">rolls</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">rolls</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">15</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Roll differences of more than 15 degrees are extremely difficult/impossible to schedule.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="n">rolls</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">roll</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rolls must be specified as an array of floats or integers, or &quot;max&quot; for rolls at 0 and 14 degrees.&#39;</span><span class="p">)</span>
+
+    <span class="c1">#Check small grid dithers match with available patterns</span>
+    <span class="k">if</span> <span class="n">nircam_sgd</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nircam_dither_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;3-POINT-BAR&#39;</span><span class="p">,</span> <span class="s1">&#39;5-POINT-BAR&#39;</span><span class="p">,</span> <span class="s1">&#39;5-POINT-BOX&#39;</span><span class="p">,</span> <span class="s1">&#39;5-POINT-DIAMOND&#39;</span><span class="p">,</span> <span class="s1">&#39;9-POINT-CIRCLE&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nircam_sgd</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">nircam_sgd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nircam_dither_patterns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid NIRCam dither pattern selected. Available patterns are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nircam_dither_patterns</span><span class="p">))</span> 
+    <span class="k">if</span> <span class="n">miri_sgd</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">miri_dither_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;5-POINT-SMALL-GRID&#39;</span><span class="p">,</span> <span class="s1">&#39;9-POINT-SMALL-GRID&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">miri_sgd</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">miri_sgd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">miri_dither_patterns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid MIRI dither pattern selected. Available patterns are: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">miri_dither_patterns</span><span class="p">))</span> </div>
+
+<div class="viewcode-block" id="read_bandpass"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.read_bandpass">[docs]</a><span class="k">def</span> <span class="nf">read_bandpass</span><span class="p">(</span><span class="n">bandpass</span><span class="p">):</span>
+    <span class="n">bandpass</span> <span class="o">=</span> <span class="n">bandpass</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;2mass&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span> <span class="ow">or</span> <span class="s1">&#39;wise&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span><span class="p">:</span>
+            <span class="c1">#Read in PanCAKE provided 2MASS and WISE bandpasses. </span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bandpass</span><span class="p">)))</span> <span class="k">as</span> <span class="n">bandpass_file</span><span class="p">:</span>
+                <span class="n">bandpass_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">bandpass_file</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+                <span class="n">bandpass_wave</span> <span class="o">=</span> <span class="n">bandpass_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e4</span> <span class="c1">#Convert from microns to angstrom</span>
+                <span class="n">bandpass_throughput</span> <span class="o">=</span> <span class="n">bandpass_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1">#Convert data to a synphot bandpass</span>
+            <span class="n">Bandpass</span> <span class="o">=</span> <span class="n">SpectralElement</span><span class="p">(</span><span class="n">Empirical1D</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">bandpass_wave</span><span class="p">,</span> <span class="n">lookup_table</span><span class="o">=</span><span class="n">bandpass_throughput</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;cousins&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span> <span class="ow">or</span> <span class="s1">&#39;bessel&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span> <span class="ow">or</span> <span class="s1">&#39;johnson&#39;</span> <span class="ow">in</span> <span class="n">bandpass</span><span class="p">:</span>
+            <span class="n">Bandpass</span> <span class="o">=</span> <span class="n">SpectralElement</span><span class="o">.</span><span class="n">from_filter</span><span class="p">(</span><span class="n">bandpass</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># #A JWST filter</span>
+            <span class="n">inst</span> <span class="o">=</span> <span class="n">determine_instrument</span><span class="p">(</span><span class="n">bandpass</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">inst</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">bandpass</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
+                    <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;sw_imaging&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;lw_imaging&#39;</span>
+            <span class="k">elif</span> <span class="n">inst</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;imaging&#39;</span>
+
+            <span class="n">factory_config</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">factory_config</span><span class="p">[</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">factory_config</span><span class="p">[</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inst</span>
+            <span class="n">factory_config</span><span class="p">[</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
+            <span class="n">factory_config</span><span class="p">[</span><span class="s1">&#39;instrument&#39;</span><span class="p">][</span><span class="s1">&#39;filter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bandpass</span>
+            <span class="c1">#factory_config[&#39;instrument&#39;][&#39;aperture&#39;] = mask</span>
+            <span class="n">bandpass_wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span> <span class="c1">#Microns for use with pandeia</span>
+            <span class="n">InstrumentConfig</span> <span class="o">=</span> <span class="n">pif</span><span class="o">.</span><span class="n">InstrumentFactory</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">factory_config</span><span class="p">)</span>
+            <span class="n">bandpass_throughput</span> <span class="o">=</span> <span class="n">InstrumentConfig</span><span class="o">.</span><span class="n">get_total_eff</span><span class="p">(</span><span class="n">bandpass_wave</span><span class="p">)</span>
+
+            <span class="n">bandpass_wave</span> <span class="o">*=</span> <span class="mf">1e4</span> <span class="c1">#Convert to angstrom for synphot</span>
+            
+            <span class="n">Bandpass</span> <span class="o">=</span> <span class="n">SpectralElement</span><span class="p">(</span><span class="n">Empirical1D</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">bandpass_wave</span><span class="p">,</span> <span class="n">lookup_table</span><span class="o">=</span><span class="n">bandpass_throughput</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Input normalisation bandpass not recognised. Currently supported filters are: &quot;2mass_j&quot;, &quot;2mass_h&quot;, &quot;2mass_ks&quot;, &quot;wise_w1&quot;, &quot;wise_w2&quot;, &quot;wise_w3&quot;, &quot;wise_w4&quot;, &quot;bessel_j&quot;, &quot;bessel_h&quot;, &quot;bessel_k&quot;, &quot;cousins_r&quot;, &quot;cousins_i&quot;, &quot;johnson_u&quot;, &quot;johnson_b&quot;, &quot;johnson_v&quot;, &quot;johnson_r&quot;, &quot;johnson_i&quot;, &quot;johnson_j&quot;, &quot;johnson_k&quot;, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nircam_filters</span><span class="p">),</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">miri_filters</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">Bandpass</span></div>
+
+<div class="viewcode-block" id="read_coronagraph_transmission"><a class="viewcode-back" href="../../autoapi/pancake/io/index.html#pancake.io.read_coronagraph_transmission">[docs]</a><span class="k">def</span> <span class="nf">read_coronagraph_transmission</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">mask_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_2DTRANS.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+       <span class="n">transmission</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">mask_file</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Input coronagraphic mask &quot;</span><span class="si">{}</span><span class="s1">&quot; not recognised. Currently supported masks are: &quot;MASKSWB&quot;, &quot;MASKLWB&quot;, &quot;MASK210R&quot;, &quot;MASK335R&quot;, &quot;MASK430R&quot;, &quot;FQPM1065&quot;, &quot;FQPM1140&quot;, &quot;FQPM1550&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+        
+    <span class="k">return</span> <span class="n">transmission</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

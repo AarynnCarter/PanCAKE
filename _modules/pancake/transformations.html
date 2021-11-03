@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pancake.transformations &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to PanCAKE’s documentation!</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pancake.html">pancake</a> &raquo;</li>
+        
+      <li>pancake.transformations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pancake.transformations</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">fourier_shift</span>
+
+<div class="viewcode-block" id="cart_to_polar"><a class="viewcode-back" href="../../autoapi/pancake/transformations/index.html#pancake.transformations.cart_to_polar">[docs]</a><span class="k">def</span> <span class="nf">cart_to_polar</span><span class="p">(</span><span class="n">xy</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;convert separations into offset, theta&#39;&#39;&#39;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1">#radius, arcsec</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="c1">#angle, degrees</span>
+    <span class="k">return</span> <span class="n">r</span><span class="p">,</span> <span class="n">theta</span></div>
+
+<div class="viewcode-block" id="polar_to_cart"><a class="viewcode-back" href="../../autoapi/pancake/transformations/index.html#pancake.transformations.polar_to_cart">[docs]</a><span class="k">def</span> <span class="nf">polar_to_cart</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">theta</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;convert from polar to cartesian,</span>
+<span class="sd">    assuming theta in degrees&#39;&#39;&#39;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="affine_transform"><a class="viewcode-back" href="../../autoapi/pancake/transformations/index.html#pancake.transformations.affine_transform">[docs]</a><span class="k">def</span> <span class="nf">affine_transform</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">center</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; theta = deg</span>
+<span class="sd">    center = x, y</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">center</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="n">b</span><span class="o">*</span><span class="n">y</span><span class="p">],</span>
+                  <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">y</span><span class="p">],</span>
+                  <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">M</span></div>
+
+<div class="viewcode-block" id="rotate"><a class="viewcode-back" href="../../autoapi/pancake/transformations/index.html#pancake.transformations.rotate">[docs]</a><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span><span class="n">theta</span><span class="p">,</span><span class="n">center</span><span class="p">):</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">affine_transform</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">center</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">xy</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">M</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="align_fourierLSQ"><a class="viewcode-back" href="../../autoapi/pancake/transformations/index.html#pancake.transformations.align_fourierLSQ">[docs]</a><span class="k">def</span> <span class="nf">align_fourierLSQ</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;LSQ optimization with Fourier shift alignment</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        reference : nd array</span>
+<span class="sd">            N x K image to be aligned to</span>
+<span class="sd">        target : nd array</span>
+<span class="sd">            N x K image to align to reference</span>
+<span class="sd">        mask : nd array, optional</span>
+<span class="sd">            N x K image indicating pixels to ignore when</span>
+<span class="sd">            performing the minimization. The masks acts as</span>
+<span class="sd">            a weighting function in performing the fit.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        results : list</span>
+<span class="sd">            [x, y, beta] values from LSQ optimization, where (x, y) </span>
+<span class="sd">            are the misalignment of target from reference and beta</span>
+<span class="sd">            is the fraction by which the target intensity must be</span>
+<span class="sd">            reduced to match the intensity of the reference.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">init_pars</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">]</span>
+    <span class="n">out</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">shift_subtract</span><span class="p">,</span> <span class="n">init_pars</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="n">mask</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">out</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="c1">#x,y,beta</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="shift_subtract"><a class="viewcode-back" href="../../autoapi/pancake/transformations/index.html#pancake.transformations.shift_subtract">[docs]</a><span class="k">def</span> <span class="nf">shift_subtract</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="n">reference</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Use Fourier Shift theorem for subpixel shifts.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        params : tuple</span>
+<span class="sd">            xshift, yshift, beta</span>
+<span class="sd">        reference : nd array</span>
+<span class="sd">            See align_fourierLSQ</span>
+<span class="sd">        target : nd array</span>
+<span class="sd">            See align_fourierLSQ</span>
+<span class="sd">        mask : nd array, optional</span>
+<span class="sd">            See align_fourierLSQ</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        1D nd array of target-reference residual after</span>
+<span class="sd">        applying shift and intensity fraction.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">xshift</span><span class="p">,</span> <span class="n">yshift</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">params</span>
+    
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">fourier_imshift</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span><span class="n">xshift</span><span class="p">,</span><span class="n">yshift</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">offset</span><span class="p">)</span> <span class="o">*</span> <span class="n">mask</span> <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span> <span class="n">target</span> <span class="o">-</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">offset</span> <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="fourier_imshift"><a class="viewcode-back" href="../../autoapi/pancake/transformations/index.html#pancake.transformations.fourier_imshift">[docs]</a><span class="k">def</span> <span class="nf">fourier_imshift</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">xshift</span><span class="p">,</span><span class="n">yshift</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;  Shift an image by use of Fourier shift theorem</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        image : nd array</span>
+<span class="sd">            N x K image</span>
+<span class="sd">        xshift : float</span>
+<span class="sd">            Pixel value by which to shift image in the x direction</span>
+<span class="sd">        yshift : float</span>
+<span class="sd">            Pixel value by which to shift image in the y direction</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        offset : nd array</span>
+<span class="sd">            Shifted image</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">fourier_shift</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">yshift</span><span class="p">,</span><span class="n">xshift</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="n">offset</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

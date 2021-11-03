@@ -1,0 +1,716 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pancake.engine &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to PanCAKE’s documentation!</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pancake.html">pancake</a> &raquo;</li>
+        
+      <li>pancake.engine</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pancake.engine</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># Just build an actual subclass of the necessary JWST classes</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">units</span>
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">from</span> <span class="nn">poppy</span> <span class="kn">import</span> <span class="n">poppy_core</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">functools32</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">pandeia</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.calc_utils</span> <span class="kn">import</span> <span class="n">build_default_calc</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.instrument_factory</span> <span class="kn">import</span> <span class="n">InstrumentFactory</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.psf_library</span> <span class="kn">import</span> <span class="n">PSFLibrary</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.psf_library</span> <span class="kn">import</span> <span class="n">PSFLibrary</span> <span class="k">as</span> <span class="n">PandeiaPSFLibrary</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.perform_calculation</span> <span class="kn">import</span> <span class="n">perform_calculation</span> <span class="k">as</span> <span class="n">pandeia_calculation</span>
+<span class="kn">from</span> <span class="nn">pandeia.engine.observation</span> <span class="kn">import</span> <span class="n">Observation</span>
+<div class="viewcode-block" id="pandeia_seed"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.pandeia_seed">[docs]</a><span class="n">pandeia_seed</span> <span class="o">=</span> <span class="n">Observation</span><span class="o">.</span><span class="n">get_random_seed</span></div>
+<span class="kn">from</span> <span class="nn">pandeia.engine.astro_spectrum</span> <span class="kn">import</span> <span class="n">ConvolvedSceneCube</span>
+<div class="viewcode-block" id="PandeiaConvolvedSceneCube"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.PandeiaConvolvedSceneCube">[docs]</a><span class="n">PandeiaConvolvedSceneCube</span> <span class="o">=</span> <span class="n">ConvolvedSceneCube</span></div>
+<span class="kn">from</span> <span class="nn">pandeia.engine.constants</span> <span class="kn">import</span> <span class="n">SPECTRAL_MAX_SAMPLES</span>
+<div class="viewcode-block" id="default_SPECTRAL_MAX_SAMPLES"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.default_SPECTRAL_MAX_SAMPLES">[docs]</a><span class="n">default_SPECTRAL_MAX_SAMPLES</span> <span class="o">=</span> <span class="n">SPECTRAL_MAX_SAMPLES</span></div>
+<span class="kn">from</span> <span class="nn">pandeia.engine.etc3D</span> <span class="kn">import</span> <span class="n">DetectorSignal</span>
+<div class="viewcode-block" id="PandeiaDetectorSignal"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.PandeiaDetectorSignal">[docs]</a><span class="n">PandeiaDetectorSignal</span> <span class="o">=</span> <span class="n">DetectorSignal</span></div>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">webbpsf</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="kn">from</span> <span class="nn">.pandeia_subclasses</span> <span class="kn">import</span> <span class="n">CoronagraphyPSFLibrary</span><span class="p">,</span> <span class="n">CoronagraphyConvolvedSceneCube</span><span class="p">,</span> <span class="n">CoronagraphyDetectorSignal</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">EngineConfiguration</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">templates</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">analysis</span>
+<span class="c1"># from .templates import templates</span>
+
+<span class="c1"># Initialize the engine options</span>
+<div class="viewcode-block" id="options"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.options">[docs]</a><span class="n">options</span> <span class="o">=</span> <span class="n">EngineConfiguration</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="latest_on_the_fly_PSF"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.latest_on_the_fly_PSF">[docs]</a><span class="n">latest_on_the_fly_PSF</span> <span class="o">=</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="cache_maxsize"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.cache_maxsize">[docs]</a><span class="n">cache_maxsize</span> <span class="o">=</span> <span class="mi">256</span>     <span class="c1"># Number of monochromatic PSFs stored in an LRU cache</span></div>
+                        <span class="c1"># Should speed up calculations that involve modifying things</span>
+                        <span class="c1"># like exposure time and don&#39;t actually require calculating new PSFs.</span>
+<div class="viewcode-block" id="get_template"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.get_template">[docs]</a><span class="k">def</span> <span class="nf">get_template</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Look up a template filename.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="list_templates"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.list_templates">[docs]</a><span class="k">def</span> <span class="nf">list_templates</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    List all bundled template calculation files.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">templatewildcard</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;*.json&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">templatewildcard</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="load_calculation"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.load_calculation">[docs]</a><span class="k">def</span> <span class="nf">load_calculation</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">calcfile</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">calcfile</span></div>
+
+<div class="viewcode-block" id="save_calculation"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.save_calculation">[docs]</a><span class="k">def</span> <span class="nf">save_calculation</span><span class="p">(</span><span class="n">calcfile</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">calcfile</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="save_to_fits"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.save_to_fits">[docs]</a><span class="k">def</span> <span class="nf">save_to_fits</span><span class="p">(</span><span class="n">array</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">hdulist</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">([</span><span class="n">hdu</span><span class="p">])</span>
+    <span class="n">hdulist</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_options"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.get_options">[docs]</a><span class="k">def</span> <span class="nf">get_options</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This returns the options object, and is used to let the various Pandeia-based subclasses get</span>
+<span class="sd">    the options object currently in use.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">options</span></div>
+
+<div class="viewcode-block" id="calculate_batch"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.calculate_batch">[docs]</a><span class="k">def</span> <span class="nf">calculate_batch</span><span class="p">(</span><span class="n">calcfiles</span><span class="p">,</span><span class="n">nprocesses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">nprocesses</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nprocesses</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span> <span class="o">=</span> <span class="n">nprocesses</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">perform_calculation</span><span class="p">,</span> <span class="n">calcfiles</span><span class="p">)</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="c1"># reset Pandeia seed</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="calculate_all"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.calculate_all">[docs]</a><span class="k">def</span> <span class="nf">calculate_all</span><span class="p">(</span><span class="n">raw_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a pandeia coronagraphy calculation. Output will be:</span>
+<span class="sd">        - a pandeia report showing the target</span>
+<span class="sd">        - a pandeia report showing the reference source</span>
+<span class="sd">        - a pandeia report showing the unocculted target (with saturation disabled)</span>
+<span class="sd">    In pandeia 1.3, this can be done as a single calculation, with the results obtained from</span>
+<span class="sd">    sub-reports. In pandeia 1.2, the sub-reports are not actually returned properly, so the overall</span>
+<span class="sd">    calculation needs to be run 3 times.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;contrast&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="n">pandeia_version</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;pandeia.engine&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">version</span>
+    <span class="k">if</span> <span class="n">pandeia_version</span> <span class="o">&gt;=</span> <span class="s2">&quot;1.3&quot;</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">perform_calculation</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">raw_config</span><span class="p">))</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;sub_reports&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;sub_reports&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;contrast&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;sub_reports&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_target</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_reference</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;contrast&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_contrast</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="calculate_target"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.calculate_target">[docs]</a><span class="k">def</span> <span class="nf">calculate_target</span><span class="p">(</span><span class="n">raw_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a pandeia coronagraphy calculation in target-only mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;target_only&#39;</span>
+    <span class="k">return</span> <span class="n">perform_calculation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="calculate_reference"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.calculate_reference">[docs]</a><span class="k">def</span> <span class="nf">calculate_reference</span><span class="p">(</span><span class="n">raw_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a pandeia coronagraphy calculation in target-only mode, replacing the target scene with</span>
+<span class="sd">    the scene stored in the coronagraphy strategy PSF subtraction source.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;target_only&#39;</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction_source&#39;</span><span class="p">])]</span>
+    <span class="k">return</span> <span class="n">perform_calculation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="calculate_contrast"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.calculate_contrast">[docs]</a><span class="k">def</span> <span class="nf">calculate_contrast</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="n">offset_x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">offset_y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a pandeia coronagraphy calculation in target-only mode, with the target offset to be</span>
+<span class="sd">    unocculted, and with saturation disabled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.scene</span> <span class="kn">import</span> <span class="n">offset_scene</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;target_only&#39;</span>
+    <span class="n">saturation_value</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">effects</span><span class="p">[</span><span class="s1">&#39;saturation&#39;</span><span class="p">]</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">set_saturation</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">offset_scene</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">],</span> <span class="n">offset_x</span><span class="p">,</span> <span class="n">offset_y</span><span class="p">)</span>
+    <span class="n">contrast_result</span> <span class="o">=</span> <span class="n">perform_calculation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">set_saturation</span><span class="p">(</span><span class="n">saturation_value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">contrast_result</span></div>
+
+<div class="viewcode-block" id="perform_calculation"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.perform_calculation">[docs]</a><span class="k">def</span> <span class="nf">perform_calculation</span><span class="p">(</span><span class="n">calcfile</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Manually decorate pandeia.engine.perform_calculation to circumvent</span>
+<span class="sd">    pandeia&#39;s tendency to modify the calcfile during the calculation.</span>
+
+<span class="sd">    Updates to the saturation computation could go here as well.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">existing_psf_library</span> <span class="o">=</span> <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">psf_library</span><span class="o">.</span><span class="n">PSFLibrary</span>
+    <span class="n">existing_scene_cube</span> <span class="o">=</span> <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">astro_spectrum</span><span class="o">.</span><span class="n">ConvolvedSceneCube</span>
+    <span class="n">existing_detector_signal</span> <span class="o">=</span> <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">etc3D</span><span class="o">.</span><span class="n">DetectorSignal</span>
+    
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">on_the_fly_PSFs</span><span class="p">:</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">psf_library</span><span class="o">.</span><span class="n">PSFLibrary</span> <span class="o">=</span> <span class="n">CoronagraphyPSFLibrary</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">PSFLibrary</span> <span class="o">=</span> <span class="n">CoronagraphyPSFLibrary</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">astro_spectrum</span><span class="o">.</span><span class="n">ConvolvedSceneCube</span> <span class="o">=</span> <span class="n">CoronagraphyConvolvedSceneCube</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">etc3D</span><span class="o">.</span><span class="n">DetectorSignal</span> <span class="o">=</span> <span class="n">CoronagraphyDetectorSignal</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">psf_library</span><span class="o">.</span><span class="n">PSFLibrary</span> <span class="o">=</span> <span class="n">PandeiaPSFLibrary</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">PSFLibrary</span> <span class="o">=</span> <span class="n">PandeiaPSFLibrary</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">astro_spectrum</span><span class="o">.</span><span class="n">ConvolvedSceneCube</span> <span class="o">=</span> <span class="n">PandeiaConvolvedSceneCube</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">etc3D</span><span class="o">.</span><span class="n">DetectorSignal</span> <span class="o">=</span> <span class="n">PandeiaDetectorSignal</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">pandeia_fixed_seed</span><span class="p">:</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">observation</span><span class="o">.</span><span class="n">Observation</span><span class="o">.</span><span class="n">get_random_seed</span> <span class="o">=</span> <span class="n">pandeia_seed</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">observation</span><span class="o">.</span><span class="n">Observation</span><span class="o">.</span><span class="n">get_random_seed</span> <span class="o">=</span> <span class="n">random_seed</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">calcfile</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;calculation&#39;</span><span class="p">][</span><span class="s1">&#39;noise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">noise</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;calculation&#39;</span><span class="p">][</span><span class="s1">&#39;effects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">effects</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">current_config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">VisibleDeprecationWarning</span><span class="p">)</span> <span class="c1"># Suppress float-indexing warnings</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">pandeia_calculation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="c1"># Reset the fixed seed state set by the pandeia engine</span>
+    <span class="c1"># to avoid unexpected results elsewhere</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Reset (potentially) overridden functions</span>
+    <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">psf_library</span><span class="o">.</span><span class="n">PSFLibrary</span> <span class="o">=</span> <span class="n">existing_psf_library</span>
+    <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">PSFLibrary</span> <span class="o">=</span> <span class="n">existing_psf_library</span>
+    <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">astro_spectrum</span><span class="o">.</span><span class="n">ConvolvedSceneCube</span> <span class="o">=</span> <span class="n">existing_scene_cube</span>
+    <span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">etc3D</span><span class="o">.</span><span class="n">DetectorSignal</span> <span class="o">=</span> <span class="n">existing_detector_signal</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="random_seed"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.random_seed">[docs]</a><span class="k">def</span> <span class="nf">random_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The pandeia engine sets a fixed seed of 42.</span>
+<span class="sd">    Circumvent that here.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#np.random.seed(None) # Reset the seed if already set</span>
+    <span class="c1">#return np.random.randint(0, 2**32 - 1) # Find a new one</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="process_config"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.process_config">[docs]</a><span class="k">def</span> <span class="nf">process_config</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="n">target_scene</span><span class="p">,</span> <span class="n">reference_scene</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process a variable that might be a file name, full JWST configuration dictionary, or instrument</span>
+<span class="sd">    configuration dictionary, along with optional target and reference scenes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># A JSON file. In this case, it should be a full pandeia config dictionary</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">raw_config</span><span class="p">):</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">load_calculation</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">error_str</span> <span class="o">=</span> <span class="s2">&quot;Error: File </span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration_dict_or_filename</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">error_str</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;configuration&quot;</span> <span class="ow">in</span> <span class="n">raw_config</span><span class="p">:</span>
+        <span class="c1"># It&#39;s a dictionary. It contains a &quot;configuration&quot; key. Assume full pandeia dictionary.</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">instrument</span> <span class="o">=</span> <span class="n">raw_config</span><span class="p">[</span><span class="s2">&quot;instrument&quot;</span><span class="p">][</span><span class="s2">&quot;instrument&quot;</span><span class="p">]</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">build_default_calc</span><span class="p">(</span><span class="n">jwst</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="s2">&quot;coronagraphy&quot;</span><span class="p">)</span>
+        <span class="n">config</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s2">&quot;instrument&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">raw_config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_scene</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: input configuration had no scene info, and no separate target scene was provided. Using default coronagraphy target scene.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error_str</span> <span class="o">=</span> <span class="s2">&quot;Invalid input </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration_dict_or_filename</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target_scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target_scene</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">target_scene</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">target_scene</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">reference_scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference_scene</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction_source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">reference_scene</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction_source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">reference_scene</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config</span></div>
+
+<div class="viewcode-block" id="calculate_subtracted"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.calculate_subtracted">[docs]</a><span class="k">def</span> <span class="nf">calculate_subtracted</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ta_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sgd</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">20.e-3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a function to calculate subtracted images with an optional reference image </span>
+<span class="sd">    small-grid dither (SGD). It does the following:</span>
+<span class="sd">        - Create a pandeia configuration file from which to build the target and reference scenes</span>
+<span class="sd">        - [optional] construct SGD</span>
+<span class="sd">        - observe target scene</span>
+<span class="sd">        - for each reference observation:</span>
+<span class="sd">            - observe reference scene</span>
+<span class="sd">        - centre reference to targets</span>
+<span class="sd">        - create klip PSF</span>
+<span class="sd">        - subtract klip PSF from target image</span>
+<span class="sd">        - return subtracted image</span>
+<span class="sd">    It will return:</span>
+<span class="sd">        - target image</span>
+<span class="sd">        - list of reference images</span>
+<span class="sd">        - artificial PSF</span>
+<span class="sd">        - subtracted image</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw_config: string or dict</span>
+<span class="sd">        One of:</span>
+<span class="sd">            - file name of pandeia JSON file describing an observation</span>
+<span class="sd">            - pandeia configuration dictionary</span>
+<span class="sd">            - pandeia instrument configuration from configuration dictionary </span>
+<span class="sd">              (i.e. config[&#39;configuration&#39;][&#39;instrument&#39;])</span>
+<span class="sd">    target_scene: list of dict (or dict), default None</span>
+<span class="sd">        List of Pandeia-style scene dictionaries describing the target. If not present, then the</span>
+<span class="sd">            target scene from raw_config will be used.</span>
+<span class="sd">    reference_scene: list of dict (or dict), default None</span>
+<span class="sd">        List of Pandeia-style scene dictionaries describing the reference source. If not present, </span>
+<span class="sd">            then the reference scene from raw_config will be used. If a list, only the first </span>
+<span class="sd">            element will be used (i.e. the reference source will be assumed to be a single element)</span>
+<span class="sd">    ta_error: bool, default False</span>
+<span class="sd">        Whether to add target acquisition error offsets to the target and reference scenes.</span>
+<span class="sd">    sgd: bool, default False</span>
+<span class="sd">        Whether to create a small-grid dither (SGD) for the reference scene.</span>
+<span class="sd">    stepsize: float, default 0.02</span>
+<span class="sd">        Size of the offsets in the SGD (if present), in arcseconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    target: numpy array containing &lt;iterations&gt; detector slopes of the target</span>
+<span class="sd">    references: list of numpy arrays containing &lt;iterations&gt; detector slopes of the reference</span>
+<span class="sd">    psf: artificial PSF created with klip</span>
+<span class="sd">    subtracted: numpy array containing &lt;iterations&gt; reference-subtracted target images</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.scene</span> <span class="kn">import</span> <span class="n">create_SGD</span><span class="p">,</span> <span class="n">get_ta_error</span><span class="p">,</span> <span class="n">offset_scene</span>
+    <span class="kn">from</span> <span class="nn">.analysis</span> <span class="kn">import</span> <span class="n">klip_projection</span><span class="p">,</span> <span class="n">register_to_target</span>
+    
+    <span class="n">config</span> <span class="o">=</span> <span class="n">process_config</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ta_error</span><span class="p">:</span>
+        <span class="c1"># add a unique TA error for the target</span>
+        <span class="n">errx</span><span class="p">,</span> <span class="n">erry</span> <span class="o">=</span> <span class="n">get_ta_error</span><span class="p">()</span>
+        <span class="n">offset_scene</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">],</span> <span class="n">errx</span><span class="p">,</span> <span class="n">erry</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">sgd</span><span class="p">:</span>
+        <span class="n">sgds</span> <span class="o">=</span> <span class="n">create_SGD</span><span class="p">(</span><span class="n">ta_error</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sgds</span> <span class="o">=</span> <span class="n">create_SGD</span><span class="p">(</span><span class="n">ta_error</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span> <span class="n">pattern_name</span><span class="o">=</span><span class="s2">&quot;SINGLE-POINT&quot;</span><span class="p">)</span>
+    
+    <span class="n">first_config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">offset_scene</span><span class="p">([</span><span class="n">first_config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction_source&#39;</span><span class="p">]],</span> <span class="o">*</span><span class="n">sgds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">first_result</span> <span class="o">=</span> <span class="n">calculate_all</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">target_slope</span> <span class="o">=</span> <span class="n">first_result</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">]</span>
+    <span class="n">sgd_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">first_result</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">sgd</span> <span class="ow">in</span> <span class="n">sgds</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">sgd_config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">offset_scene</span><span class="p">([</span><span class="n">sgd_config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction_source&#39;</span><span class="p">]],</span> <span class="o">*</span><span class="n">sgd</span><span class="p">)</span>
+        <span class="n">sgd_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">calculate_reference</span><span class="p">(</span><span class="n">sgd_config</span><span class="p">))</span>
+
+    <span class="n">sgd_reg</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sgd_slopes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sgd_results</span><span class="p">:</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">]</span>
+        <span class="n">sgd_slopes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">slope</span><span class="p">),</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="n">register_to_target</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">target_slope</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">rescale_reference</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sgd_reg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
+
+    <span class="n">sgd_reg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sgd_reg</span><span class="p">)</span>
+
+    <span class="n">centered_target</span> <span class="o">=</span> <span class="n">target_slope</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">target_slope</span><span class="p">)</span>
+    <span class="n">artificialPSF</span> <span class="o">=</span> <span class="n">klip_projection</span><span class="p">(</span><span class="n">centered_target</span><span class="p">,</span><span class="n">sgd_reg</span><span class="p">)</span>
+
+    <span class="n">sgd_sub</span> <span class="o">=</span> <span class="n">centered_target</span> <span class="o">-</span> <span class="n">artificialPSF</span>
+    
+    <span class="n">output</span> <span class="o">=</span>    <span class="p">{</span>
+                    <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="n">target_slope</span><span class="p">,</span>
+                    <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="n">sgd_slopes</span><span class="p">,</span>
+                    <span class="s1">&#39;psf&#39;</span><span class="p">:</span> <span class="n">artificialPSF</span><span class="p">,</span>
+                    <span class="s1">&#39;subtracted&#39;</span><span class="p">:</span> <span class="n">sgd_sub</span>
+                <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="calculate_contrast_curve"><a class="viewcode-back" href="../../autoapi/pancake/engine/index.html#pancake.engine.calculate_contrast_curve">[docs]</a><span class="k">def</span> <span class="nf">calculate_contrast_curve</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ta_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">keep_options</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a replacement for the Pandeia calculate_contrast function. It is designed to use the</span>
+<span class="sd">    various internal analysis functions to do the following:</span>
+<span class="sd">        - Load one of the pandeia_coronagraphy custom templates</span>
+<span class="sd">        - Repeat &lt;iterations&gt; times:</span>
+<span class="sd">            - Run through pandeia with the target scene in place of the default scene</span>
+<span class="sd">            - Run through pandeia with the reference scene in place of the default scene</span>
+<span class="sd">        - Run through pandeia with the off-axis target</span>
+<span class="sd">        - Generate an aperture image</span>
+<span class="sd">        - Run the analysis contrast utility method</span>
+<span class="sd">    It will return:</span>
+<span class="sd">        - list of target images</span>
+<span class="sd">        - list of reference images</span>
+<span class="sd">        - off-axis image</span>
+<span class="sd">        - list of subtracted images</span>
+<span class="sd">        - normalized contrast profile (with reference bins)</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw_config: string or dict</span>
+<span class="sd">        One of:</span>
+<span class="sd">            - file name of pandeia JSON file describing an observation</span>
+<span class="sd">            - pandeia configuration dictionary</span>
+<span class="sd">            - pandeia instrument configuration from configuration dictionary </span>
+<span class="sd">              (i.e. config[&#39;configuration&#39;][&#39;instrument&#39;])</span>
+<span class="sd">    target: list of dict (or dict), default None</span>
+<span class="sd">        List of Pandeia-style scene dictionaries describing the target. If not present, then the</span>
+<span class="sd">            target scene from raw_config will be used.</span>
+<span class="sd">    reference: list of dict (or dict), default None</span>
+<span class="sd">        List of Pandeia-style scene dictionaries describing the reference source. If not present, </span>
+<span class="sd">            then the reference scene from raw_config will be used. If a list, only the first </span>
+<span class="sd">            element will be used (i.e. the reference source will be assumed to be a single element)</span>
+<span class="sd">    ta_error: bool, default False</span>
+<span class="sd">        Whether to add target acquisition error offsets to the target and reference scenes.</span>
+<span class="sd">    iterations: int, default=1</span>
+<span class="sd">        Number of times to iterate generating TA errors and observing the target and reference</span>
+<span class="sd">        source</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    targets: list of numpy arrays containing &lt;iterations&gt; detector slopes of the target</span>
+<span class="sd">    references: list of numpy arrays containing &lt;iterations&gt; detector slopes of the reference</span>
+<span class="sd">    unocculted: numpy array of the detector slopes of the unocculted source</span>
+<span class="sd">    subtractions: list of numpy arrays containing &lt;iterations&gt; reference-subtracted target images</span>
+<span class="sd">    contrast: list of numpy arrays containing:</span>
+<span class="sd">        bins: bins used for the normalized contrast profile</span>
+<span class="sd">        contrast: normalized contrast profile</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.scene</span> <span class="kn">import</span> <span class="n">get_ta_error</span><span class="p">,</span> <span class="n">offset_scene</span>
+    <span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">draw</span>
+    <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">convolve</span>
+    
+    <span class="n">capitalized_instruments</span> <span class="o">=</span> <span class="p">{</span>
+                                <span class="s2">&quot;miri&quot;</span><span class="p">:</span> <span class="s1">&#39;MIRI&#39;</span><span class="p">,</span>
+                                <span class="s2">&quot;nircam_sw&quot;</span><span class="p">:</span> <span class="s1">&#39;NIRCam&#39;</span><span class="p">,</span>
+                                <span class="s2">&quot;nircam_lw&quot;</span><span class="p">:</span> <span class="s1">&#39;NIRCam&#39;</span><span class="p">,</span>
+                                <span class="s2">&quot;nircam&quot;</span><span class="p">:</span> <span class="s2">&quot;NIRCam&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">process_config</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span>
+
+    <span class="c1"># Save existing options    </span>
+    <span class="n">saved_options</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">current_options</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_options</span><span class="p">:</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">on_the_fly_PSFs</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">wave_sampling</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">target_slopes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">reference_slopes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">offaxis_slopes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting Iteration&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iteration </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">iterations</span><span class="p">))</span>
+        <span class="n">current_config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ta_error</span><span class="p">:</span>
+            <span class="c1"># Add unique target acq error to the target</span>
+            <span class="n">offset_scene</span><span class="p">(</span><span class="n">current_config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">],</span> <span class="o">*</span><span class="n">get_ta_error</span><span class="p">()</span> <span class="p">)</span>
+            <span class="c1"># Add unique target acq error to the reference</span>
+            <span class="n">offset_scene</span><span class="p">([</span><span class="n">current_config</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">][</span><span class="s1">&#39;psf_subtraction_source&#39;</span><span class="p">]],</span> <span class="o">*</span><span class="n">get_ta_error</span><span class="p">())</span>
+        <span class="c1"># Adopt a new realization of the WFE.</span>
+        <span class="c1"># Note that we&#39;re using the same WFE for target and reference here.</span>
+<span class="c1">#         if not keep_options:</span>
+<span class="c1">#             ins = config[&#39;configuration&#39;][&#39;instrument&#39;][&#39;instrument&#39;].lower()</span>
+<span class="c1">#             ote_name = &#39;OPD_RevW_ote_for_{}_predicted.fits.gz&#39;.format(capitalized_instruments[ins])</span>
+<span class="c1">#             options.on_the_fly_webbpsf_opd = (ote_name, n)</span>
+        <span class="c1"># Calculate target and reference</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">calculate_all</span><span class="p">(</span><span class="n">current_config</span><span class="p">)</span>
+        <span class="n">target_slopes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">])</span>
+        <span class="n">reference_slopes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">][</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">])</span>
+        <span class="n">offaxis_slopes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;contrast&#39;</span><span class="p">][</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished iteration </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">iterations</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating Unocculted Image&quot;</span><span class="p">)</span>
+    <span class="n">offaxis</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">offset_scene</span><span class="p">(</span><span class="n">offaxis</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span> <span class="c1">#arsec</span>
+
+    <span class="n">options</span><span class="o">.</span><span class="n">set_saturation</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">offaxis_result</span> <span class="o">=</span> <span class="n">calculate_target</span><span class="p">(</span><span class="n">offaxis</span><span class="p">)</span>
+    <span class="n">offaxis_slope</span> <span class="o">=</span> <span class="n">offaxis_result</span><span class="p">[</span><span class="s1">&#39;2d&#39;</span><span class="p">][</span><span class="s1">&#39;detector&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Restore original option configuration</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">current_options</span> <span class="o">=</span> <span class="n">saved_options</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating Subtraction Stack&quot;</span><span class="p">)</span>
+    <span class="n">subtraction_stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">iterations</span><span class="p">,)</span> <span class="o">+</span> <span class="n">target_slopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">targ</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">target_slopes</span><span class="p">,</span> <span class="n">reference_slopes</span><span class="p">)):</span>
+        <span class="n">aligned_ref</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">register_to_target</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">targ</span><span class="p">)</span> <span class="c1"># Aligned, scaled, mean-centered reference</span>
+        <span class="n">subtraction_stack</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">targ</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">targ</span><span class="p">)</span> <span class="o">-</span> <span class="n">aligned_ref</span> <span class="c1"># Mean-center target and subtract reference</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating Covariance Matrix&quot;</span><span class="p">)</span>
+    <span class="n">cov_matrix</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">covariance_matrix</span><span class="p">(</span><span class="n">subtraction_stack</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating Aperture Image&quot;</span><span class="p">)</span>
+    <span class="n">image_dim</span> <span class="o">=</span> <span class="n">subtraction_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">aperture_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">image_dim</span><span class="p">)</span>
+    <span class="n">aperture_image</span><span class="p">[</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">((</span><span class="n">image_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">image_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">radius</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing Aperture Matrix&quot;</span><span class="p">)</span>
+    <span class="n">aperture_matrix</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">aperture_matrix</span><span class="p">(</span><span class="n">aperture_image</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing Noise Map&quot;</span><span class="p">)</span>
+    <span class="n">noise_map</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">noise_map</span><span class="p">(</span><span class="n">cov_matrix</span><span class="p">,</span> <span class="n">aperture_matrix</span><span class="p">,</span> <span class="n">image_dim</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Convolving off-axis image&quot;</span><span class="p">)</span>
+    <span class="n">convolved_offaxis</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span><span class="n">offaxis_slope</span><span class="p">,</span> <span class="n">aperture_image</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+    <span class="n">normalization</span> <span class="o">=</span> <span class="n">convolved_offaxis</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating Radial Profile&quot;</span><span class="p">)</span>
+    <span class="n">bins</span><span class="p">,</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">radial_profile</span><span class="p">(</span><span class="n">noise_map</span><span class="p">)</span>
+    <span class="n">normalized_profile</span> <span class="o">=</span> <span class="n">profile</span> <span class="o">/</span> <span class="n">normalization</span>
+
+    <span class="n">output</span> <span class="o">=</span>    <span class="p">{</span>
+                    <span class="s1">&#39;targets&#39;</span><span class="p">:</span> <span class="n">target_slopes</span><span class="p">,</span>
+                    <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="n">reference_slopes</span><span class="p">,</span>
+                    <span class="s1">&#39;unocculted&#39;</span><span class="p">:</span> <span class="n">offaxis_slopes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s1">&#39;subtractions&#39;</span><span class="p">:</span> <span class="n">subtraction_stack</span><span class="p">,</span>
+                    <span class="s1">&#39;covariance_matrix&#39;</span><span class="p">:</span> <span class="n">cov_matrix</span><span class="p">,</span>
+                    <span class="s1">&#39;aperture_image&#39;</span><span class="p">:</span> <span class="n">aperture_image</span><span class="p">,</span>
+                    <span class="s1">&#39;aperture_matrix&#39;</span><span class="p">:</span> <span class="n">aperture_matrix</span><span class="p">,</span>
+                    <span class="s1">&#39;noise_map&#39;</span><span class="p">:</span> <span class="n">noise_map</span><span class="p">,</span>
+                    <span class="s1">&#39;convolved_unocculted&#39;</span><span class="p">:</span> <span class="n">convolved_offaxis</span><span class="p">,</span>
+                    <span class="s1">&#39;normalization&#39;</span><span class="p">:</span> <span class="n">normalization</span><span class="p">,</span>
+                    <span class="s1">&#39;contrast&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="s1">&#39;bins&#39;</span><span class="p">:</span> <span class="n">bins</span><span class="p">,</span>
+                                    <span class="s1">&#39;profile&#39;</span><span class="p">:</span> <span class="n">profile</span><span class="p">,</span>
+                                    <span class="s1">&#39;normalized_profile&#39;</span><span class="p">:</span> <span class="n">normalized_profile</span>
+                                <span class="p">}</span>
+                <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
