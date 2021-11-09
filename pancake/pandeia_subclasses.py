@@ -50,7 +50,6 @@ from pandeia.engine.etc3D import CalculationConfig, DetectorSignal
 PandeiaDetectorSignal = DetectorSignal
 
 from .config import EngineConfiguration
-from . import templates
 
 cache_maxsize = 256     # Number of monochromatic PSFs stored in an LRU cache
                         # Should speed up calculations that involve modifying things
