@@ -266,8 +266,8 @@ def create_SGD(ta_error=False, fsm_error='default', stepsize=20.e-3, pattern_nam
         # Use a ta_error from a "saved" list of draws from a 5mas normal distribution (still randomnly generated, but seed is fixed)
         rngx = np.random.RandomState(42)
         rngy = np.random.RandomState(2021)
-        saved_ta_x = rngx.random.normal(loc=0.,scale=5e-3,size=50)
-        saved_ta_y = rngy.random.normal(loc=0.,scale=5e-3,size=50)
+        saved_ta_x = rngx.normal(loc=0.,scale=5e-3,size=50)
+        saved_ta_y = rngy.normal(loc=0.,scale=5e-3,size=50)
         ta_x, ta_y = saved_ta_x[sim_num], saved_ta_y[sim_num]
 
     elif ta_error=='random':
