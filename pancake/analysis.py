@@ -19,7 +19,6 @@ import pyklip.parallelized as parallelized
 import pyklip.rdi as rdi
 import pyklip.fakes as fakes
 
-
 # Getting erros when trying to use multiprocessing with pyKLIP
 # Disable using the below
 parallelized.debug = True
@@ -38,10 +37,10 @@ def enable_runtime_warnings(state):
 	immediately called a few lines above. 
 
 	Parameters
-		state : bool
-			Whether the RuntimeWarning's should be enabled (True), or disabled ( False).
-	Returns:
-		None
+	----------
+	state : bool
+		Whether the RuntimeWarning's should be enabled (True), or disabled ( False).
+
 	""" 
 	if state==True:
 		warnings.simplefilter('always', RuntimeWarning)
@@ -50,28 +49,30 @@ def enable_runtime_warnings(state):
 	else:
 		raise ValueError('Runtime Warnings can only be enabled/disabled with a boolean True/False input.')
 
-#### Impossible to pass the mask argument into pyKLIP, to use with inject_planet() function must use the functools partial function to set the mask variable
 def transmission_corrected(input_stamp, input_dx, input_dy, filt, mask, mode='multiply'):
 	"""
-	Function to apply a 2-dimensional JWST coronagraphic transmission map to an input image.
+	Function to apply a 2-dimensional JWST coronagraphic transmission map to an input image. 
 
 	Parameters
-		input_stamp : 2D ndarray
-			Input image, should have dimensions equal to or smaller than the array for the
-			coronagraphic transmission map.
-		input_dx : 2D ndarray
-			Array of X pixel offsets for each element in the array relative to the central pixel of the simulation. 
-		input_dy : 2D ndarray
-			Array of Y pixel offsets for each element in the array relative to the central pixel of the simulation. 	
-		filt : str
-			JWST filter string, used to obtain offsets for the NIRCam bar masks. 
-		mask : str
-			JWST coronagraphic mask string, used to identify which transmission map to apply.
-		mode : str
-			Whether to 'multiply' or 'divide' the input stamp by the transmission map. 
+	----------
+	input_stamp : 2D ndarray
+		Input image, should have dimensions equal to or smaller than the array 
+		for the coronagraphic transmission map.
+	input_dx : 2D ndarray
+		Array of X pixel offsets for each element in the array relative to the central pixel of the simulation. 
+	input_dy : 2D ndarray
+		Array of Y pixel offsets for each element in the array relative to the central pixel of the simulation. 	
+	filt : str
+		JWST filter string, used to obtain offsets for the NIRCam bar masks. 
+	mask : str
+		JWST coronagraphic mask string, used to identify which transmission map to apply.
+	mode : str
+		Whether to 'multiply' or 'divide' the input stamp by the transmission map.
+
 	Returns
-		output_stamp : 2D ndarray
-			Equivalent to the input_stamp following the application of the transmission map. 
+	-------
+	output_stamp : 2D ndarray
+		Equivalent to the input_stamp following the application of the transmission map. 
 	"""
 	##### Get the x- and y- dimension for the input image
 	input_x, input_y = input_stamp.shape 
@@ -116,19 +117,22 @@ def identify_primary_sources(pancake_results, target, references=None, target_pr
 	Function to identify, or assume, the primary sources (i.e. central 'stars') of output PanCAKE simulation results. 
 
 	Parameters
-		pancake_results : HDUList
-			Simulated results as returned by pancake.sequence.Sequence().run()
-		target : str
-			The provided string name for the target scene in the observation sequence. 
-		references : str / list of strings / NoneType
-			The provided string name(s) for the reference scene(s) in the observations sequence, if any.
-		target_primary_source : str
-			Desired primary source to use for the target scene, or 'default' to assume primary source. 
-		reference_primary_sources : str / list of strings
-			Desired primary source(s) to use for the reference scene(s), or 'default' to assume primary source(s).
+	----------
+	pancake_results : HDUList
+		Simulated results as returned by pancake.sequence.Sequence().run()
+	target : str
+		The provided string name for the target scene in the observation sequence. 
+	references : str / list of strings / NoneType
+		The provided string name(s) for the reference scene(s) in the observations sequence, if any.
+	target_primary_source : str
+		Desired primary source to use for the target scene, or 'default' to assume primary source. 
+	reference_primary_sources : str / list of strings
+		Desired primary source(s) to use for the reference scene(s), or 'default' to assume primary source(s).
+	
 	Returns
-		primary_sources : list of strings
-			List of the primary source(s), where the source in the '0' index always corresponds to the target scene. 
+	-------
+	primary_sources : list of strings
+		List of the primary source(s), where the source in the '0' index always corresponds to the target scene. 
 
 	"""
 	#Get all of the observations names for this simulation
@@ -183,25 +187,28 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 	Function to extract a subset of simulated images from the output of a PanCAKE simulation into a more flexible format. 
 	
 	Parameters
-		pancake_results : HDUList
-			Simulated results as returned by pancake.sequence.Sequence().run()
-		observations : list of strings
-			List of observation strings that correspond to extension names in the pancake_results HDUList
-		primary_sources : list of strings
-			List of the primary source(s) as obtained by identify_primary_sources
-		all_rolls : list of ints / floats
-			Which PA roll images to be extracted
-		references : str / list of strings / NoneType
-			The provided string name(s) for the reference scene(s) in the observations sequence, if any. Can
-			not be used in conjunction with retrieving simulated target images. 
-		extract_offaxis : bool
-			Boolean choice of whether to extract offaxis images or not
-		filename_prefix : str
-			Simple prefix string used to assign a unique name to each simulated image.
+	----------
+	pancake_results : HDUList
+		Simulated results as returned by pancake.sequence.Sequence().run()
+	observations : list of strings
+		List of observation strings that correspond to extension names in the pancake_results HDUList
+	primary_sources : list of strings
+		List of the primary source(s) as obtained by identify_primary_sources
+	all_rolls : list of ints / floats
+		Which PA roll images to be extracted
+	references : str / list of strings / NoneType
+		The provided string name(s) for the reference scene(s) in the observations sequence, if any. Can
+		not be used in conjunction with retrieving simulated target images. 
+	extract_offaxis : bool
+		Boolean choice of whether to extract offaxis images or not
+	filename_prefix : str
+		Simple prefix string used to assign a unique name to each simulated image.
+	
 	Returns
-		extracted : dict
-			Dictionary containing all requested images, their roll angles, center points, assigned filenames, and
-			if requested, a 20x20 pixel offaxis PSF stamp image and its peak flux.  
+	-------
+	extracted : dict
+		Dictionary containing all requested images, their roll angles, center points, assigned filenames, and
+		if requested, a 20x20 pixel offaxis PSF stamp image and its peak flux.  
 	"""
 
 	##### Create placeholder variables to append to / adjust later. 
@@ -289,32 +296,35 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 	and contrast curve estimation. 
 
 	Parameters
-		pancake_results : HDUList
-			Simulated results as returned by pancake.sequence.Sequence().run()
-		target : string
-			The provided string name for the target scene in the observation sequence
-		target_obs : list of stings
-			List of target observation strings that correspond to extension names in the pancake_results HDUList
-		filt : string
-			JWST filter string
-		mask : string
-			JWST coronagraphic mask string
-		primary_sources : list of strings
-			List of the primary source(s) as obtained by identify_primary_sources
-		references : list of strings
-			The provided string name(s) for the reference scene(s) in the observations sequence, if any.
-		reference_obs : list of strings
-			List of target observation strings that correspond to extension names in the pancake_results HDUList, if any. 
-		target_rolls : list of ints / floats
-			Which target PA roll images to use. Alternatively, 'default' to use all of them for ADI modes, or roll=0 for RDI. 
-		reference_rolls : list of ints / floats
-			Which reference PA roll images to use. Alternatively, 'default' to use all of them for ADI modes, or roll=0 for RDI. 
-		subtraction : str
-			pyKLIP compatible subtraction string, available options are 'ADI', 'RDI', or 'ADI+RDI'
+	----------
+	pancake_results : HDUList
+		Simulated results as returned by pancake.sequence.Sequence().run()
+	target : string
+		The provided string name for the target scene in the observation sequence
+	target_obs : list of stings
+		List of target observation strings that correspond to extension names in the pancake_results HDUList
+	filt : string
+		JWST filter string
+	mask : string
+		JWST coronagraphic mask string
+	primary_sources : list of strings
+		List of the primary source(s) as obtained by identify_primary_sources
+	references : list of strings
+		The provided string name(s) for the reference scene(s) in the observations sequence, if any.
+	reference_obs : list of strings
+		List of target observation strings that correspond to extension names in the pancake_results HDUList, if any. 
+	target_rolls : list of ints / floats
+		Which target PA roll images to use. Alternatively, 'default' to use all of them for ADI modes, or roll=0 for RDI. 
+	reference_rolls : list of ints / floats
+		Which reference PA roll images to use. Alternatively, 'default' to use all of them for ADI modes, or roll=0 for RDI. 
+	subtraction : str
+		pyKLIP compatible subtraction string, available options are 'ADI', 'RDI', or 'ADI+RDI'
+
 	Returns
-		processed_output : dict
-			Dictionary output containing pyKLIP datasets for the target and PSF library (if necessary), in addition
-			to some information on the offaxis simulation for normalisation / planet injection purposes. 
+	-------
+	processed_output : dict
+		Dictionary output containing pyKLIP datasets for the target and PSF library (if necessary), in addition
+		to some information on the offaxis simulation for normalisation / planet injection purposes. 
 	"""
 	###### Get all of the observations names for this simulation
 	obs_names = [pancake_results[i].header['EXTNAME'] for i in range(1,len(pancake_results))]
@@ -433,15 +443,18 @@ def mask_companions(image_array, companion_xy, mask_radius=7):
 	Function apply NaN masks to a number of images at the location of known companion objects. 
 
 	Parameters
-		image_array : 3D ndarray
-			Numpy array of input images
-		companion_xy : iterator of tuples
-			zip() tuples, with each containing the companion x and y *pixel* locations.
-		mask_radius : float
-			The desired mask radius in pixels. 
+	----------
+	image_array : 3D ndarray
+		Numpy array of input images
+	companion_xy : iterator of tuples
+		zip() tuples, with each containing the companion x and y *pixel* locations.
+	mask_radius : float
+		The desired mask radius in pixels. 
+	
 	Returns
-		masked_images : 3D ndarray
-			Numpy array of output, companion masked images. 
+	-------
+	masked_images : 3D ndarray
+		Numpy array of output, companion masked images. 
 	'''
 	# Create an array to allocate the output images to. 	
 	masked_images = np.empty_like(image_array)
@@ -461,11 +474,53 @@ def mask_companions(image_array, companion_xy, mask_radius=7):
 
 def get_companion_mask(companion_xy, mask_dataset, mask_psflib, offaxis_psf_stamp, center=[0,0], filt='f444w', mask='mask335r', annuli=1, subsections=1, numbasis=25, movement=1, subtraction='ADI', outputdir='./RESULTS/'):
 	'''
-	Function to create a mask that can be applied to an image in order to "block" any pixels that correspond to the emitted flux of a companion object. 
-	In essence, the function uses an offaxis PSF to inject companions into the image, on top of where they already exist, except at a *very* high flux. 
-	This image can then be processed via KLIP to identify the pixels in the resultant subtracted image which are most impacted by the presence of 
-	the companion object, and assign them to be masked. This offers significant improvements over a simplistic circular mask due to the lobes of the 
-	JWST PSF, particularly for the NIRCam filters. Main current drawback is it only masks excess flux from companions, and misses ADI oversubtractions.  
+	Function to create a mask that can be applied to an image in order to "block" any pixels 
+	that correspond to the emitted flux of a companion object. 
+
+	In essence, the function uses an offaxis PSF to inject companions into the image, 
+	on top of where they already exist, except at a *very* high flux. 
+	
+	This image can then be processed via KLIP to identify the pixels in the resultant subtracted image 
+	which are most impacted by the presence of the companion object, and assign them to be masked. 
+	This offers significant improvements over a simplistic circular mask due to the lobes of the 
+	JWST PSF, particularly for the NIRCam filters, whilst still being relatively quick to compute. 
+
+	Parameters
+	----------
+	companion_xy : iterator of tuples
+		zip() tuples, with each containing any companion x and y *pixel* locations.
+	mask_dataset : 	pyKLIP Dataset	
+		Dataset to use to estimate the a companion mask
+	mask_psflib : pyKLIP PSFLibrary
+		Dataset to use for RDI subtractions
+	offaxis_psf_stamp : 2D ndarray
+		Stamp image of an offaxis (i.e. not underneath the coronagraph) PSF
+	center : list
+		List of x and y centers
+	filt : str
+		JWST filter string
+	mask : str
+		JWST coronagraphic mask string
+	annuli : int
+		pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel 
+		boundaries (a <= r < b) for each annulus
+	subsections : int 
+		pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) 
+		specifying the positon angle boundaries (a <= PA < b) for each section [radians]
+	numbasis : int
+		number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be 
+		used is automatically picked based on the eigenvalues.
+	movement : int
+		pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF
+	subtraction : str
+		pyKLIP compatible subtraction string, available options are 'ADI', 'RDI', or 'ADI+RDI' 
+	outputdir : str
+		Directory to output pyKLIP generated results to.
+
+	Results
+	-------
+	comp_mask : 2D ndarray
+		True/False array of pixels to mask to exclude companion
 
 	'''
 	# Create our arrays of planets to inject into the input dataset, note the flux is scaled up by a factor of 10^12
@@ -503,103 +558,127 @@ def get_companion_mask(companion_xy, mask_dataset, mask_psflib, offaxis_psf_stam
 
 
 def meas_contrast_basic(dat, iwa, owa, resolution, center=None, low_pass_filter=True):
-    """
-	Duplicate of the meas_contrast funciton within pyKLIP, except calculating a 
-	standard 5 sigma limit instead of small sample statistics corrections. 
+	"""
+	Duplicate of the meas_contrast() function within pyKLIP, except calculating a 
+	standard 5 sigma limit instead of small sample statistics corrections.
 
-    """
+	Parameters
+	----------
+	dat : 2D ndarray
+		2D image - already flux calibrated
+	iwa : float 
+		inner working angle
+	owa : float
+		outer working angle
+	resolution : float
+		size of noise resolution element in pixels (for speckle noise ~ FWHM or lambda/D)
+		but it can be 1 pixel if limited by pixel-to-pixel noise. 
+	center : list
+		location of star (x,y). If None, defaults the image size // 2.
+	low_pass_filter: bool/float
+		if True, run a low pass filter. Can also be a float which specifices the 
+		width of the Gaussian filter (sigma). If False, no Gaussian filter is run
 
-    if center is None:
-        starx = dat.shape[1]//2
-        stary = dat.shape[0]//2
-    else:
-        starx, stary = center
+	Returns
+	-------
+		(seps, contrast): tuple 
+			separations in pixels and corresponding 5 sigma FPF
 
-    # figure out how finely to sample the radial profile
-    dr = resolution/2.0
-    numseps = int((owa-iwa)/dr)
-    # don't want to start right at the edge of the occulting mask
-    # but also want to well sample the contrast curve so go at twice the resolution
-    seps = np.arange(numseps) * dr + iwa + resolution/2.0
-    dsep = resolution
-    # find equivalent Gaussian PSF for this resolution
+	"""
+
+	if center is None:
+		starx = dat.shape[1]//2
+		stary = dat.shape[0]//2
+	else:
+		starx, stary = center
+
+	# figure out how finely to sample the radial profile
+	dr = resolution/2.0
+	numseps = int((owa-iwa)/dr)
+	# don't want to start right at the edge of the occulting mask
+	# but also want to well sample the contrast curve so go at twice the resolution
+	seps = np.arange(numseps) * dr + iwa + resolution/2.0
+	dsep = resolution
+	# find equivalent Gaussian PSF for this resolution
 
 
-    # run a low pass filter on the data, check if input is boolean or a number
-    if not isinstance(low_pass_filter, bool):
-        # manually passed in low pass filter size
-        sigma = low_pass_filter
-        filtered = pyklip.klip.nan_gaussian_filter(dat, sigma)
-    elif low_pass_filter:
-        # set low pass filter size to be same as resolution element
-        sigma = dsep / 2.355  # assume resolution element size corresponds to FWHM
-        filtered = pyklip.klip. nan_gaussian_filter(dat, sigma)
-    else:
-        # no filtering
-        filtered = dat
+	# run a low pass filter on the data, check if input is boolean or a number
+	if not isinstance(low_pass_filter, bool):
+		# manually passed in low pass filter size
+		sigma = low_pass_filter
+		filtered = pyklip.klip.nan_gaussian_filter(dat, sigma)
+	elif low_pass_filter:
+		# set low pass filter size to be same as resolution element
+		sigma = dsep / 2.355  # assume resolution element size corresponds to FWHM
+		filtered = pyklip.klip. nan_gaussian_filter(dat, sigma)
+	else:
+		# no filtering
+		filtered = dat
 
-    contrast = []
-    # create a coordinate grid
-    x,y = np.meshgrid(np.arange(float(dat.shape[1])), np.arange(float(dat.shape[0])))
-    r = np.sqrt((x-starx)**2 + (y-stary)**2)
-    theta = np.arctan2(y-stary, x-starx) % 2*np.pi
-    for sep in seps:
-        # calculate noise in an annulus with width of the resolution element
-        annulus = np.where((r < sep + resolution/2) & (r > sep - resolution/2))
-        noise_mean = np.nanmean(filtered[annulus])
-        noise_std = 5*np.nanstd(filtered[annulus], ddof=1)
+	contrast = []
+	# create a coordinate grid
+	x,y = np.meshgrid(np.arange(float(dat.shape[1])), np.arange(float(dat.shape[0])))
+	r = np.sqrt((x-starx)**2 + (y-stary)**2)
+	theta = np.arctan2(y-stary, x-starx) % 2*np.pi
+	for sep in seps:
+		# calculate noise in an annulus with width of the resolution element
+		annulus = np.where((r < sep + resolution/2) & (r > sep - resolution/2))
+		noise_mean = np.nanmean(filtered[annulus])
+		noise_std = 5*np.nanstd(filtered[annulus], ddof=1)
 
-    return seps, np.array(noise_std)
+	return seps, np.array(noise_std)
 
 def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis_flux, raw_input_dataset, raw_input_psflib, primary_vegamag=0, pixel_scale=0.063, annuli=1, subsections=1, numbasis=25, movement=1, subtraction='ADI', companion_xy=None, verbose=True, outputdir='./RESULTS/', plot_klip_throughput=False):
 	"""
-	Function to compute contrast curves from a pyKLIP subtracted image file. Contrast curves will be corrected for both the coronagraphic and KLIP throughput, 
-	in addition to being converted to relative, and absolute magnitude sensitivity limits. 
+	Function to compute contrast curves from a pyKLIP subtracted image file. Contrast curves will be corrected for both the coronagraphic and KLIP throughput, in addition to being converted to relative, and absolute magnitude sensitivity limits. 
 
 	Parameters
-		subtracted_hdu_file : str
-			Filename for a subtracted image file as produced by pyklip.parallelized.klip_dataset()
-		filt : str
-			JWST filter string
-		mask : str
-			JWST coronagraphic mask string
-		offaxis_psf_stamp : 2D ndarray
-			Stamp image of an offaxis (i.e. not underneath the coronagraph) PSF
-		offaxis_flux : float
-			Peak flux of the offaxis PSF
-		raw_input_dataset : pyKLIP Dataset
-			The input target dataset that was used to generate the subtracted_hdu_file. Used many times over for planet injection. 
-		raw_input_psflib : pyKLIP PSFLibrary
-			The input PSF library dataset that was used to generate the subtracted_hdu_file, if any. Used many times over for planet injection. 
-		primary_vegamag : float
-			Vega magnitude of the primary source of the target scene in the specified filter.
-		pixel_scale : float
-			Pixel scale for this observation. 
-		annuli : int
-			pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel 
-			boundaries (a <= r < b) for each annulus
-		subsections : int 
-			pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) 
-			specifying the positon angle boundaries (a <= PA < b) for each section [radians]
-		numbasis : int
-			number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be 
-			used is automatically picked based on the eigenvalues.
-		movement : int
-			pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF
-		subtraction : str
-			pyKLIP compatible subtraction string, available options are 'ADI', 'RDI', or 'ADI+RDI' 
-		companion_xy : iterator of tuples
-			zip() tuples, with each containing any companion x and y *pixel* locations.
-		verbose : bool
-			Optional argument to turn on (True) or off (False) printed terminal updates. 
-		outputdir : str
-			Directory to save any temporary or results files. 
-		plot_klip_throughput : bool
-			Optional argument to plot (True) the calculated KLIP throughput for each image. Primarily for debugging.  
-	Returns 
-		all_contrasts : dict
-			Dictionary output of the contrast, relative magnitude sensitivity, absolute magnitude sensitivity and separation. Alternative
-			formats of the separation, the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided. 
+	----------
+	subtracted_hdu_file : str
+		Filename for a subtracted image file as produced by pyklip.parallelized.klip_dataset()
+	filt : str
+		JWST filter string
+	mask : str
+		JWST coronagraphic mask string
+	offaxis_psf_stamp : 2D ndarray
+		Stamp image of an offaxis (i.e. not underneath the coronagraph) PSF
+	offaxis_flux : float
+		Peak flux of the offaxis PSF
+	raw_input_dataset : pyKLIP Dataset
+		The input target dataset that was used to generate the subtracted_hdu_file. Used many times over for planet injection. 
+	raw_input_psflib : pyKLIP PSFLibrary
+		The input PSF library dataset that was used to generate the subtracted_hdu_file, if any. Used many times over for planet injection. 
+	primary_vegamag : float
+		Vega magnitude of the primary source of the target scene in the specified filter.
+	pixel_scale : float
+		Pixel scale for this observation. 
+	annuli : int
+		pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel 
+		boundaries (a <= r < b) for each annulus
+	subsections : int 
+		pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) 
+		specifying the positon angle boundaries (a <= PA < b) for each section [radians]
+	numbasis : int
+		number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be 
+		used is automatically picked based on the eigenvalues.
+	movement : int
+		pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF
+	subtraction : str
+		pyKLIP compatible subtraction string, available options are 'ADI', 'RDI', or 'ADI+RDI' 
+	companion_xy : iterator of tuples
+		zip() tuples, with each containing any companion x and y *pixel* locations.
+	verbose : bool
+		Optional argument to turn on (True) or off (False) printed terminal updates. 
+	outputdir : str
+		Directory to save any temporary or results files. 
+	plot_klip_throughput : bool
+		Optional argument to plot (True) the calculated KLIP throughput for each image. Primarily for debugging.  
+	
+	Returns
+	------- 
+	all_contrasts : dict
+		Dictionary output of the contrast, relative magnitude sensitivity, absolute magnitude sensitivity and separation. Alternative
+		formats of the separation, the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided. 
 	"""
 
 	##### First thing we need to do is open the file with the subtracted images. 
@@ -811,6 +890,21 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 	return all_contrasts
 
 def get_source_properties(template_obs, primary_source):
+	'''
+	Small function to grab a variety of source properties for a template observation HDUList
+
+	Parameters
+	----------
+	template_obs : HDUList
+		FITS data for a template observation file
+	primary_source : str
+		String descriptor of the primary source in the observation.
+	Returns
+	-------
+	source_props : dict
+		Dictionary of source properties as extracted from the input template_obs file. 
+
+	'''	
 	header = template_obs.header
 	pixel_scale = header['PIXSCALE']
 	num_sources = header['NSOURCES']
@@ -844,6 +938,27 @@ def get_source_properties(template_obs, primary_source):
 	return source_props
 
 def companion_snrs(subtracted_hdu_file, filt, mask, companion_xy, mask_radius=7):
+	'''
+	Function to, perhaps crudely, estimate the SNR of a planet in a pyKLIP subtracted image. 
+
+	Parameters
+	----------
+	subtracted_hdu_file : str
+		Filepath for the subtracted image.
+	filt : str
+		JWST filter string
+	mask : str
+		JWST coronagraphic mask string
+	companion_xy : iterator of tuples
+		zip() tuples, with each containing the companion x and y *pixel* locations.
+
+	Returns
+	-------
+	companion_snrs : list
+		List of companion SNR's corresponding the order provided in companion_xy
+
+	'''
+
 	# Read in the file
 	with fits.open(subtracted_hdu_file) as hdulist:
 		subtracted_hdu = hdulist[0]
@@ -906,6 +1021,67 @@ def companion_snrs(subtracted_hdu_file, filt, mask, companion_xy, mask_radius=7)
 	return companion_snrs
 
 def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, save_contrasts=True):
+	'''
+	Overarching function to compute contrast curves from output PanCAKE results. 
+
+	Parameters
+	----------
+	pancake_results : HDUList
+		Simulated results as returned by pancake.sequence.Sequence().run()
+	target : str
+		The provided string name for the target scene in the observation sequence. 
+	references : str / list of strings / NoneType
+		The provided string name(s) for the reference scene(s) in the observations sequence, if any.
+	subtraction : str
+		pyKLIP compatible subtraction string, available options are 'ADI', 'RDI', or 'ADI+RDI'
+	filters : str
+		JWST filter string, or 'all' to use all available filters. 
+	masks : str
+		JWST mask string, or 'all' to use all available masks
+	target_rolls : list of ints / floats
+		Which target PA roll images to use. Alternatively, 'default' to use all of them for ADI modes, or roll=0 for RDI. 
+	target_primary_source : str
+		Desired primary source to use for the target scene, or 'default' to assume primary source. 
+	reference_primary_sources : str / list of strings
+		Desired primary source(s) to use for the reference scene(s), or 'default' to assume primary source(s).
+	reference_rolls : list of ints / floats
+		Which reference PA roll images to use. Alternatively, 'default' to use all of them for ADI modes, or roll=0 for RDI. 
+	klip_annuli : int
+		pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel 
+		boundaries (a <= r < b) for each annulus
+	klip_subsections : int 
+		pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) 
+		specifying the positon angle boundaries (a <= PA < b) for each section [radians]
+	klip_numbasis : int
+		number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be 
+		used is automatically picked based on the eigenvalues.
+	klip_movement : int
+		pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF
+	get_companions_snrs : bool
+		True to calculate SNR's of any companions in subtracted images, False to not. 
+	clean_saved_files : bool
+		True to delete any subtracted files generated by pyKLIP
+	outputdir : str
+		Output directory to save subtracted files to.
+	save_prefix : str
+		Prefix of filenames to be saved, 'default is 
+		"{}-{}-{}-{}-nb{}a{}s{}m{}".format(target, filt, mask, subtraction, klip_nb_str, klip_annuli, klip_subsections, klip_movement)
+	verbose : bool
+		Toggle for printing various messages throughout the computation
+	plot_contrast : bool
+		Toggle for plotting of contrast curves
+	plot_klip_throughput : bool
+		Toggle for plotting of calculated klip_throughout, may interrupt code execution
+	save_contrasts : bool
+		Toggle for saving computed contrasts to a file. 
+
+	Returns
+	-------
+	contrast_curve_dict : dict
+		Dictionary output of all requested contrasts, relative magnitude sensitivities, 
+		absolute magnitude sensitivities and separations. Alternative formats of the separation, 
+		the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided.
+	'''
 
 	###### Perform some input checks on the user provided parameters
 	# Check requested subtraction is valid
