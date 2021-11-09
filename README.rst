@@ -1,5 +1,5 @@
 PanCAKE
 =======
 
-`Documentation Here! <https://github.io/AarynnCarter/PanCAKE>`_
+`Documentation Here! <https://aarynncarter.github.io/PanCAKE>`_
 
