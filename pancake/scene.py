@@ -12,11 +12,12 @@ from .engine import perform_calculation
 from .utilities import query_simbad, convert_spt_to_pandeia, user_spectrum, pandeia_spectrum, normalise_spectrum, compute_magnitude
 from pandeia.engine.calc_utils import build_default_calc
 
-'''
-Scene class to mirror the construction of a typical Pandeia 'Scene', reinventing the wheel a little bit, but means that
-users don't need to import pandeia in their main code and that aspects of data input can be streamlined. 
-'''
+
 class Scene():
+    '''
+    Scene class to mirror the construction of a typical Pandeia 'Scene', reinventing the wheel a little bit, but means that
+    users don't need to import pandeia in their main code and that aspects of data input can be streamlined. 
+    '''
     __NEXT_ID = 1
     def __init__(self, name=None, **kwargs):
         #Load a default pandeia scene to assign properties to. NIRCam/Coroangraphy doesn't matter here, just need an empty scene dict
