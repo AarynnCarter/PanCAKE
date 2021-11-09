@@ -20,13 +20,11 @@ Please note this an early release version of the code, so these webpages are sti
    :caption: Contents:
 
    Installation <install>
-
-   Basic Tutorial <basic_tutorial>
-
+   Basic Tutorial </notebooks/pancake_basic_tutorial.ipynb>
    Astrophysical Scene Constuction <scene>
    Observational Sequence Constuction <sequence>
    Simulation Execution <simulation>
-   Postprocessing <postprocessing>
+   Postprocessing <postprocessing> 
 
    API <api>
 

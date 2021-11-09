@@ -1,0 +1,239 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "e8f68c28",
+   "metadata": {},
+   "source": [
+    "# Basic Tutorial\n",
+    "\n",
+    "All simulations with the PanCAKE package are performed through four primary stages: Astrophysical Scene Construction, Observational Sequence Construction, Simulation Execution, and Postprocessing. In this tutorial we will cover a basic implementation of each of these stages. For more advanced use cases, please refer to the relevant tabs in the contents (coming soon).\n",
+    "\n",
+    "To begin, like all other Python packages, we must import PanCAKE:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e3dd1118",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pancake"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ec1c0f0c",
+   "metadata": {},
+   "source": [
+    "### Define Scenes\n",
+    "\n",
+    "From here we have full access to PanCAKE’s functionality, and can begin by performing the Astrophysical Scene Constuction. In this case, we would like two separate scenes of a ‘Target’ scene (HIP 65426) and a ‘Reference’ scene (HIP 68245):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "1399fd45",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Target // Adding Source: HIP 65426\n",
+      "WARNING: Couldn't determine magnitude system, assuming Vega magnitudes.\n",
+      "WARNING: Spectral type 'a2v' not compatible with Pandeia grid, using spectral type 'a1v' instead.\n",
+      "Reference // Adding Source: HIP 68245\n",
+      "WARNING: Couldn't determine magnitude system, assuming Vega magnitudes.\n",
+      "WARNING: Spectral type 'b2iv' not compatible with Pandeia grid, using spectral type 'b1v' instead.\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Define the target scene\n",
+    "target = pancake.scene.Scene('Target')\n",
+    "target.add_source('HIP 65426', kind='simbad')\n",
+    "\n",
+    "# Define the reference scene\n",
+    "reference = pancake.scene.Scene('Reference')\n",
+    "reference.add_source('HIP 68245', kind='simbad')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7cb5a5bf",
+   "metadata": {},
+   "source": [
+    "Here we have simply initialised both scenes, provided a descriptive name for each, and then added sources to these scenes using [SIMBAD](http://simbad.u-strasbg.fr/simbad/) queries based on their names. In this case, no other user information is required. Alternative methods of adding sources to scenes, such as an input file, are described in the Astrophysical Scene Construction tab.\n",
+    "\n",
+    "### Define Sequence\n",
+    "\n",
+    "With all the necessary scenes defined, we can move on to the Observational Sequence Construction. To do this we simply initialise a sequence, and then add observations of our scenes in the chronological order in which we would like them to occur. In this case, we will be performing an observation in the NIRCam F444W and MIRI F1550C filters for both the Target and Reference scenes:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "e24188ca",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Optimising Readout // Target // Exposure: F444W, 3600 seconds\n",
+      "--> Pattern: DEEP8, Number of Groups: 20, Number of Integrations: 9 = 3743s\n",
+      "Optimising Readout // Target // Exposure: F1550C, 3600 seconds\n",
+      "--> Pattern: FAST, Number of Groups: 1251, Number of Integrations: 12 = 3598s\n",
+      "Optimising Readout // Reference // Exposure: F444W, 3600 seconds\n",
+      "--> Scaling provided exposure times by relative flux of: \"Target\"\n",
+      "--> Pattern: DEEP8, Number of Groups: 8, Number of Integrations: 3 = 478s\n",
+      "Optimising Readout // Reference // Exposure: F1550C, 3600 seconds\n",
+      "--> Scaling provided exposure times by relative flux of: \"Target\"\n",
+      "--> Pattern: FAST, Number of Groups: 1119, Number of Integrations: 2 = 536s\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Initialise an observational sequence\n",
+    "seq = pancake.sequence.Sequence()\n",
+    "\n",
+    "# Add target and reference observations\n",
+    "seq.add_observation(target, exposures=[('F444W', 'optimise', 3600), ('F1550C', 'optimise', 3600)], nircam_mask='MASK335R', rolls=[0,14])\n",
+    "seq.add_observation(reference, exposures=[('F444W', 'optimise', 3600), ('F1550C', 'optimise', 3600)], scale_exposures=target, nircam_mask='MASK335R', nircam_sgd='9-POINT-CIRCLE', miri_sgd='9-POINT-SMALL-GRID')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7601e182",
+   "metadata": {},
+   "source": [
+    "Here the exposures have been defined using an ‘optimise’ string, followed by the duration of the observation in seconds. In such a case, PanCAKE will attempt to compute ‘optimal’ readout parameters for this observation, report these back to the user, and use these for future simulations. We have also scaled the reference exposures relative to the target to account for the flux difference between the two stars. Note that the instrument does not need to be provided, as this can be identified by the input filter. Defining exposures using precise readout parameters is also possible, and follows the construction (FILTER, PATTERN, NGROUP, NINT).\n",
+    "\n",
+    "For all NIRCam simulations the desired coronagraphic mask must be specified, whereas for MIRI these are tied to the chosen filter, and do not need to be specified. For the target, multiple roll angles have been defined to allow for ADI PSF subtraction, and for the reference small-grid dither patterns have been specified to allow for RDI PSF subtraction.\n",
+    "\n",
+    "At this stage it is important to note that (aside from computational restrictions) there is no limit to the number of scenes, or number of observations, that can be included within a given sequence. \n",
+    "\n",
+    "### Perform Simulations\n",
+    "\n",
+    "With the sequence fully defined, all relevant simulations can be performed with a single line of code:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "fda608e7",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Running Simulations...\n",
+      "--> Observation 1/6 // Target_F444W\n",
+      "--> Observation 2/6 // Target_F444W\n",
+      "--> Observation 3/6 // Target_F1550C\n",
+      "--> Observation 4/6 // Target_F1550C\n",
+      "--> Observation 5/6 // Reference_F444W\n",
+      "----> Small Grid Dither 1/9\n",
+      "----> Small Grid Dither 2/9\n",
+      "----> Small Grid Dither 3/9\n",
+      "----> Small Grid Dither 4/9\n",
+      "----> Small Grid Dither 5/9\n",
+      "----> Small Grid Dither 6/9\n",
+      "----> Small Grid Dither 7/9\n",
+      "----> Small Grid Dither 8/9\n",
+      "----> Small Grid Dither 9/9\n",
+      "--> Observation 6/6 // Reference_F1550C\n",
+      "----> Small Grid Dither 1/9\n",
+      "----> Small Grid Dither 2/9\n",
+      "----> Small Grid Dither 3/9\n",
+      "----> Small Grid Dither 4/9\n",
+      "----> Small Grid Dither 5/9\n",
+      "----> Small Grid Dither 6/9\n",
+      "----> Small Grid Dither 7/9\n",
+      "----> Small Grid Dither 8/9\n",
+      "----> Small Grid Dither 9/9\n"
+     ]
+    }
+   ],
+   "source": [
+    "results = seq.run(save_file='./simulations.fits')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "00458572",
+   "metadata": {},
+   "source": [
+    "In this case, we are performing the most basic simulation possible, with no wavefront evolution, or on-the-fly PSF calculation. We have also specified a file to save the simulations to as they are performed, examples are shown below. Further description of advanced simulation capabilities and considerations is provided in the Simulation Execution tab.\n",
+    "\n",
+    "![raw](PLOTS/raw_images_website.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cb053c26",
+   "metadata": {},
+   "source": [
+    "### Perform Post-Processing\n",
+    "\n",
+    "Finally, with the simulations completed, we can perform postprocessing within PanCAKE and compute contrast curves based on different PSF subtraction strategies:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "41fbdb98",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pancake.analysis.contrast_curve(results, target='Target', references='Reference', subtraction='ADI')\n",
+    "pancake.analysis.contrast_curve(results, target='Target', references='Reference', subtraction='RDI')\n",
+    "pancake.analysis.contrast_curve(results, target='Target', references='Reference', subtraction='ADI+RDI')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d5197243",
+   "metadata": {},
+   "source": [
+    "This PSF subtraction process utilises [pyKLIP](https://pyklip.readthedocs.io/en/latest/) to perform all the heavy lifting. Specificity in how the KLIP algorithm is implemented can also be provided, and is described in more detail in the Postprocessing tab. This process will also save the PSF subtracted images and contrast curves for further inspection, formatted examples shown below.\n",
+    "\n",
+    "![sub](PLOTS/sub_images_website.png)\n",
+    "![contrast](PLOTS/contrast_curves_website.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c18f9a54",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python [conda env:pcake] *",
+   "language": "python",
+   "name": "conda-env-pcake-py"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

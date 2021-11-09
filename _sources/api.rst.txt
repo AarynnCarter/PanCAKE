@@ -1,5 +1,5 @@
 PanCAKE package
-==============
+===============
 
 Module contents
 ---------------
@@ -26,7 +26,7 @@ pancake.config module
     :show-inheritance:
 
 pancake.engine module
---------------------
+---------------------
 
 .. automodule:: pancake.engine
     :members:
