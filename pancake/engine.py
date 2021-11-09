@@ -43,9 +43,7 @@ except ImportError:
 
 from .pandeia_subclasses import CoronagraphyPSFLibrary, CoronagraphyConvolvedSceneCube, CoronagraphyDetectorSignal
 from .config import EngineConfiguration
-from . import templates
 from . import analysis
-# from .templates import templates
 
 # Initialize the engine options
 options = EngineConfiguration()
