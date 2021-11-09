@@ -55,24 +55,24 @@ def transmission_corrected(input_stamp, input_dx, input_dy, filt, mask, mode='mu
 
 	Parameters
 	----------
-	input_stamp : 2D ndarray
-		Input image, should have dimensions equal to or smaller than the array 
-		for the coronagraphic transmission map.
-	input_dx : 2D ndarray
-		Array of X pixel offsets for each element in the array relative to the central pixel of the simulation. 
-	input_dy : 2D ndarray
-		Array of Y pixel offsets for each element in the array relative to the central pixel of the simulation. 	
-	filt : str
-		JWST filter string, used to obtain offsets for the NIRCam bar masks. 
-	mask : str
-		JWST coronagraphic mask string, used to identify which transmission map to apply.
-	mode : str
-		Whether to 'multiply' or 'divide' the input stamp by the transmission map.
+		input_stamp : 2D ndarray
+			Input image, should have dimensions equal to or smaller than the array 
+			for the coronagraphic transmission map.
+		input_dx : 2D ndarray
+			Array of X pixel offsets for each element in the array relative to the central pixel of the simulation. 
+		input_dy : 2D ndarray
+			Array of Y pixel offsets for each element in the array relative to the central pixel of the simulation. 	
+		filt : str
+			JWST filter string, used to obtain offsets for the NIRCam bar masks. 
+		mask : str
+			JWST coronagraphic mask string, used to identify which transmission map to apply.
+		mode : str
+			Whether to 'multiply' or 'divide' the input stamp by the transmission map.
 
 	Returns
 	-------
-	output_stamp : 2D ndarray
-		Equivalent to the input_stamp following the application of the transmission map. 
+		output_stamp : 2D ndarray
+			Equivalent to the input_stamp following the application of the transmission map. 
 	"""
 	##### Get the x- and y- dimension for the input image
 	input_x, input_y = input_stamp.shape 
