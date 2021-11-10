@@ -1,3 +1,13 @@
+"""
+The vast majority of functions in this submodule are obsolete owing to
+generalisation of PanCAKE simulations into Scenes and a Sequence, alongside
+the incorporation of pyKLIP postprocessing (Nov 2021).Nevertheless, for now 
+I am leaving things as they are to maintain some level of backwards compatability. 
+
+Functions that are not used in the current version are marked as 'Deprecated'
+and may not have particularly detailed docstrings. 
+"""
+
 from __future__ import absolute_import
 
 from copy import deepcopy
@@ -52,15 +62,6 @@ cache_maxsize = 256     # Number of monochromatic PSFs stored in an LRU cache
                         # like exposure time and don't actually require calculating new PSFs.
 
 
-"""
-The vast majority of functions in this submodule are obsolete owing to
-generalisation of PanCAKE simulations into Scenes and a Sequence, alongside
-the incorporation of pyKLIP postprocessing (Nov 2021).Nevertheless, for now 
-I am leaving things as they are to maintain some level of backwards compatability. 
-
-Functions that are not used in the current version are marked as 'Deprecated'
-and may not have particularly detailed docstrings. 
-"""
 def load_calculation(filename):
     """
     Deprecated
