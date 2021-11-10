@@ -517,7 +517,7 @@ def get_companion_mask(companion_xy, mask_dataset, mask_psflib, offaxis_psf_stam
 	outputdir : str
 		Directory to output pyKLIP generated results to.
 
-	Results
+	Returns
 	-------
 	comp_mask : 2D ndarray
 		True/False array of pixels to mask to exclude companion

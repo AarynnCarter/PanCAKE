@@ -8,7 +8,6 @@ import matplotlib.ticker as tck
 from astropy.io import fits
 
 from .transformations import polar_to_cart, cart_to_polar, rotate
-from .engine import perform_calculation
 from .utilities import query_simbad, convert_spt_to_pandeia, user_spectrum, pandeia_spectrum, normalise_spectrum, compute_magnitude
 from pandeia.engine.calc_utils import build_default_calc
 

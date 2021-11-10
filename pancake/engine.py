@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-# Just build an actual subclass of the necessary JWST classes
-
 from copy import deepcopy
 from glob import glob
 import json
@@ -52,28 +50,39 @@ latest_on_the_fly_PSF = None
 cache_maxsize = 256     # Number of monochromatic PSFs stored in an LRU cache
                         # Should speed up calculations that involve modifying things
                         # like exposure time and don't actually require calculating new PSFs.
-def get_template(filename):
-    ''' Look up a template filename.
-    '''
-    return pkg_resources.resource_filename(templates.__name__,filename)
 
-def list_templates():
-    '''
-    List all bundled template calculation files.
-    '''
-    templatewildcard = pkg_resources.resource_filename(templates.__name__, '*.json')
-    return [os.path.basename(fname) for fname in glob(templatewildcard)]
 
+"""
+The vast majority of functions in this submodule are obsolete owing to
+generalisation of PanCAKE simulations into Scenes and a Sequence, alongside
+the incorporation of pyKLIP postprocessing (Nov 2021).Nevertheless, for now 
+I am leaving things as they are to maintain some level of backwards compatability. 
+
+Functions that are not used in the current version are marked as 'Deprecated'
+and may not have particularly detailed docstrings. 
+"""
 def load_calculation(filename):
+    """
+    Deprecated
+
+    """
     with open(filename) as f:
         calcfile = json.load(f)
     return calcfile
 
 def save_calculation(calcfile,filename):
+    """
+    Deprecated
+
+    """
     with open(filename, 'w+') as f:
         json.dump(calcfile, f, indent=2)
 
 def save_to_fits(array,filename):
+    """
+    Deprecated
+
+    """
     hdu = fits.PrimaryHDU(array)
     hdulist = fits.HDUList([hdu])
     hdulist.writeto(filename)
@@ -86,6 +95,11 @@ def get_options():
     return options
 
 def calculate_batch(calcfiles,nprocesses=None):
+    """
+    Deprecated
+
+    """
+
     if nprocesses is None:
         nprocesses = mp.cpu_count()
     pool = mp.Pool(processes = nprocesses)
@@ -99,6 +113,8 @@ def calculate_batch(calcfiles,nprocesses=None):
 
 def calculate_all(raw_config):
     """
+    Deprecated
+
     Run a pandeia coronagraphy calculation. Output will be:
         - a pandeia report showing the target
         - a pandeia report showing the reference source
@@ -123,6 +139,16 @@ def calculate_all(raw_config):
 def calculate_target(raw_config):
     """
     Run a pandeia coronagraphy calculation in target-only mode
+
+    Parameters
+    ----------
+    raw_config : dict
+        Dictionary compatible with Pandeia calculations
+
+    Returns
+    -------
+    results : dict
+        Various products from the pandeia calculation 
     """
     config = deepcopy(raw_config)
     config['strategy']['psf_subtraction'] = 'target_only'
@@ -130,8 +156,20 @@ def calculate_target(raw_config):
 
 def calculate_reference(raw_config):
     """
+    Deprecated 
+
     Run a pandeia coronagraphy calculation in target-only mode, replacing the target scene with
     the scene stored in the coronagraphy strategy PSF subtraction source.
+    
+    Parameters
+    ----------
+    raw_config : dict
+        Dictionary compatible with Pandeia calculations
+
+    Returns
+    -------
+    results : dict
+        Various products from the pandeia calculation 
     """
     config = deepcopy(raw_config)
     config['strategy']['psf_subtraction'] = 'target_only'
@@ -140,6 +178,8 @@ def calculate_reference(raw_config):
 
 def calculate_contrast(raw_config, offset_x=0.5, offset_y=0.5):
     """
+    Deprecated
+
     Run a pandeia coronagraphy calculation in target-only mode, with the target offset to be
     unocculted, and with saturation disabled.
     """
@@ -160,6 +200,16 @@ def perform_calculation(calcfile):
     pandeia's tendency to modify the calcfile during the calculation.
 
     Updates to the saturation computation could go here as well.
+
+    Parameters
+    ----------
+    calcfile : dict
+        Dictionary compatible with Pandeia calculations
+
+    Returns
+    -------
+    results : dict
+        Various products from the pandeia calculation 
     '''
     existing_psf_library = pandeia.engine.psf_library.PSFLibrary
     existing_scene_cube = pandeia.engine.astro_spectrum.ConvolvedSceneCube
@@ -203,6 +253,8 @@ def perform_calculation(calcfile):
 
 def random_seed(self):
     '''
+    Deprecated
+
     The pandeia engine sets a fixed seed of 42.
     Circumvent that here.
     '''
@@ -212,6 +264,8 @@ def random_seed(self):
 
 def process_config(raw_config, target_scene, reference_scene):
     """
+    Deprecated
+
     Process a variable that might be a file name, full JWST configuration dictionary, or instrument
     configuration dictionary, along with optional target and reference scenes.
     """
@@ -248,6 +302,8 @@ def process_config(raw_config, target_scene, reference_scene):
 
 def calculate_subtracted(raw_config, target=None, reference=None, ta_error=False, sgd=False, stepsize=20.e-3):
     """
+    Deprecated
+
     This is a function to calculate subtracted images with an optional reference image 
     small-grid dither (SGD). It does the following:
         - Create a pandeia configuration file from which to build the target and reference scenes
@@ -347,6 +403,8 @@ def calculate_subtracted(raw_config, target=None, reference=None, ta_error=False
 
 def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=True, iterations=5, keep_options=False):
     """
+    Deprecated
+
     This is a replacement for the Pandeia calculate_contrast function. It is designed to use the
     various internal analysis functions to do the following:
         - Load one of the pandeia_coronagraphy custom templates
@@ -498,3 +556,21 @@ def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=T
                 }
 
     return output
+
+
+# def get_template(filename):
+#     ''' Look up a template filename.
+
+#     Parameters
+#     ----------
+#     filename : str
+#         Path the template file
+#     '''
+#     return pkg_resources.resource_filename(templates.__name__,filename)
+
+# def list_templates():
+#     '''
+#     List all bundled template calculation files.
+#     '''
+#     templatewildcard = pkg_resources.resource_filename(templates.__name__, '*.json')
+#     return [os.path.basename(fname) for fname in glob(templatewildcard)]
