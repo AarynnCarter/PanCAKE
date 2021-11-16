@@ -41,7 +41,6 @@ pancake.io module
     :undoc-members:
     :show-inheritance:
 
-
 pancake.opds module
 -------------------
 
@@ -50,7 +49,6 @@ pancake.opds module
     :undoc-members:
     :show-inheritance:
 
-
 pancake.pandeia_subclasses module
 ---------------------------------
 
@@ -58,7 +56,6 @@ pancake.pandeia_subclasses module
     :members:
     :undoc-members:
     :show-inheritance:
-
 
 pancake.scene module
 --------------------

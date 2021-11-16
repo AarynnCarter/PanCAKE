@@ -23,7 +23,7 @@ and install the PanCAKE package and all relevant dependencies ::
 Necessary Data Files
 ^^^^^^^^^^^^^^^^^^^^
 
-PanCAKE makes use the Pandeia and WebbPSF packages that require their own separate data files. You may find that certain aspects of PanCAKE will work without some of these data files, but to access all of PanCAKE's functionality, they must be downloaded.
+PanCAKE makes use of the `Pandeia <https://pypi.org/project/pandeia.engine/>`_, `WebbPSF <https://webbpsf.readthedocs.io/en/latest/>`_, and `synphot <https://synphot.readthedocs.io/en/latest/>`_ packages that require their own separate data files. You may find that certain aspects of PanCAKE will work without some of these data files, but to access all of PanCAKE's functionality, they must be downloaded.
 
 | **Pandeia:** `https://stsci.app.box.com/v/pandeia-refdata-v1p6p1 <https://stsci.app.box.com/v/pandeia-refdata-v1p6p1>`_ (~1.9 GB)
 | **WebbPSF:** `webbpsf-data-0.9.0.tar.gz <https://stsci.box.com/shared/static/qcptcokkbx7fgi3c00w2732yezkxzb99.gz>`_ (~250 MB, Direct Download Link)

@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
 
   
   
@@ -36,6 +35,7 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -92,12 +92,12 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_basic_tutorial.html">Basic Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
             
@@ -147,8 +147,6 @@
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-          <li><a href="../pancake.html">pancake</a> &raquo;</li>
         
       <li>pancake.pandeia_subclasses</li>
     
@@ -213,19 +211,18 @@
 <span class="kn">from</span> <span class="nn">pandeia.engine.psf_library</span> <span class="kn">import</span> <span class="n">PSFLibrary</span>
 <span class="kn">from</span> <span class="nn">pandeia.engine.strategy</span> <span class="kn">import</span> <span class="n">Coronagraphy</span>
 <span class="kn">from</span> <span class="nn">pandeia.engine.constants</span> <span class="kn">import</span> <span class="n">SPECTRAL_MAX_SAMPLES</span>
-<div class="viewcode-block" id="default_SPECTRAL_MAX_SAMPLES"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.default_SPECTRAL_MAX_SAMPLES">[docs]</a><span class="n">default_SPECTRAL_MAX_SAMPLES</span> <span class="o">=</span> <span class="n">SPECTRAL_MAX_SAMPLES</span></div>
+<span class="n">default_SPECTRAL_MAX_SAMPLES</span> <span class="o">=</span> <span class="n">SPECTRAL_MAX_SAMPLES</span>
 <span class="kn">from</span> <span class="nn">pandeia.engine.etc3D</span> <span class="kn">import</span> <span class="n">CalculationConfig</span><span class="p">,</span> <span class="n">DetectorSignal</span>
-<div class="viewcode-block" id="PandeiaDetectorSignal"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.PandeiaDetectorSignal">[docs]</a><span class="n">PandeiaDetectorSignal</span> <span class="o">=</span> <span class="n">DetectorSignal</span></div>
+<span class="n">PandeiaDetectorSignal</span> <span class="o">=</span> <span class="n">DetectorSignal</span>
 
 <span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">EngineConfiguration</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">templates</span>
 
-<div class="viewcode-block" id="cache_maxsize"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.cache_maxsize">[docs]</a><span class="n">cache_maxsize</span> <span class="o">=</span> <span class="mi">256</span>     <span class="c1"># Number of monochromatic PSFs stored in an LRU cache</span></div>
+<span class="n">cache_maxsize</span> <span class="o">=</span> <span class="mi">256</span>     <span class="c1"># Number of monochromatic PSFs stored in an LRU cache</span>
                         <span class="c1"># Should speed up calculations that involve modifying things</span>
                         <span class="c1"># like exposure time and don&#39;t actually require calculating new PSFs.</span>
 
 
-<div class="viewcode-block" id="CoronagraphyPSFLibrary"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary">[docs]</a><span class="k">class</span> <span class="nc">CoronagraphyPSFLibrary</span><span class="p">(</span><span class="n">PSFLibrary</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary">[docs]</a><span class="k">class</span> <span class="nc">CoronagraphyPSFLibrary</span><span class="p">(</span><span class="n">PSFLibrary</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Subclass of the Pandeia PSFLibrary class, intended to allow PSFs to be generated on-the-fly</span>
 <span class="sd">    via webbpsf rather than using cached PSFs</span>
@@ -245,7 +242,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.associate_offset_to_source"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.associate_offset_to_source">[docs]</a>    <span class="k">def</span> <span class="nf">associate_offset_to_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary.associate_offset_to_source"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.associate_offset_to_source">[docs]</a>    <span class="k">def</span> <span class="nf">associate_offset_to_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Added azimuth information for use with webbpsf. Pandeia currently does not calculate </span>
 <span class="sd">        the PA and assumes azimuthal symmetry resulting in incorrect calculations when using </span>
@@ -260,7 +257,7 @@
 
         <span class="k">return</span> <span class="n">psf_associations</span></div>
     
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_pupil_throughput"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_pupil_throughput">[docs]</a>    <span class="k">def</span> <span class="nf">get_pupil_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wave</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_pupil_throughput"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_pupil_throughput">[docs]</a>    <span class="k">def</span> <span class="nf">get_pupil_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wave</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Intended for pandeia 1.2 compatibility.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -269,9 +266,9 @@
         <span class="n">ins</span> <span class="o">=</span> <span class="n">CoronagraphyPSFLibrary</span><span class="o">.</span><span class="n">_get_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">CoronagraphyPSFLibrary</span><span class="o">.</span><span class="n">_pupil_throughput</span><span class="p">(</span><span class="n">ins</span><span class="p">)</span></div>
     
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_cached_psf"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_cached_psf">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="n">cache_maxsize</span><span class="p">)</span>
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_cached_psf"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_cached_psf">[docs]</a>    <span class="k">def</span> <span class="nf">get_cached_psf</span><span class="p">(</span> <span class="n">wave</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">,</span> <span class="n">oversample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_offset</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">otf_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_aperture</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_cached_psf</span><span class="p">(</span> <span class="n">wave</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">,</span> <span class="n">oversample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_offset</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">otf_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_aperture</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">.engine</span> <span class="kn">import</span> <span class="n">options</span>
         <span class="c1">#Make the instrument and determine the mode</span>
         <span class="n">ins</span> <span class="o">=</span> <span class="n">CoronagraphyPSFLibrary</span><span class="o">.</span><span class="n">_get_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">,</span> <span class="n">source_offset</span><span class="p">)</span>
@@ -305,7 +302,7 @@
 
         <span class="k">return</span> <span class="n">psf</span></div>
 
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_psf"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_psf">[docs]</a>    <span class="k">def</span> <span class="nf">get_psf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wave</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">,</span> <span class="n">oversample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_offset</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">otf_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_aperture</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_psf"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_psf">[docs]</a>    <span class="k">def</span> <span class="nf">get_psf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wave</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">,</span> <span class="n">oversample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_offset</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">otf_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">full_aperture</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">cache</span>
         <span class="k">if</span> <span class="n">oversample</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -404,7 +401,7 @@
 
         <span class="k">return</span> <span class="n">psf</span></div>
 
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_pix_scale"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_pix_scale">[docs]</a>    <span class="k">def</span> <span class="nf">get_pix_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary.get_pix_scale"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.get_pix_scale">[docs]</a>    <span class="k">def</span> <span class="nf">get_pix_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get PSF pixel scale for given instrument/aperture.</span>
 <span class="sd">        </span>
@@ -416,13 +413,13 @@
         <span class="n">pix_sclx</span><span class="p">,</span> <span class="n">pix_scly</span> <span class="o">=</span> <span class="n">pix_scl</span><span class="p">,</span> <span class="n">pix_scl</span>
         <span class="k">return</span> <span class="n">pix_sclx</span><span class="p">,</span> <span class="n">pix_scly</span></div>
 
-<div class="viewcode-block" id="CoronagraphyPSFLibrary._have_psf"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary._have_psf">[docs]</a>    <span class="k">def</span> <span class="nf">_have_psf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_have_psf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf_name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Determine whether a cached PSF exists for a given combination</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_path</span><span class="p">,</span> <span class="n">psf_name</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_path</span><span class="p">,</span> <span class="n">psf_name</span><span class="p">))</span>
 
-<div class="viewcode-block" id="CoronagraphyPSFLibrary._get_psf"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary._get_psf">[docs]</a>    <span class="k">def</span> <span class="nf">_get_psf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_psf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf_name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Return a cached PSF exists for a given combination</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -431,10 +428,10 @@
             <span class="n">diff_limit</span> <span class="o">=</span> <span class="n">inf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;DIFFLMT&#39;</span><span class="p">]</span>
             <span class="n">pupil_throughput</span> <span class="o">=</span> <span class="n">inf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;PUPTHR&#39;</span><span class="p">]</span>
             <span class="n">psf</span> <span class="o">=</span> <span class="n">inf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-        <span class="k">return</span> <span class="n">psf</span><span class="p">,</span> <span class="n">pix_scl</span><span class="p">,</span> <span class="n">diff_limit</span><span class="p">,</span> <span class="n">pupil_throughput</span></div>
+        <span class="k">return</span> <span class="n">psf</span><span class="p">,</span> <span class="n">pix_scl</span><span class="p">,</span> <span class="n">diff_limit</span><span class="p">,</span> <span class="n">pupil_throughput</span>
     
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="CoronagraphyPSFLibrary._pupil_throughput"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary._pupil_throughput">[docs]</a>    <span class="k">def</span> <span class="nf">_pupil_throughput</span><span class="p">(</span><span class="n">ins</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_pupil_throughput</span><span class="p">(</span><span class="n">ins</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines pupil throughput given a webbpsf instrument object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -442,10 +439,10 @@
         <span class="n">ote_pupil</span> <span class="o">=</span> <span class="n">optsys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">amplitude</span>
         <span class="n">coron_pupil</span> <span class="o">=</span> <span class="n">optsys</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">amplitude</span>
         <span class="n">pupil_throughput</span> <span class="o">=</span> <span class="n">coron_pupil</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">ote_pupil</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">pupil_throughput</span></div>
+        <span class="k">return</span> <span class="n">pupil_throughput</span>
     
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="CoronagraphyPSFLibrary._get_instrument"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary._get_instrument">[docs]</a>    <span class="k">def</span> <span class="nf">_get_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">,</span> <span class="n">source_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">aperture_name</span><span class="p">,</span> <span class="n">source_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">.engine</span> <span class="kn">import</span> <span class="n">options</span> <span class="k">as</span> <span class="n">pancake_options</span>
         <span class="n">instrument_config</span> <span class="o">=</span> <span class="n">pancake_options</span><span class="o">.</span><span class="n">current_config</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">][</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span>
         <span class="n">scene_config</span> <span class="o">=</span> <span class="n">pancake_options</span><span class="o">.</span><span class="n">current_config</span><span class="p">[</span><span class="s1">&#39;scene&#39;</span><span class="p">]</span>
@@ -478,10 +475,10 @@
         <span class="n">ins</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;source_offset_theta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">ins</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;output_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;oversampled&#39;</span>
         <span class="n">ins</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;parity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;odd&#39;</span>
-        <span class="k">return</span> <span class="n">ins</span></div>
+        <span class="k">return</span> <span class="n">ins</span>
     
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.parse_aperture"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.parse_aperture">[docs]</a>    <span class="k">def</span> <span class="nf">parse_aperture</span><span class="p">(</span><span class="n">aperture_name</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary.parse_aperture"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.parse_aperture">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_aperture</span><span class="p">(</span><span class="n">aperture_name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Return [image mask, pupil mask, fov_pixels, trim_fov_pixels, pixelscale]</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -506,8 +503,8 @@
     
         <span class="k">return</span> <span class="n">aperture_dict</span><span class="p">[</span><span class="n">aperture_name</span><span class="p">]</span></div>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.calc_psf"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.calc_psf">[docs]</a>    <span class="k">def</span> <span class="nf">calc_psf</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">wave</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">oversample</span><span class="p">,</span> <span class="n">pix_scale</span><span class="p">,</span> <span class="n">fov_pixels</span><span class="p">,</span> <span class="n">trim_fov_pixels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyPSFLibrary.calc_psf"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.calc_psf">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">calc_psf</span><span class="p">(</span><span class="n">ins</span><span class="p">,</span> <span class="n">wave</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">oversample</span><span class="p">,</span> <span class="n">pix_scale</span><span class="p">,</span> <span class="n">fov_pixels</span><span class="p">,</span> <span class="n">trim_fov_pixels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Following the treatment in pandeia_data/dev/make_psf.py to handle</span>
 <span class="sd">        off-center PSFs for use as a kernel in later convolutions.</span>
@@ -546,7 +543,7 @@
 
         <span class="k">return</span> <span class="n">psf_result</span></div>
     
-<div class="viewcode-block" id="CoronagraphyPSFLibrary._log"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary._log">[docs]</a>    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A bypass for the inability for Pandeia to do some internal python class serialization if the</span>
 <span class="sd">        class contains a logger</span>
@@ -561,40 +558,40 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Logger has no function </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">level</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Message is: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
         <span class="n">logging_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">level</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="n">logging_fn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+        <span class="n">logging_fn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.nircam_mode"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.nircam_mode">[docs]</a>    <span class="n">nircam_mode</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">nircam_mode</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;mask210r&#39;</span><span class="p">:</span> <span class="s1">&#39;sw_imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;mask335r&#39;</span><span class="p">:</span> <span class="s1">&#39;lw_imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;mask430r&#39;</span><span class="p">:</span> <span class="s1">&#39;lw_imaging&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;masklwb&#39;</span><span class="p">:</span> <span class="s1">&#39;lw_imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;maskswb&#39;</span><span class="p">:</span> <span class="s1">&#39;sw_imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1065&#39;</span><span class="p">:</span> <span class="s1">&#39;imaging&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="s1">&#39;imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="s1">&#39;imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="s1">&#39;imaging&#39;</span></div>
+                    <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="s1">&#39;imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="s1">&#39;imaging&#39;</span><span class="p">,</span> <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="s1">&#39;imaging&#39;</span>
                   <span class="p">}</span>
 
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.image_mask"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.image_mask">[docs]</a>    <span class="n">image_mask</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">image_mask</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;mask210r&#39;</span><span class="p">:</span> <span class="s1">&#39;MASK210R&#39;</span><span class="p">,</span> <span class="s1">&#39;mask335r&#39;</span><span class="p">:</span> <span class="s1">&#39;MASK335R&#39;</span><span class="p">,</span> <span class="s1">&#39;mask430r&#39;</span><span class="p">:</span> <span class="s1">&#39;MASK430R&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;masklwb&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKLWB&#39;</span><span class="p">,</span> <span class="s1">&#39;maskswb&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKSWB&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1065&#39;</span><span class="p">:</span> <span class="s1">&#39;FQPM1065&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="s1">&#39;FQPM1140&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="s1">&#39;FQPM1550&#39;</span><span class="p">,</span> <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="s1">&#39;LYOT2300&#39;</span></div>
+                    <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="s1">&#39;FQPM1140&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="s1">&#39;FQPM1550&#39;</span><span class="p">,</span> <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="s1">&#39;LYOT2300&#39;</span>
                  <span class="p">}</span>
     
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.pupil_mask"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.pupil_mask">[docs]</a>    <span class="n">pupil_mask</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">pupil_mask</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;mask210r&#39;</span><span class="p">:</span> <span class="s1">&#39;CIRCLYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;mask335r&#39;</span><span class="p">:</span> <span class="s1">&#39;CIRCLYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;mask430r&#39;</span><span class="p">:</span> <span class="s1">&#39;CIRCLYOT&#39;</span><span class="p">,</span> 
                     <span class="s1">&#39;masklwb&#39;</span><span class="p">:</span> <span class="s1">&#39;WEDGELYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;maskswb&#39;</span><span class="p">:</span> <span class="s1">&#39;WEDGELYOT&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1065&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> 
-                    <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKLYOT&#39;</span></div>
+                    <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKFQPM&#39;</span><span class="p">,</span> <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="s1">&#39;MASKLYOT&#39;</span>
                  <span class="p">}</span>
     
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.fov_pixels"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.fov_pixels">[docs]</a>    <span class="n">fov_pixels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">fov_pixels</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;mask210r&#39;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span> <span class="s1">&#39;mask335r&#39;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span> <span class="s1">&#39;mask430r&#39;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span> <span class="s1">&#39;masklwb&#39;</span><span class="p">:</span> <span class="mi">351</span><span class="p">,</span> 
                     <span class="s1">&#39;maskswb&#39;</span><span class="p">:</span> <span class="mi">351</span><span class="p">,</span> <span class="s1">&#39;fqpm1065&#39;</span><span class="p">:</span> <span class="mi">81</span><span class="p">,</span> <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="mi">81</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="mi">81</span><span class="p">,</span> 
-                    <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="mi">81</span></div>
+                    <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="mi">81</span>
                  <span class="p">}</span>
     
-<div class="viewcode-block" id="CoronagraphyPSFLibrary.trim_fov_pixels"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyPSFLibrary.trim_fov_pixels">[docs]</a>    <span class="n">trim_fov_pixels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">trim_fov_pixels</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="s1">&#39;mask210r&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mask335r&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mask430r&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;masklwb&#39;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span> 
                         <span class="s1">&#39;maskswb&#39;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span> <span class="s1">&#39;fqpm1065&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;fqpm1140&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;fqpm1550&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> 
-                        <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="kc">None</span></div></div>
-                      <span class="p">}</span>
+                        <span class="s1">&#39;lyot2300&#39;</span><span class="p">:</span> <span class="kc">None</span>
+                      <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="CoronagraphyConvolvedSceneCube"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyConvolvedSceneCube">[docs]</a><span class="k">class</span> <span class="nc">CoronagraphyConvolvedSceneCube</span><span class="p">(</span><span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">astro_spectrum</span><span class="o">.</span><span class="n">ConvolvedSceneCube</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyConvolvedSceneCube"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyConvolvedSceneCube">[docs]</a><span class="k">class</span> <span class="nc">CoronagraphyConvolvedSceneCube</span><span class="p">(</span><span class="n">pandeia</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">astro_spectrum</span><span class="o">.</span><span class="n">ConvolvedSceneCube</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This class overrides the ConvolvedSceneCube class, and instead of using SPECTRAL_MAX_SAMPLES it</span>
 <span class="sd">    looks for a wavelength size that should be present in the &#39;scene&#39; part of the template</span>
@@ -613,15 +610,15 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">CoronagraphyConvolvedSceneCube</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">instrument</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="CoronagraphyConvolvedSceneCube._max_samples"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyConvolvedSceneCube._max_samples">[docs]</a>    <span class="k">def</span> <span class="nf">_max_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_max_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        This is intended to replace a constant with a function. Maybe it works?</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coronagraphy_options</span><span class="o">.</span><span class="n">wave_sampling</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">default_SPECTRAL_MAX_SAMPLES</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coronagraphy_options</span><span class="o">.</span><span class="n">wave_sampling</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coronagraphy_options</span><span class="o">.</span><span class="n">wave_sampling</span>
 
-<div class="viewcode-block" id="CoronagraphyConvolvedSceneCube._log"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyConvolvedSceneCube._log">[docs]</a>    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A bypass for the inability for Pandeia to do some internal python class serialization if the</span>
 <span class="sd">        class contains a logger</span>
@@ -633,10 +630,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="n">logging_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
-        <span class="n">logging_fn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+        <span class="n">logging_fn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal">[docs]</a><span class="k">class</span> <span class="nc">CoronagraphyDetectorSignal</span><span class="p">(</span><span class="n">CoronagraphyConvolvedSceneCube</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal">[docs]</a><span class="k">class</span> <span class="nc">CoronagraphyDetectorSignal</span><span class="p">(</span><span class="n">CoronagraphyConvolvedSceneCube</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Override the DetectorSignal to avoid odd issues with inheritance. Unfortunately this currently</span>
 <span class="sd">    means copying the functions entirely (with changes to which class is used)</span>
@@ -777,7 +774,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">det_pars</span><span class="p">[</span><span class="s1">&#39;rn_correlation&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_noise_correlation_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_instrument</span><span class="o">.</span><span class="n">get_readnoise_correlation_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.spectral_detector_transform"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.spectral_detector_transform">[docs]</a>    <span class="k">def</span> <span class="nf">spectral_detector_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.spectral_detector_transform"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.spectral_detector_transform">[docs]</a>    <span class="k">def</span> <span class="nf">spectral_detector_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create engine API format dict section containing properties of wavelength coordinates</span>
 <span class="sd">        at the detector plane.</span>
@@ -824,7 +821,7 @@
             <span class="k">raise</span> <span class="n">EngineOutputError</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">t</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.wcs_info"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.wcs_info">[docs]</a>    <span class="k">def</span> <span class="nf">wcs_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.wcs_info"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.wcs_info">[docs]</a>    <span class="k">def</span> <span class="nf">wcs_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get detector coordinate transform as a dict of WCS keyword/value pairs.</span>
 
@@ -866,19 +863,19 @@
             <span class="k">raise</span> <span class="n">EngineOutputError</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">header</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_wave_pix"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_wave_pix">[docs]</a>    <span class="k">def</span> <span class="nf">get_wave_pix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_wave_pix"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_wave_pix">[docs]</a>    <span class="k">def</span> <span class="nf">get_wave_pix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the mapping of wavelengths to pixels on the detector plane</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;wave_pix&#39;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_fp_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_fp_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_fp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_fp_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_fp_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_fp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return scene flux at the focal plane in e-/s/pixel/micron (excludes background)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;fp&#39;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_bg_fp_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_bg_fp_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_bg_fp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_bg_fp_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_bg_fp_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_bg_fp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate background in e-/s/pixel/micron at the focal plane. Also correct for any excess in predicted background</span>
 <span class="sd">        if there are pupil losses in the PSF. (#2529)</span>
@@ -892,14 +889,14 @@
                                                                                   <span class="s1">&#39;aperture&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">bg_fp_rate</span> <span class="o">*</span> <span class="n">pupil_thru</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_bg_pix_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_bg_pix_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_bg_pix_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_bg_pix_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_bg_pix_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_bg_pix_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the background on the detector in e-/s/pixel</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bg_pix_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_plus_bg_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;fp_pix&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;fp_pix&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">bg_pix_rate</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.on_detector"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.on_detector">[docs]</a>    <span class="k">def</span> <span class="nf">on_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate_list</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.on_detector"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.on_detector">[docs]</a>    <span class="k">def</span> <span class="nf">on_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will take the list of (pixel) rates and use them create a single detector frame. A single</span>
 <span class="sd">        image will only have one rate in the list, but the IFUs will have n_slices. There may be other examples,</span>
@@ -919,7 +916,7 @@
 
         <span class="k">return</span> <span class="n">detector</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_pix_grid"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_pix_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_pix_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_pix_grid"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_pix_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_pix_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the coordinate grid of the detector plane</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -948,7 +945,7 @@
             <span class="k">raise</span> <span class="n">EngineOutputError</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;Unsupported projection_type: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_type</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">grid</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.all_rates"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.all_rates">[docs]</a>    <span class="k">def</span> <span class="nf">all_rates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux</span><span class="p">,</span> <span class="n">add_extended_background</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.all_rates"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.all_rates">[docs]</a>    <span class="k">def</span> <span class="nf">all_rates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux</span><span class="p">,</span> <span class="n">add_extended_background</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate rates in e-/s/pixel/micron or e-/s/pixel given a flux cube in mJy</span>
 
@@ -1015,7 +1012,7 @@
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">products</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.ote_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.ote_rate">[docs]</a>    <span class="k">def</span> <span class="nf">ote_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.ote_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.ote_rate">[docs]</a>    <span class="k">def</span> <span class="nf">ote_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate source rate in e-/s/pixel/micron at the telescope entrance aperture given</span>
 <span class="sd">        a flux cube in mJy/pixel.</span>
@@ -1029,7 +1026,7 @@
         <span class="n">ote_rate</span> <span class="o">=</span> <span class="n">f_lambda</span> <span class="o">*</span> <span class="n">a_lambda</span>
         <span class="k">return</span> <span class="n">ote_rate</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.focal_plane_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.focal_plane_rate">[docs]</a>    <span class="k">def</span> <span class="nf">focal_plane_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.focal_plane_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.focal_plane_rate">[docs]</a>    <span class="k">def</span> <span class="nf">focal_plane_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes the output from self.ote_rate() and multiplies it by the components</span>
 <span class="sd">        of efficiency within the system and returns the source rate at the focal plane in</span>
@@ -1043,7 +1040,7 @@
         <span class="n">fp_rate</span> <span class="o">=</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">filter_eff</span> <span class="o">*</span> <span class="n">disperser_eff</span> <span class="o">*</span> <span class="n">internal_eff</span> <span class="o">*</span> <span class="n">qe</span>
         <span class="k">return</span> <span class="n">fp_rate</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.spec_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.spec_rate">[docs]</a>    <span class="k">def</span> <span class="nf">spec_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.spec_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.spec_rate">[docs]</a>    <span class="k">def</span> <span class="nf">spec_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        For slitted spectrographs, calculate the detector signal by integrating</span>
 <span class="sd">        along the dispersion direction of the cube (which is masked by a, by assumption,</span>
@@ -1118,7 +1115,7 @@
 
         <span class="k">return</span> <span class="n">products</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.image_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.image_rate">[docs]</a>    <span class="k">def</span> <span class="nf">image_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.image_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.image_rate">[docs]</a>    <span class="k">def</span> <span class="nf">image_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Calculate the electron rate for imaging modes by integrating along</span>
 <span class="sd">        the wavelength direction of the cube.</span>
@@ -1152,7 +1149,7 @@
 
         <span class="k">return</span> <span class="n">products</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.slitless_rate"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.slitless_rate">[docs]</a>    <span class="k">def</span> <span class="nf">slitless_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">add_extended_background</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.slitless_rate"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.slitless_rate">[docs]</a>    <span class="k">def</span> <span class="nf">slitless_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">add_extended_background</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Calculate the detector rates for slitless modes. Here we retain all spatial information and build</span>
 <span class="sd">        up the detector plane by shifting and coadding the frames from the convolved flux cube. Also need to handle</span>
@@ -1311,7 +1308,7 @@
 
         <span class="k">return</span> <span class="n">products</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.wave_eff"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.wave_eff">[docs]</a>    <span class="k">def</span> <span class="nf">wave_eff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.wave_eff"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.wave_eff">[docs]</a>    <span class="k">def</span> <span class="nf">wave_eff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
         <span class="n">rate_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rate_tot</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">wave</span><span class="p">)</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rate_tot</span><span class="p">)</span>
@@ -1322,10 +1319,10 @@
         <span class="n">wave_eff_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave_eff</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">wave_eff_arr</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_projection_type"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_projection_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_projection_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_projection_type"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_projection_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_projection_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_type</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.ipc_convolve"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.ipc_convolve">[docs]</a>    <span class="k">def</span> <span class="nf">ipc_convolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.ipc_convolve"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.ipc_convolve">[docs]</a>    <span class="k">def</span> <span class="nf">ipc_convolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
         <span class="n">fp_pix_ipc</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
 
         <span class="n">debug_utils</span><span class="o">.</span><span class="n">debugarrays</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s1">&#39;etc3D&#39;</span><span class="p">,</span> <span class="s1">&#39;ipc_convolve&#39;</span><span class="p">,</span>
@@ -1338,7 +1335,7 @@
 
         <span class="k">return</span> <span class="n">fp_pix_ipc</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_saturation_mask"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_saturation_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_saturation_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CoronagraphyDetectorSignal.get_saturation_mask"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal.get_saturation_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_saturation_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a numpy array indicating pixels with full saturation (2), partial saturation (1) and no saturation (0).</span>
 
@@ -1368,7 +1365,7 @@
 
         <span class="k">return</span> <span class="n">saturation_mask</span></div>
 
-<div class="viewcode-block" id="CoronagraphyDetectorSignal._groups_before_sat"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.CoronagraphyDetectorSignal._groups_before_sat">[docs]</a>    <span class="k">def</span> <span class="nf">_groups_before_sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">fullwell</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_groups_before_sat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">fullwell</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fix for Pandeia 1.2/1.3, since exposure spec doesn&#39;t have this in 1.2</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1385,17 +1382,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown detector type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exposure_spec</span><span class="o">.</span><span class="n">det_type</span><span class="p">))</span>
         <span class="n">slice_group</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">groups_before_sat</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">slice_group</span></div></div>
+        <span class="k">return</span> <span class="n">slice_group</span></div>
 
 
 
-<div class="viewcode-block" id="SeparateTargetReferenceCoronagraphy"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.SeparateTargetReferenceCoronagraphy">[docs]</a><span class="k">class</span> <span class="nc">SeparateTargetReferenceCoronagraphy</span><span class="p">(</span><span class="n">Coronagraphy</span><span class="p">):</span>
+<div class="viewcode-block" id="SeparateTargetReferenceCoronagraphy"><a class="viewcode-back" href="../../api.html#pancake.pandeia_subclasses.SeparateTargetReferenceCoronagraphy">[docs]</a><span class="k">class</span> <span class="nc">SeparateTargetReferenceCoronagraphy</span><span class="p">(</span><span class="n">Coronagraphy</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    This class is intended to override the cronography behaviour of requiring that the reference </span>
 <span class="sd">    source be included in the same calculation template as the observation source.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="SeparateTargetReferenceCoronagraphy._create_weight_matrix"><a class="viewcode-back" href="../../autoapi/pancake/pandeia_subclasses/index.html#pancake.pandeia_subclasses.SeparateTargetReferenceCoronagraphy._create_weight_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">_create_weight_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_detector_signal_list</span><span class="p">,</span> <span class="n">my_detector_noise_list</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_weight_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_detector_signal_list</span><span class="p">,</span> <span class="n">my_detector_noise_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This private method creates the weight matrix, a_ij, used for the strategy sum. It gets overridden</span>
 <span class="sd">        in each strategy. In this case, it applies all weight to the first (and only) target. As such, it</span>
@@ -1451,7 +1448,7 @@
         <span class="c1"># Note that this is not how matrix indexing is formally constructed, but it enforces a rule</span>
         <span class="c1"># that product subscripts should always be tuples or regular ndarrays.</span>
         <span class="n">product_subscript</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">product_subscript</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">product_subscript</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">weight_matrix</span><span class="p">,</span> <span class="p">[</span><span class="n">product_subscript</span><span class="p">]</span></div></div>
+        <span class="k">return</span> <span class="n">weight_matrix</span><span class="p">,</span> <span class="p">[</span><span class="n">product_subscript</span><span class="p">]</span></div>
     
 </pre></div>
 

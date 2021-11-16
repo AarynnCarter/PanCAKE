@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
 
   
   
@@ -36,6 +35,7 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -92,12 +92,12 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_basic_tutorial.html">Basic Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scene.html">Astrophysical Scene Constuction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Constuction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
             
@@ -148,8 +148,6 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-          <li><a href="../pancake.html">pancake</a> &raquo;</li>
-        
       <li>pancake.analysis</li>
     
     
@@ -187,10 +185,9 @@
 <span class="kn">import</span> <span class="nn">pyklip.rdi</span> <span class="k">as</span> <span class="nn">rdi</span>
 <span class="kn">import</span> <span class="nn">pyklip.fakes</span> <span class="k">as</span> <span class="nn">fakes</span>
 
-
 <span class="c1"># Getting erros when trying to use multiprocessing with pyKLIP</span>
 <span class="c1"># Disable using the below</span>
-<div class="viewcode-block" id="debug"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.debug">[docs]</a><span class="n">parallelized</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span></div>
+<span class="n">parallelized</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="c1">##############################</span>
 <span class="c1"># DISCLAIMER </span>
@@ -199,17 +196,17 @@
 <span class="c1">##############################</span>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
-<div class="viewcode-block" id="enable_runtime_warnings"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.enable_runtime_warnings">[docs]</a><span class="k">def</span> <span class="nf">enable_runtime_warnings</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+<div class="viewcode-block" id="enable_runtime_warnings"><a class="viewcode-back" href="../../api.html#pancake.analysis.enable_runtime_warnings">[docs]</a><span class="k">def</span> <span class="nf">enable_runtime_warnings</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Function to toggle on/off RuntimeWarning&#39;s. Many of these do not impact the functionality of the code</span>
 <span class="sd">	and therefore can be safely ignored for the vast majority of user cases. As a result, this function is</span>
 <span class="sd">	immediately called a few lines above. </span>
 
 <span class="sd">	Parameters</span>
-<span class="sd">		state : bool</span>
-<span class="sd">			Whether the RuntimeWarning&#39;s should be enabled (True), or disabled ( False).</span>
-<span class="sd">	Returns:</span>
-<span class="sd">		None</span>
+<span class="sd">	----------</span>
+<span class="sd">	state : bool</span>
+<span class="sd">		Whether the RuntimeWarning&#39;s should be enabled (True), or disabled ( False).</span>
+
 <span class="sd">	&quot;&quot;&quot;</span> 
 	<span class="k">if</span> <span class="n">state</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
 		<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;always&#39;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
@@ -218,28 +215,30 @@
 	<span class="k">else</span><span class="p">:</span>
 		<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Runtime Warnings can only be enabled/disabled with a boolean True/False input.&#39;</span><span class="p">)</span></div>
 
-<span class="c1">#### Impossible to pass the mask argument into pyKLIP, to use with inject_planet() function must use the functools partial function to set the mask variable</span>
-<div class="viewcode-block" id="transmission_corrected"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.transmission_corrected">[docs]</a><span class="k">def</span> <span class="nf">transmission_corrected</span><span class="p">(</span><span class="n">input_stamp</span><span class="p">,</span> <span class="n">input_dx</span><span class="p">,</span> <span class="n">input_dy</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="transmission_corrected"><a class="viewcode-back" href="../../api.html#pancake.analysis.transmission_corrected">[docs]</a><span class="k">def</span> <span class="nf">transmission_corrected</span><span class="p">(</span><span class="n">input_stamp</span><span class="p">,</span> <span class="n">input_dx</span><span class="p">,</span> <span class="n">input_dy</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	Function to apply a 2-dimensional JWST coronagraphic transmission map to an input image.</span>
+<span class="sd">	Function to apply a 2-dimensional JWST coronagraphic transmission map to an input image. </span>
 
 <span class="sd">	Parameters</span>
-<span class="sd">		input_stamp : 2D ndarray</span>
-<span class="sd">			Input image, should have dimensions equal to or smaller than the array for the</span>
-<span class="sd">			coronagraphic transmission map.</span>
-<span class="sd">		input_dx : 2D ndarray</span>
-<span class="sd">			Array of X pixel offsets for each element in the array relative to the central pixel of the simulation. </span>
-<span class="sd">		input_dy : 2D ndarray</span>
-<span class="sd">			Array of Y pixel offsets for each element in the array relative to the central pixel of the simulation. 	</span>
-<span class="sd">		filt : str</span>
-<span class="sd">			JWST filter string, used to obtain offsets for the NIRCam bar masks. </span>
-<span class="sd">		mask : str</span>
-<span class="sd">			JWST coronagraphic mask string, used to identify which transmission map to apply.</span>
-<span class="sd">		mode : str</span>
-<span class="sd">			Whether to &#39;multiply&#39; or &#39;divide&#39; the input stamp by the transmission map. </span>
+<span class="sd">	----------</span>
+<span class="sd">	input_stamp : 2D ndarray</span>
+<span class="sd">		Input image, should have dimensions equal to or smaller than the array </span>
+<span class="sd">		for the coronagraphic transmission map.</span>
+<span class="sd">	input_dx : 2D ndarray</span>
+<span class="sd">		Array of X pixel offsets for each element in the array relative to the central pixel of the simulation. </span>
+<span class="sd">	input_dy : 2D ndarray</span>
+<span class="sd">		Array of Y pixel offsets for each element in the array relative to the central pixel of the simulation. 	</span>
+<span class="sd">	filt : str</span>
+<span class="sd">		JWST filter string, used to obtain offsets for the NIRCam bar masks. </span>
+<span class="sd">	mask : str</span>
+<span class="sd">		JWST coronagraphic mask string, used to identify which transmission map to apply.</span>
+<span class="sd">	mode : str</span>
+<span class="sd">		Whether to &#39;multiply&#39; or &#39;divide&#39; the input stamp by the transmission map.</span>
+
 <span class="sd">	Returns</span>
-<span class="sd">		output_stamp : 2D ndarray</span>
-<span class="sd">			Equivalent to the input_stamp following the application of the transmission map. </span>
+<span class="sd">	-------</span>
+<span class="sd">	output_stamp : 2D ndarray</span>
+<span class="sd">		Equivalent to the input_stamp following the application of the transmission map. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="c1">##### Get the x- and y- dimension for the input image</span>
 	<span class="n">input_x</span><span class="p">,</span> <span class="n">input_y</span> <span class="o">=</span> <span class="n">input_stamp</span><span class="o">.</span><span class="n">shape</span> 
@@ -279,24 +278,27 @@
 
 	<span class="k">return</span> <span class="n">output_stamp</span></div>
 
-<div class="viewcode-block" id="identify_primary_sources"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.identify_primary_sources">[docs]</a><span class="k">def</span> <span class="nf">identify_primary_sources</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_primary_source</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_primary_sources</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="identify_primary_sources"><a class="viewcode-back" href="../../api.html#pancake.analysis.identify_primary_sources">[docs]</a><span class="k">def</span> <span class="nf">identify_primary_sources</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_primary_source</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_primary_sources</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Function to identify, or assume, the primary sources (i.e. central &#39;stars&#39;) of output PanCAKE simulation results. </span>
 
 <span class="sd">	Parameters</span>
-<span class="sd">		pancake_results : HDUList</span>
-<span class="sd">			Simulated results as returned by pancake.sequence.Sequence().run()</span>
-<span class="sd">		target : str</span>
-<span class="sd">			The provided string name for the target scene in the observation sequence. </span>
-<span class="sd">		references : str / list of strings / NoneType</span>
-<span class="sd">			The provided string name(s) for the reference scene(s) in the observations sequence, if any.</span>
-<span class="sd">		target_primary_source : str</span>
-<span class="sd">			Desired primary source to use for the target scene, or &#39;default&#39; to assume primary source. </span>
-<span class="sd">		reference_primary_sources : str / list of strings</span>
-<span class="sd">			Desired primary source(s) to use for the reference scene(s), or &#39;default&#39; to assume primary source(s).</span>
+<span class="sd">	----------</span>
+<span class="sd">	pancake_results : HDUList</span>
+<span class="sd">		Simulated results as returned by pancake.sequence.Sequence().run()</span>
+<span class="sd">	target : str</span>
+<span class="sd">		The provided string name for the target scene in the observation sequence. </span>
+<span class="sd">	references : str / list of strings / NoneType</span>
+<span class="sd">		The provided string name(s) for the reference scene(s) in the observations sequence, if any.</span>
+<span class="sd">	target_primary_source : str</span>
+<span class="sd">		Desired primary source to use for the target scene, or &#39;default&#39; to assume primary source. </span>
+<span class="sd">	reference_primary_sources : str / list of strings</span>
+<span class="sd">		Desired primary source(s) to use for the reference scene(s), or &#39;default&#39; to assume primary source(s).</span>
+<span class="sd">	</span>
 <span class="sd">	Returns</span>
-<span class="sd">		primary_sources : list of strings</span>
-<span class="sd">			List of the primary source(s), where the source in the &#39;0&#39; index always corresponds to the target scene. </span>
+<span class="sd">	-------</span>
+<span class="sd">	primary_sources : list of strings</span>
+<span class="sd">		List of the primary source(s), where the source in the &#39;0&#39; index always corresponds to the target scene. </span>
 
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="c1">#Get all of the observations names for this simulation</span>
@@ -346,30 +348,33 @@
 
 	<span class="k">return</span> <span class="n">primary_sources</span></div>
 
-<div class="viewcode-block" id="extract_simulated_images"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.extract_simulated_images">[docs]</a><span class="k">def</span> <span class="nf">extract_simulated_images</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">observations</span><span class="p">,</span> <span class="n">primary_sources</span><span class="p">,</span> <span class="n">all_rolls</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extract_offaxis</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="o">=</span><span class="s1">&#39;image&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="extract_simulated_images"><a class="viewcode-back" href="../../api.html#pancake.analysis.extract_simulated_images">[docs]</a><span class="k">def</span> <span class="nf">extract_simulated_images</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">observations</span><span class="p">,</span> <span class="n">primary_sources</span><span class="p">,</span> <span class="n">all_rolls</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extract_offaxis</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filename_prefix</span><span class="o">=</span><span class="s1">&#39;image&#39;</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Function to extract a subset of simulated images from the output of a PanCAKE simulation into a more flexible format. </span>
 <span class="sd">	</span>
 <span class="sd">	Parameters</span>
-<span class="sd">		pancake_results : HDUList</span>
-<span class="sd">			Simulated results as returned by pancake.sequence.Sequence().run()</span>
-<span class="sd">		observations : list of strings</span>
-<span class="sd">			List of observation strings that correspond to extension names in the pancake_results HDUList</span>
-<span class="sd">		primary_sources : list of strings</span>
-<span class="sd">			List of the primary source(s) as obtained by identify_primary_sources</span>
-<span class="sd">		all_rolls : list of ints / floats</span>
-<span class="sd">			Which PA roll images to be extracted</span>
-<span class="sd">		references : str / list of strings / NoneType</span>
-<span class="sd">			The provided string name(s) for the reference scene(s) in the observations sequence, if any. Can</span>
-<span class="sd">			not be used in conjunction with retrieving simulated target images. </span>
-<span class="sd">		extract_offaxis : bool</span>
-<span class="sd">			Boolean choice of whether to extract offaxis images or not</span>
-<span class="sd">		filename_prefix : str</span>
-<span class="sd">			Simple prefix string used to assign a unique name to each simulated image.</span>
+<span class="sd">	----------</span>
+<span class="sd">	pancake_results : HDUList</span>
+<span class="sd">		Simulated results as returned by pancake.sequence.Sequence().run()</span>
+<span class="sd">	observations : list of strings</span>
+<span class="sd">		List of observation strings that correspond to extension names in the pancake_results HDUList</span>
+<span class="sd">	primary_sources : list of strings</span>
+<span class="sd">		List of the primary source(s) as obtained by identify_primary_sources</span>
+<span class="sd">	all_rolls : list of ints / floats</span>
+<span class="sd">		Which PA roll images to be extracted</span>
+<span class="sd">	references : str / list of strings / NoneType</span>
+<span class="sd">		The provided string name(s) for the reference scene(s) in the observations sequence, if any. Can</span>
+<span class="sd">		not be used in conjunction with retrieving simulated target images. </span>
+<span class="sd">	extract_offaxis : bool</span>
+<span class="sd">		Boolean choice of whether to extract offaxis images or not</span>
+<span class="sd">	filename_prefix : str</span>
+<span class="sd">		Simple prefix string used to assign a unique name to each simulated image.</span>
+<span class="sd">	</span>
 <span class="sd">	Returns</span>
-<span class="sd">		extracted : dict</span>
-<span class="sd">			Dictionary containing all requested images, their roll angles, center points, assigned filenames, and</span>
-<span class="sd">			if requested, a 20x20 pixel offaxis PSF stamp image and its peak flux.  </span>
+<span class="sd">	-------</span>
+<span class="sd">	extracted : dict</span>
+<span class="sd">		Dictionary containing all requested images, their roll angles, center points, assigned filenames, and</span>
+<span class="sd">		if requested, a 20x20 pixel offaxis PSF stamp image and its peak flux.  </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="c1">##### Create placeholder variables to append to / adjust later. </span>
@@ -451,38 +456,41 @@
 
 	<span class="k">return</span> <span class="n">extracted</span></div>
  
-<div class="viewcode-block" id="process_simulations"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.process_simulations">[docs]</a><span class="k">def</span> <span class="nf">process_simulations</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_obs</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">primary_sources</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reference_obs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="process_simulations"><a class="viewcode-back" href="../../api.html#pancake.analysis.process_simulations">[docs]</a><span class="k">def</span> <span class="nf">process_simulations</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_obs</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">primary_sources</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reference_obs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Function to process a set of desired simulated images from PanCAKE and convert them into pyKLIP datasets to enable easier stellar PSF subtraction</span>
 <span class="sd">	and contrast curve estimation. </span>
 
 <span class="sd">	Parameters</span>
-<span class="sd">		pancake_results : HDUList</span>
-<span class="sd">			Simulated results as returned by pancake.sequence.Sequence().run()</span>
-<span class="sd">		target : string</span>
-<span class="sd">			The provided string name for the target scene in the observation sequence</span>
-<span class="sd">		target_obs : list of stings</span>
-<span class="sd">			List of target observation strings that correspond to extension names in the pancake_results HDUList</span>
-<span class="sd">		filt : string</span>
-<span class="sd">			JWST filter string</span>
-<span class="sd">		mask : string</span>
-<span class="sd">			JWST coronagraphic mask string</span>
-<span class="sd">		primary_sources : list of strings</span>
-<span class="sd">			List of the primary source(s) as obtained by identify_primary_sources</span>
-<span class="sd">		references : list of strings</span>
-<span class="sd">			The provided string name(s) for the reference scene(s) in the observations sequence, if any.</span>
-<span class="sd">		reference_obs : list of strings</span>
-<span class="sd">			List of target observation strings that correspond to extension names in the pancake_results HDUList, if any. </span>
-<span class="sd">		target_rolls : list of ints / floats</span>
-<span class="sd">			Which target PA roll images to use. Alternatively, &#39;default&#39; to use all of them for ADI modes, or roll=0 for RDI. </span>
-<span class="sd">		reference_rolls : list of ints / floats</span>
-<span class="sd">			Which reference PA roll images to use. Alternatively, &#39;default&#39; to use all of them for ADI modes, or roll=0 for RDI. </span>
-<span class="sd">		subtraction : str</span>
-<span class="sd">			pyKLIP compatible subtraction string, available options are &#39;ADI&#39;, &#39;RDI&#39;, or &#39;ADI+RDI&#39;</span>
+<span class="sd">	----------</span>
+<span class="sd">	pancake_results : HDUList</span>
+<span class="sd">		Simulated results as returned by pancake.sequence.Sequence().run()</span>
+<span class="sd">	target : string</span>
+<span class="sd">		The provided string name for the target scene in the observation sequence</span>
+<span class="sd">	target_obs : list of stings</span>
+<span class="sd">		List of target observation strings that correspond to extension names in the pancake_results HDUList</span>
+<span class="sd">	filt : string</span>
+<span class="sd">		JWST filter string</span>
+<span class="sd">	mask : string</span>
+<span class="sd">		JWST coronagraphic mask string</span>
+<span class="sd">	primary_sources : list of strings</span>
+<span class="sd">		List of the primary source(s) as obtained by identify_primary_sources</span>
+<span class="sd">	references : list of strings</span>
+<span class="sd">		The provided string name(s) for the reference scene(s) in the observations sequence, if any.</span>
+<span class="sd">	reference_obs : list of strings</span>
+<span class="sd">		List of target observation strings that correspond to extension names in the pancake_results HDUList, if any. </span>
+<span class="sd">	target_rolls : list of ints / floats</span>
+<span class="sd">		Which target PA roll images to use. Alternatively, &#39;default&#39; to use all of them for ADI modes, or roll=0 for RDI. </span>
+<span class="sd">	reference_rolls : list of ints / floats</span>
+<span class="sd">		Which reference PA roll images to use. Alternatively, &#39;default&#39; to use all of them for ADI modes, or roll=0 for RDI. </span>
+<span class="sd">	subtraction : str</span>
+<span class="sd">		pyKLIP compatible subtraction string, available options are &#39;ADI&#39;, &#39;RDI&#39;, or &#39;ADI+RDI&#39;</span>
+
 <span class="sd">	Returns</span>
-<span class="sd">		processed_output : dict</span>
-<span class="sd">			Dictionary output containing pyKLIP datasets for the target and PSF library (if necessary), in addition</span>
-<span class="sd">			to some information on the offaxis simulation for normalisation / planet injection purposes. </span>
+<span class="sd">	-------</span>
+<span class="sd">	processed_output : dict</span>
+<span class="sd">		Dictionary output containing pyKLIP datasets for the target and PSF library (if necessary), in addition</span>
+<span class="sd">		to some information on the offaxis simulation for normalisation / planet injection purposes. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="c1">###### Get all of the observations names for this simulation</span>
 	<span class="n">obs_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">pancake_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">))]</span>
@@ -596,20 +604,23 @@
 
 	<span class="k">return</span> <span class="n">processed_output</span></div>
 
-<div class="viewcode-block" id="mask_companions"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.mask_companions">[docs]</a><span class="k">def</span> <span class="nf">mask_companions</span><span class="p">(</span><span class="n">image_array</span><span class="p">,</span> <span class="n">companion_xy</span><span class="p">,</span> <span class="n">mask_radius</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+<div class="viewcode-block" id="mask_companions"><a class="viewcode-back" href="../../api.html#pancake.analysis.mask_companions">[docs]</a><span class="k">def</span> <span class="nf">mask_companions</span><span class="p">(</span><span class="n">image_array</span><span class="p">,</span> <span class="n">companion_xy</span><span class="p">,</span> <span class="n">mask_radius</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
 	<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">	Function apply NaN masks to a number of images at the location of known companion objects. </span>
 
 <span class="sd">	Parameters</span>
-<span class="sd">		image_array : 3D ndarray</span>
-<span class="sd">			Numpy array of input images</span>
-<span class="sd">		companion_xy : iterator of tuples</span>
-<span class="sd">			zip() tuples, with each containing the companion x and y *pixel* locations.</span>
-<span class="sd">		mask_radius : float</span>
-<span class="sd">			The desired mask radius in pixels. </span>
+<span class="sd">	----------</span>
+<span class="sd">	image_array : 3D ndarray</span>
+<span class="sd">		Numpy array of input images</span>
+<span class="sd">	companion_xy : iterator of tuples</span>
+<span class="sd">		zip() tuples, with each containing the companion x and y *pixel* locations.</span>
+<span class="sd">	mask_radius : float</span>
+<span class="sd">		The desired mask radius in pixels. </span>
+<span class="sd">	</span>
 <span class="sd">	Returns</span>
-<span class="sd">		masked_images : 3D ndarray</span>
-<span class="sd">			Numpy array of output, companion masked images. </span>
+<span class="sd">	-------</span>
+<span class="sd">	masked_images : 3D ndarray</span>
+<span class="sd">		Numpy array of output, companion masked images. </span>
 <span class="sd">	&#39;&#39;&#39;</span>
 	<span class="c1"># Create an array to allocate the output images to. 	</span>
 	<span class="n">masked_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">image_array</span><span class="p">)</span>
@@ -627,13 +638,55 @@
 	<span class="k">return</span> <span class="n">masked_images</span></div>
 
 
-<div class="viewcode-block" id="get_companion_mask"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.get_companion_mask">[docs]</a><span class="k">def</span> <span class="nf">get_companion_mask</span><span class="p">(</span><span class="n">companion_xy</span><span class="p">,</span> <span class="n">mask_dataset</span><span class="p">,</span> <span class="n">mask_psflib</span><span class="p">,</span> <span class="n">offaxis_psf_stamp</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">filt</span><span class="o">=</span><span class="s1">&#39;f444w&#39;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="s1">&#39;mask335r&#39;</span><span class="p">,</span> <span class="n">annuli</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subsections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">numbasis</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">movement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s1">&#39;./RESULTS/&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="get_companion_mask"><a class="viewcode-back" href="../../api.html#pancake.analysis.get_companion_mask">[docs]</a><span class="k">def</span> <span class="nf">get_companion_mask</span><span class="p">(</span><span class="n">companion_xy</span><span class="p">,</span> <span class="n">mask_dataset</span><span class="p">,</span> <span class="n">mask_psflib</span><span class="p">,</span> <span class="n">offaxis_psf_stamp</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">filt</span><span class="o">=</span><span class="s1">&#39;f444w&#39;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="s1">&#39;mask335r&#39;</span><span class="p">,</span> <span class="n">annuli</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subsections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">numbasis</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">movement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s1">&#39;./RESULTS/&#39;</span><span class="p">):</span>
 	<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">	Function to create a mask that can be applied to an image in order to &quot;block&quot; any pixels that correspond to the emitted flux of a companion object. </span>
-<span class="sd">	In essence, the function uses an offaxis PSF to inject companions into the image, on top of where they already exist, except at a *very* high flux. </span>
-<span class="sd">	This image can then be processed via KLIP to identify the pixels in the resultant subtracted image which are most impacted by the presence of </span>
-<span class="sd">	the companion object, and assign them to be masked. This offers significant improvements over a simplistic circular mask due to the lobes of the </span>
-<span class="sd">	JWST PSF, particularly for the NIRCam filters. Main current drawback is it only masks excess flux from companions, and misses ADI oversubtractions.  </span>
+<span class="sd">	Function to create a mask that can be applied to an image in order to &quot;block&quot; any pixels </span>
+<span class="sd">	that correspond to the emitted flux of a companion object. </span>
+
+<span class="sd">	In essence, the function uses an offaxis PSF to inject companions into the image, </span>
+<span class="sd">	on top of where they already exist, except at a *very* high flux. </span>
+<span class="sd">	</span>
+<span class="sd">	This image can then be processed via KLIP to identify the pixels in the resultant subtracted image </span>
+<span class="sd">	which are most impacted by the presence of the companion object, and assign them to be masked. </span>
+<span class="sd">	This offers significant improvements over a simplistic circular mask due to the lobes of the </span>
+<span class="sd">	JWST PSF, particularly for the NIRCam filters, whilst still being relatively quick to compute. </span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	companion_xy : iterator of tuples</span>
+<span class="sd">		zip() tuples, with each containing any companion x and y *pixel* locations.</span>
+<span class="sd">	mask_dataset : 	pyKLIP Dataset	</span>
+<span class="sd">		Dataset to use to estimate the a companion mask</span>
+<span class="sd">	mask_psflib : pyKLIP PSFLibrary</span>
+<span class="sd">		Dataset to use for RDI subtractions</span>
+<span class="sd">	offaxis_psf_stamp : 2D ndarray</span>
+<span class="sd">		Stamp image of an offaxis (i.e. not underneath the coronagraph) PSF</span>
+<span class="sd">	center : list</span>
+<span class="sd">		List of x and y centers</span>
+<span class="sd">	filt : str</span>
+<span class="sd">		JWST filter string</span>
+<span class="sd">	mask : str</span>
+<span class="sd">		JWST coronagraphic mask string</span>
+<span class="sd">	annuli : int</span>
+<span class="sd">		pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel </span>
+<span class="sd">		boundaries (a &lt;= r &lt; b) for each annulus</span>
+<span class="sd">	subsections : int </span>
+<span class="sd">		pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) </span>
+<span class="sd">		specifying the positon angle boundaries (a &lt;= PA &lt; b) for each section [radians]</span>
+<span class="sd">	numbasis : int</span>
+<span class="sd">		number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be </span>
+<span class="sd">		used is automatically picked based on the eigenvalues.</span>
+<span class="sd">	movement : int</span>
+<span class="sd">		pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF</span>
+<span class="sd">	subtraction : str</span>
+<span class="sd">		pyKLIP compatible subtraction string, available options are &#39;ADI&#39;, &#39;RDI&#39;, or &#39;ADI+RDI&#39; </span>
+<span class="sd">	outputdir : str</span>
+<span class="sd">		Directory to output pyKLIP generated results to.</span>
+
+<span class="sd">	Returns</span>
+<span class="sd">	-------</span>
+<span class="sd">	comp_mask : 2D ndarray</span>
+<span class="sd">		True/False array of pixels to mask to exclude companion</span>
 
 <span class="sd">	&#39;&#39;&#39;</span>
 	<span class="c1"># Create our arrays of planets to inject into the input dataset, note the flux is scaled up by a factor of 10^12</span>
@@ -670,104 +723,128 @@
 	<span class="k">return</span> <span class="n">comp_mask</span></div>
 
 
-<div class="viewcode-block" id="meas_contrast_basic"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.meas_contrast_basic">[docs]</a><span class="k">def</span> <span class="nf">meas_contrast_basic</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">iwa</span><span class="p">,</span> <span class="n">owa</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low_pass_filter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	Duplicate of the meas_contrast funciton within pyKLIP, except calculating a </span>
-<span class="sd">	standard 5 sigma limit instead of small sample statistics corrections. </span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">center</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">starx</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span>
-        <span class="n">stary</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">starx</span><span class="p">,</span> <span class="n">stary</span> <span class="o">=</span> <span class="n">center</span>
-
-    <span class="c1"># figure out how finely to sample the radial profile</span>
-    <span class="n">dr</span> <span class="o">=</span> <span class="n">resolution</span><span class="o">/</span><span class="mf">2.0</span>
-    <span class="n">numseps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">owa</span><span class="o">-</span><span class="n">iwa</span><span class="p">)</span><span class="o">/</span><span class="n">dr</span><span class="p">)</span>
-    <span class="c1"># don&#39;t want to start right at the edge of the occulting mask</span>
-    <span class="c1"># but also want to well sample the contrast curve so go at twice the resolution</span>
-    <span class="n">seps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numseps</span><span class="p">)</span> <span class="o">*</span> <span class="n">dr</span> <span class="o">+</span> <span class="n">iwa</span> <span class="o">+</span> <span class="n">resolution</span><span class="o">/</span><span class="mf">2.0</span>
-    <span class="n">dsep</span> <span class="o">=</span> <span class="n">resolution</span>
-    <span class="c1"># find equivalent Gaussian PSF for this resolution</span>
-
-
-    <span class="c1"># run a low pass filter on the data, check if input is boolean or a number</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">low_pass_filter</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="c1"># manually passed in low pass filter size</span>
-        <span class="n">sigma</span> <span class="o">=</span> <span class="n">low_pass_filter</span>
-        <span class="n">filtered</span> <span class="o">=</span> <span class="n">pyklip</span><span class="o">.</span><span class="n">klip</span><span class="o">.</span><span class="n">nan_gaussian_filter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">low_pass_filter</span><span class="p">:</span>
-        <span class="c1"># set low pass filter size to be same as resolution element</span>
-        <span class="n">sigma</span> <span class="o">=</span> <span class="n">dsep</span> <span class="o">/</span> <span class="mf">2.355</span>  <span class="c1"># assume resolution element size corresponds to FWHM</span>
-        <span class="n">filtered</span> <span class="o">=</span> <span class="n">pyklip</span><span class="o">.</span><span class="n">klip</span><span class="o">.</span> <span class="n">nan_gaussian_filter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># no filtering</span>
-        <span class="n">filtered</span> <span class="o">=</span> <span class="n">dat</span>
-
-    <span class="n">contrast</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># create a coordinate grid</span>
-    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">starx</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">stary</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">stary</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">starx</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
-    <span class="k">for</span> <span class="n">sep</span> <span class="ow">in</span> <span class="n">seps</span><span class="p">:</span>
-        <span class="c1"># calculate noise in an annulus with width of the resolution element</span>
-        <span class="n">annulus</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">r</span> <span class="o">&lt;</span> <span class="n">sep</span> <span class="o">+</span> <span class="n">resolution</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">r</span> <span class="o">&gt;</span> <span class="n">sep</span> <span class="o">-</span> <span class="n">resolution</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
-        <span class="n">noise_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">filtered</span><span class="p">[</span><span class="n">annulus</span><span class="p">])</span>
-        <span class="n">noise_std</span> <span class="o">=</span> <span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">filtered</span><span class="p">[</span><span class="n">annulus</span><span class="p">],</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">seps</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">noise_std</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="compute_contrast"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.compute_contrast">[docs]</a><span class="k">def</span> <span class="nf">compute_contrast</span><span class="p">(</span><span class="n">subtracted_hdu_file</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">offaxis_psf_stamp</span><span class="p">,</span> <span class="n">offaxis_flux</span><span class="p">,</span> <span class="n">raw_input_dataset</span><span class="p">,</span> <span class="n">raw_input_psflib</span><span class="p">,</span> <span class="n">primary_vegamag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pixel_scale</span><span class="o">=</span><span class="mf">0.063</span><span class="p">,</span> <span class="n">annuli</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subsections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">numbasis</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">movement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">,</span> <span class="n">companion_xy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s1">&#39;./RESULTS/&#39;</span><span class="p">,</span> <span class="n">plot_klip_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="meas_contrast_basic"><a class="viewcode-back" href="../../api.html#pancake.analysis.meas_contrast_basic">[docs]</a><span class="k">def</span> <span class="nf">meas_contrast_basic</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">iwa</span><span class="p">,</span> <span class="n">owa</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low_pass_filter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	Function to compute contrast curves from a pyKLIP subtracted image file. Contrast curves will be corrected for both the coronagraphic and KLIP throughput, </span>
-<span class="sd">	in addition to being converted to relative, and absolute magnitude sensitivity limits. </span>
+<span class="sd">	Duplicate of the meas_contrast() function within pyKLIP, except calculating a </span>
+<span class="sd">	standard 5 sigma limit instead of small sample statistics corrections.</span>
 
 <span class="sd">	Parameters</span>
-<span class="sd">		subtracted_hdu_file : str</span>
-<span class="sd">			Filename for a subtracted image file as produced by pyklip.parallelized.klip_dataset()</span>
-<span class="sd">		filt : str</span>
-<span class="sd">			JWST filter string</span>
-<span class="sd">		mask : str</span>
-<span class="sd">			JWST coronagraphic mask string</span>
-<span class="sd">		offaxis_psf_stamp : 2D ndarray</span>
-<span class="sd">			Stamp image of an offaxis (i.e. not underneath the coronagraph) PSF</span>
-<span class="sd">		offaxis_flux : float</span>
-<span class="sd">			Peak flux of the offaxis PSF</span>
-<span class="sd">		raw_input_dataset : pyKLIP Dataset</span>
-<span class="sd">			The input target dataset that was used to generate the subtracted_hdu_file. Used many times over for planet injection. </span>
-<span class="sd">		raw_input_psflib : pyKLIP PSFLibrary</span>
-<span class="sd">			The input PSF library dataset that was used to generate the subtracted_hdu_file, if any. Used many times over for planet injection. </span>
-<span class="sd">		primary_vegamag : float</span>
-<span class="sd">			Vega magnitude of the primary source of the target scene in the specified filter.</span>
-<span class="sd">		pixel_scale : float</span>
-<span class="sd">			Pixel scale for this observation. </span>
-<span class="sd">		annuli : int</span>
-<span class="sd">			pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel </span>
-<span class="sd">			boundaries (a &lt;= r &lt; b) for each annulus</span>
-<span class="sd">		subsections : int </span>
-<span class="sd">			pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) </span>
-<span class="sd">			specifying the positon angle boundaries (a &lt;= PA &lt; b) for each section [radians]</span>
-<span class="sd">		numbasis : int</span>
-<span class="sd">			number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be </span>
-<span class="sd">			used is automatically picked based on the eigenvalues.</span>
-<span class="sd">		movement : int</span>
-<span class="sd">			pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF</span>
-<span class="sd">		subtraction : str</span>
-<span class="sd">			pyKLIP compatible subtraction string, available options are &#39;ADI&#39;, &#39;RDI&#39;, or &#39;ADI+RDI&#39; </span>
-<span class="sd">		companion_xy : iterator of tuples</span>
-<span class="sd">			zip() tuples, with each containing any companion x and y *pixel* locations.</span>
-<span class="sd">		verbose : bool</span>
-<span class="sd">			Optional argument to turn on (True) or off (False) printed terminal updates. </span>
-<span class="sd">		outputdir : str</span>
-<span class="sd">			Directory to save any temporary or results files. </span>
-<span class="sd">		plot_klip_throughput : bool</span>
-<span class="sd">			Optional argument to plot (True) the calculated KLIP throughput for each image. Primarily for debugging.  </span>
-<span class="sd">	Returns </span>
-<span class="sd">		all_contrasts : dict</span>
-<span class="sd">			Dictionary output of the contrast, relative magnitude sensitivity, absolute magnitude sensitivity and separation. Alternative</span>
-<span class="sd">			formats of the separation, the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided. </span>
+<span class="sd">	----------</span>
+<span class="sd">	dat : 2D ndarray</span>
+<span class="sd">		2D image - already flux calibrated</span>
+<span class="sd">	iwa : float </span>
+<span class="sd">		inner working angle</span>
+<span class="sd">	owa : float</span>
+<span class="sd">		outer working angle</span>
+<span class="sd">	resolution : float</span>
+<span class="sd">		size of noise resolution element in pixels (for speckle noise ~ FWHM or lambda/D)</span>
+<span class="sd">		but it can be 1 pixel if limited by pixel-to-pixel noise. </span>
+<span class="sd">	center : list</span>
+<span class="sd">		location of star (x,y). If None, defaults the image size // 2.</span>
+<span class="sd">	low_pass_filter: bool/float</span>
+<span class="sd">		if True, run a low pass filter. Can also be a float which specifices the </span>
+<span class="sd">		width of the Gaussian filter (sigma). If False, no Gaussian filter is run</span>
+
+<span class="sd">	Returns</span>
+<span class="sd">	-------</span>
+<span class="sd">		(seps, contrast): tuple </span>
+<span class="sd">			separations in pixels and corresponding 5 sigma FPF</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">if</span> <span class="n">center</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">starx</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span>
+		<span class="n">stary</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">starx</span><span class="p">,</span> <span class="n">stary</span> <span class="o">=</span> <span class="n">center</span>
+
+	<span class="c1"># figure out how finely to sample the radial profile</span>
+	<span class="n">dr</span> <span class="o">=</span> <span class="n">resolution</span><span class="o">/</span><span class="mf">2.0</span>
+	<span class="n">numseps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">owa</span><span class="o">-</span><span class="n">iwa</span><span class="p">)</span><span class="o">/</span><span class="n">dr</span><span class="p">)</span>
+	<span class="c1"># don&#39;t want to start right at the edge of the occulting mask</span>
+	<span class="c1"># but also want to well sample the contrast curve so go at twice the resolution</span>
+	<span class="n">seps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numseps</span><span class="p">)</span> <span class="o">*</span> <span class="n">dr</span> <span class="o">+</span> <span class="n">iwa</span> <span class="o">+</span> <span class="n">resolution</span><span class="o">/</span><span class="mf">2.0</span>
+	<span class="n">dsep</span> <span class="o">=</span> <span class="n">resolution</span>
+	<span class="c1"># find equivalent Gaussian PSF for this resolution</span>
+
+
+	<span class="c1"># run a low pass filter on the data, check if input is boolean or a number</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">low_pass_filter</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+		<span class="c1"># manually passed in low pass filter size</span>
+		<span class="n">sigma</span> <span class="o">=</span> <span class="n">low_pass_filter</span>
+		<span class="n">filtered</span> <span class="o">=</span> <span class="n">pyklip</span><span class="o">.</span><span class="n">klip</span><span class="o">.</span><span class="n">nan_gaussian_filter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+	<span class="k">elif</span> <span class="n">low_pass_filter</span><span class="p">:</span>
+		<span class="c1"># set low pass filter size to be same as resolution element</span>
+		<span class="n">sigma</span> <span class="o">=</span> <span class="n">dsep</span> <span class="o">/</span> <span class="mf">2.355</span>  <span class="c1"># assume resolution element size corresponds to FWHM</span>
+		<span class="n">filtered</span> <span class="o">=</span> <span class="n">pyklip</span><span class="o">.</span><span class="n">klip</span><span class="o">.</span> <span class="n">nan_gaussian_filter</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="c1"># no filtering</span>
+		<span class="n">filtered</span> <span class="o">=</span> <span class="n">dat</span>
+
+	<span class="n">contrast</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="c1"># create a coordinate grid</span>
+	<span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+	<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">starx</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">stary</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+	<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">stary</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">starx</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+	<span class="k">for</span> <span class="n">sep</span> <span class="ow">in</span> <span class="n">seps</span><span class="p">:</span>
+		<span class="c1"># calculate noise in an annulus with width of the resolution element</span>
+		<span class="n">annulus</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">r</span> <span class="o">&lt;</span> <span class="n">sep</span> <span class="o">+</span> <span class="n">resolution</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">r</span> <span class="o">&gt;</span> <span class="n">sep</span> <span class="o">-</span> <span class="n">resolution</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+		<span class="n">noise_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">filtered</span><span class="p">[</span><span class="n">annulus</span><span class="p">])</span>
+		<span class="n">noise_std</span> <span class="o">=</span> <span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">filtered</span><span class="p">[</span><span class="n">annulus</span><span class="p">],</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">seps</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">noise_std</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="compute_contrast"><a class="viewcode-back" href="../../api.html#pancake.analysis.compute_contrast">[docs]</a><span class="k">def</span> <span class="nf">compute_contrast</span><span class="p">(</span><span class="n">subtracted_hdu_file</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">offaxis_psf_stamp</span><span class="p">,</span> <span class="n">offaxis_flux</span><span class="p">,</span> <span class="n">raw_input_dataset</span><span class="p">,</span> <span class="n">raw_input_psflib</span><span class="p">,</span> <span class="n">primary_vegamag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pixel_scale</span><span class="o">=</span><span class="mf">0.063</span><span class="p">,</span> <span class="n">annuli</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subsections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">numbasis</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">movement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">,</span> <span class="n">companion_xy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s1">&#39;./RESULTS/&#39;</span><span class="p">,</span> <span class="n">plot_klip_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Function to compute contrast curves from a pyKLIP subtracted image file. Contrast curves will be corrected for both the coronagraphic and KLIP throughput, in addition to being converted to relative, and absolute magnitude sensitivity limits. </span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	subtracted_hdu_file : str</span>
+<span class="sd">		Filename for a subtracted image file as produced by pyklip.parallelized.klip_dataset()</span>
+<span class="sd">	filt : str</span>
+<span class="sd">		JWST filter string</span>
+<span class="sd">	mask : str</span>
+<span class="sd">		JWST coronagraphic mask string</span>
+<span class="sd">	offaxis_psf_stamp : 2D ndarray</span>
+<span class="sd">		Stamp image of an offaxis (i.e. not underneath the coronagraph) PSF</span>
+<span class="sd">	offaxis_flux : float</span>
+<span class="sd">		Peak flux of the offaxis PSF</span>
+<span class="sd">	raw_input_dataset : pyKLIP Dataset</span>
+<span class="sd">		The input target dataset that was used to generate the subtracted_hdu_file. Used many times over for planet injection. </span>
+<span class="sd">	raw_input_psflib : pyKLIP PSFLibrary</span>
+<span class="sd">		The input PSF library dataset that was used to generate the subtracted_hdu_file, if any. Used many times over for planet injection. </span>
+<span class="sd">	primary_vegamag : float</span>
+<span class="sd">		Vega magnitude of the primary source of the target scene in the specified filter.</span>
+<span class="sd">	pixel_scale : float</span>
+<span class="sd">		Pixel scale for this observation. </span>
+<span class="sd">	annuli : int</span>
+<span class="sd">		pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel </span>
+<span class="sd">		boundaries (a &lt;= r &lt; b) for each annulus</span>
+<span class="sd">	subsections : int </span>
+<span class="sd">		pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) </span>
+<span class="sd">		specifying the positon angle boundaries (a &lt;= PA &lt; b) for each section [radians]</span>
+<span class="sd">	numbasis : int</span>
+<span class="sd">		number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be </span>
+<span class="sd">		used is automatically picked based on the eigenvalues.</span>
+<span class="sd">	movement : int</span>
+<span class="sd">		pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF</span>
+<span class="sd">	subtraction : str</span>
+<span class="sd">		pyKLIP compatible subtraction string, available options are &#39;ADI&#39;, &#39;RDI&#39;, or &#39;ADI+RDI&#39; </span>
+<span class="sd">	companion_xy : iterator of tuples</span>
+<span class="sd">		zip() tuples, with each containing any companion x and y *pixel* locations.</span>
+<span class="sd">	verbose : bool</span>
+<span class="sd">		Optional argument to turn on (True) or off (False) printed terminal updates. </span>
+<span class="sd">	outputdir : str</span>
+<span class="sd">		Directory to save any temporary or results files. </span>
+<span class="sd">	plot_klip_throughput : bool</span>
+<span class="sd">		Optional argument to plot (True) the calculated KLIP throughput for each image. Primarily for debugging.  </span>
+<span class="sd">	</span>
+<span class="sd">	Returns</span>
+<span class="sd">	------- </span>
+<span class="sd">	all_contrasts : dict</span>
+<span class="sd">		Dictionary output of the contrast, relative magnitude sensitivity, absolute magnitude sensitivity and separation. Alternative</span>
+<span class="sd">		formats of the separation, the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
 
 	<span class="c1">##### First thing we need to do is open the file with the subtracted images. </span>
@@ -978,7 +1055,22 @@
 
 	<span class="k">return</span> <span class="n">all_contrasts</span></div>
 
-<div class="viewcode-block" id="get_source_properties"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.get_source_properties">[docs]</a><span class="k">def</span> <span class="nf">get_source_properties</span><span class="p">(</span><span class="n">template_obs</span><span class="p">,</span> <span class="n">primary_source</span><span class="p">):</span>
+<div class="viewcode-block" id="get_source_properties"><a class="viewcode-back" href="../../api.html#pancake.analysis.get_source_properties">[docs]</a><span class="k">def</span> <span class="nf">get_source_properties</span><span class="p">(</span><span class="n">template_obs</span><span class="p">,</span> <span class="n">primary_source</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">	Small function to grab a variety of source properties for a template observation HDUList</span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	template_obs : HDUList</span>
+<span class="sd">		FITS data for a template observation file</span>
+<span class="sd">	primary_source : str</span>
+<span class="sd">		String descriptor of the primary source in the observation.</span>
+<span class="sd">	Returns</span>
+<span class="sd">	-------</span>
+<span class="sd">	source_props : dict</span>
+<span class="sd">		Dictionary of source properties as extracted from the input template_obs file. </span>
+
+<span class="sd">	&#39;&#39;&#39;</span>	
 	<span class="n">header</span> <span class="o">=</span> <span class="n">template_obs</span><span class="o">.</span><span class="n">header</span>
 	<span class="n">pixel_scale</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;PIXSCALE&#39;</span><span class="p">]</span>
 	<span class="n">num_sources</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;NSOURCES&#39;</span><span class="p">]</span>
@@ -1011,7 +1103,28 @@
 
 	<span class="k">return</span> <span class="n">source_props</span></div>
 
-<div class="viewcode-block" id="companion_snrs"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.companion_snrs">[docs]</a><span class="k">def</span> <span class="nf">companion_snrs</span><span class="p">(</span><span class="n">subtracted_hdu_file</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">companion_xy</span><span class="p">,</span> <span class="n">mask_radius</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+<div class="viewcode-block" id="companion_snrs"><a class="viewcode-back" href="../../api.html#pancake.analysis.companion_snrs">[docs]</a><span class="k">def</span> <span class="nf">companion_snrs</span><span class="p">(</span><span class="n">subtracted_hdu_file</span><span class="p">,</span> <span class="n">filt</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">companion_xy</span><span class="p">,</span> <span class="n">mask_radius</span><span class="o">=</span><span class="mi">7</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">	Function to, perhaps crudely, estimate the SNR of a planet in a pyKLIP subtracted image. </span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	subtracted_hdu_file : str</span>
+<span class="sd">		Filepath for the subtracted image.</span>
+<span class="sd">	filt : str</span>
+<span class="sd">		JWST filter string</span>
+<span class="sd">	mask : str</span>
+<span class="sd">		JWST coronagraphic mask string</span>
+<span class="sd">	companion_xy : iterator of tuples</span>
+<span class="sd">		zip() tuples, with each containing the companion x and y *pixel* locations.</span>
+
+<span class="sd">	Returns</span>
+<span class="sd">	-------</span>
+<span class="sd">	companion_snrs : list</span>
+<span class="sd">		List of companion SNR&#39;s corresponding the order provided in companion_xy</span>
+
+<span class="sd">	&#39;&#39;&#39;</span>
+
 	<span class="c1"># Read in the file</span>
 	<span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">subtracted_hdu_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdulist</span><span class="p">:</span>
 		<span class="n">subtracted_hdu</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1073,7 +1186,68 @@
 
 	<span class="k">return</span> <span class="n">companion_snrs</span></div>
 
-<div class="viewcode-block" id="contrast_curve"><a class="viewcode-back" href="../../autoapi/pancake/analysis/index.html#pancake.analysis.contrast_curve">[docs]</a><span class="k">def</span> <span class="nf">contrast_curve</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">masks</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">target_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">target_primary_source</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_primary_sources</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">klip_annuli</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">klip_subsections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">klip_numbasis</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">klip_movement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">get_companion_snrs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_saved_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s1">&#39;./RESULTS/&#39;</span><span class="p">,</span> <span class="n">save_prefix</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_contrast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_klip_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_contrasts</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="contrast_curve"><a class="viewcode-back" href="../../api.html#pancake.analysis.contrast_curve">[docs]</a><span class="k">def</span> <span class="nf">contrast_curve</span><span class="p">(</span><span class="n">pancake_results</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtraction</span><span class="o">=</span><span class="s1">&#39;ADI&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">masks</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">target_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">target_primary_source</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_primary_sources</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">reference_rolls</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">klip_annuli</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">klip_subsections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">klip_numbasis</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">klip_movement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">get_companion_snrs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clean_saved_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="s1">&#39;./RESULTS/&#39;</span><span class="p">,</span> <span class="n">save_prefix</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_contrast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_klip_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_contrasts</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">	Overarching function to compute contrast curves from output PanCAKE results. </span>
+
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	pancake_results : HDUList</span>
+<span class="sd">		Simulated results as returned by pancake.sequence.Sequence().run()</span>
+<span class="sd">	target : str</span>
+<span class="sd">		The provided string name for the target scene in the observation sequence. </span>
+<span class="sd">	references : str / list of strings / NoneType</span>
+<span class="sd">		The provided string name(s) for the reference scene(s) in the observations sequence, if any.</span>
+<span class="sd">	subtraction : str</span>
+<span class="sd">		pyKLIP compatible subtraction string, available options are &#39;ADI&#39;, &#39;RDI&#39;, or &#39;ADI+RDI&#39;</span>
+<span class="sd">	filters : str</span>
+<span class="sd">		JWST filter string, or &#39;all&#39; to use all available filters. </span>
+<span class="sd">	masks : str</span>
+<span class="sd">		JWST mask string, or &#39;all&#39; to use all available masks</span>
+<span class="sd">	target_rolls : list of ints / floats</span>
+<span class="sd">		Which target PA roll images to use. Alternatively, &#39;default&#39; to use all of them for ADI modes, or roll=0 for RDI. </span>
+<span class="sd">	target_primary_source : str</span>
+<span class="sd">		Desired primary source to use for the target scene, or &#39;default&#39; to assume primary source. </span>
+<span class="sd">	reference_primary_sources : str / list of strings</span>
+<span class="sd">		Desired primary source(s) to use for the reference scene(s), or &#39;default&#39; to assume primary source(s).</span>
+<span class="sd">	reference_rolls : list of ints / floats</span>
+<span class="sd">		Which reference PA roll images to use. Alternatively, &#39;default&#39; to use all of them for ADI modes, or roll=0 for RDI. </span>
+<span class="sd">	klip_annuli : int</span>
+<span class="sd">		pyKLIP argument - Annuli to use for KLIP. Can be a number, or a list of 2-element tuples (a, b) specifying the pixel </span>
+<span class="sd">		boundaries (a &lt;= r &lt; b) for each annulus</span>
+<span class="sd">	klip_subsections : int </span>
+<span class="sd">		pyKLIP argument - Sections to break each annuli into. Can be a number [integer], or a list of 2-element tuples (a, b) </span>
+<span class="sd">		specifying the positon angle boundaries (a &lt;= PA &lt; b) for each section [radians]</span>
+<span class="sd">	klip_numbasis : int</span>
+<span class="sd">		number of KL basis vectors to use (can be a scalar or list like). Length of b If numbasis is [None] the number of KL modes to be </span>
+<span class="sd">		used is automatically picked based on the eigenvalues.</span>
+<span class="sd">	klip_movement : int</span>
+<span class="sd">		pyKLIP argument - minimum amount of movement (in pixels) of an astrophysical source to consider using that image for a refernece PSF</span>
+<span class="sd">	get_companions_snrs : bool</span>
+<span class="sd">		True to calculate SNR&#39;s of any companions in subtracted images, False to not. </span>
+<span class="sd">	clean_saved_files : bool</span>
+<span class="sd">		True to delete any subtracted files generated by pyKLIP</span>
+<span class="sd">	outputdir : str</span>
+<span class="sd">		Output directory to save subtracted files to.</span>
+<span class="sd">	save_prefix : str</span>
+<span class="sd">		Prefix of filenames to be saved, &#39;default is </span>
+<span class="sd">		&quot;{}-{}-{}-{}-nb{}a{}s{}m{}&quot;.format(target, filt, mask, subtraction, klip_nb_str, klip_annuli, klip_subsections, klip_movement)</span>
+<span class="sd">	verbose : bool</span>
+<span class="sd">		Toggle for printing various messages throughout the computation</span>
+<span class="sd">	plot_contrast : bool</span>
+<span class="sd">		Toggle for plotting of contrast curves</span>
+<span class="sd">	plot_klip_throughput : bool</span>
+<span class="sd">		Toggle for plotting of calculated klip_throughout, may interrupt code execution</span>
+<span class="sd">	save_contrasts : bool</span>
+<span class="sd">		Toggle for saving computed contrasts to a file. </span>
+
+<span class="sd">	Returns</span>
+<span class="sd">	-------</span>
+<span class="sd">	contrast_curve_dict : dict</span>
+<span class="sd">		Dictionary output of all requested contrasts, relative magnitude sensitivities, </span>
+<span class="sd">		absolute magnitude sensitivities and separations. Alternative formats of the separation, </span>
+<span class="sd">		the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided.</span>
+<span class="sd">	&#39;&#39;&#39;</span>
 
 	<span class="c1">###### Perform some input checks on the user provided parameters</span>
 	<span class="c1"># Check requested subtraction is valid</span>
