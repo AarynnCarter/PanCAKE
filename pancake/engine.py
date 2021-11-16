@@ -114,7 +114,7 @@ def calculate_batch(calcfiles,nprocesses=None):
 
 def calculate_all(raw_config):
 	"""
-	Deprecated - Run a pandeia coronagraphy calculation. Output will be:
+	Deprecated - Run a pandeia coronagraphy calculation. Output will be
 		- a pandeia report showing the target
 		- a pandeia report showing the reference source
 		- a pandeia report showing the unocculted target (with saturation disabled)
@@ -310,18 +310,22 @@ def process_config(raw_config, target_scene, reference_scene):
 
 def calculate_subtracted(raw_config, target=None, reference=None, ta_error=False, sgd=False, stepsize=20.e-3):
 	'''
-	Deprecated - This is a function to calculate subtracted images with an optional reference image 
-	small-grid dither (SGD). It does the following:
-		- Create a pandeia configuration file from which to build the target and reference scenes
-		- [optional] construct SGD
-		- observe target scene
-		- for each reference observation:
-			- observe reference scene
-		- centre reference to targets
-		- create klip PSF
-		- subtract klip PSF from target image
-		- return subtracted image
-	It will return:
+	Deprecated 
+
+	This is a function to calculate subtracted images with an optional reference image 
+	small-grid dither (SGD). It does the following...
+
+	- Create a pandeia configuration file from which to build the target and reference scenes
+	- [optional] construct SGD
+	- observe target scene
+	- for each reference observation
+		- observe reference scene
+	- centre reference to targets
+	- create klip PSF
+	- subtract klip PSF from target image
+	- return subtracted image
+
+	It will return
 		- target image
 		- list of reference images
 		- artificial PSF
@@ -413,21 +417,22 @@ def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=T
 	Deprecated
 
 	This is a replacement for the Pandeia calculate_contrast function. It is designed to use the
-	various internal analysis functions to do the following:
-		- Load one of the pandeia_coronagraphy custom templates
-		- Repeat <iterations> times:
-			- Run through pandeia with the target scene in place of the default scene
-			- Run through pandeia with the reference scene in place of the default scene
-		- Run through pandeia with the off-axis target
-		- Generate an aperture image
-		- Run the analysis contrast utility method
-	It will return:
-		- list of target images
-		- list of reference images
-		- off-axis image
-		- list of subtracted images
-		- normalized contrast profile (with reference bins)
+	various internal analysis functions to do the following...
+	- Load one of the pandeia_coronagraphy custom templates
+	- Repeat <iterations> times
+		- Run through pandeia with the target scene in place of the default scene
+		- Run through pandeia with the reference scene in place of the default scene
+	- Run through pandeia with the off-axis target
+	- Generate an aperture image
+	- Run the analysis contrast utility method
 	
+	It will return
+	- list of target images
+	- list of reference images
+	- off-axis image
+	- list of subtracted images
+	- normalized contrast profile (with reference bins)
+
 	Parameters
 	----------
 	raw_config: string or dict
