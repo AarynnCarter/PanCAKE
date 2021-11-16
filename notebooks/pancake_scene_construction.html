@@ -1,0 +1,681 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Astrophysical Scene Construction &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pancake_basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scene.html">Astrophysical Scene Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sequence.html">Observational Sequence Constuction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Astrophysical Scene Construction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/pancake_scene_construction.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="https://github.com/aarynncarter/PanCAKE/tree/gh-pages/notebooks/pancake_scene_construction.ipynb">Download full notebook here</a></p>
+</div>
+<div class="section" id="Astrophysical-Scene-Construction">
+<h1>Astrophysical Scene Construction<a class="headerlink" href="#Astrophysical-Scene-Construction" title="Permalink to this headline">¶</a></h1>
+<p>The first step in any PanCAKE simulation is to define the astrophysical scenes that we want to simulate observations for. Theoretically, Scenes can be as large as desired, or include any number of astrophysical sources. However, only objects within the simulated field of view will have an effect on the simulation results.</p>
+<p>In the <a class="reference external" href="https://aarynncarter.com/PanCAKE/notebooks/pancake_basic_tutorial.html">Basic Tutorial</a> we covered a simple example of this, however there exist a variety of different ways to construct and visualise these scenes further.</p>
+<div class="section" id="The-Basics">
+<h2>The Basics<a class="headerlink" href="#The-Basics" title="Permalink to this headline">¶</a></h2>
+<p>The scenes we want to include in a simulation should be independently intialised using <code class="docutils literal notranslate"><span class="pre">pancake.scene.Scene()</span></code>. Ideally, a string descriptor of the scene should also be provided for future clarity in simulation FITS headers, although this is not mandatory. In this case we have created two scenes, one for our “Target” (for science observations) and one for our “Reference” (for PSF subtraction).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pancake</span>
+
+<span class="n">target</span> <span class="o">=</span> <span class="n">pancake</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="s1">&#39;Target&#39;</span><span class="p">)</span>
+<span class="n">reference</span> <span class="o">=</span> <span class="n">pancake</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="s1">&#39;Reference&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Adding-Sources">
+<h2>Adding Sources<a class="headerlink" href="#Adding-Sources" title="Permalink to this headline">¶</a></h2>
+<p>Now that the scenes we need have been created, we can start to add astrophysical sources to them as desired. Those with previous experience will notice that this is almost identical to the scene construction in the official JWST Exposure Time Calculator (Pandeia). This is by design, and simply allows PanCAKE to interface easily with Pandeia, without requiring and unnecessary amount of user inputs.</p>
+<div class="section" id="SIMBAD-Query">
+<h3>SIMBAD Query<a class="headerlink" href="#SIMBAD-Query" title="Permalink to this headline">¶</a></h3>
+<p>The simplest way to add a source to a scene is using a query to <a class="reference external" href="http://simbad.u-strasbg.fr/simbad/">SIMBAD</a>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">target</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="s1">&#39;HIP 65426&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;simbad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Target // Adding Source: HIP 65426
+WARNING: Couldn&#39;t determine magnitude system, assuming Vega magnitudes.
+WARNING: Spectral type &#39;a2v&#39; not compatible with Pandeia grid, using spectral type &#39;a1v&#39; instead.
+</pre></div></div>
+</div>
+<p>In this case, all we needed to do was provide a SIMBAD compatible string identifier for the object we wish to observe, and let PanCAKE know that we want to use SIMBAD to get all the relevant information with the <code class="docutils literal notranslate"><span class="pre">kind</span></code> property.</p>
+<p>Here we can see that we have a few warnings. For the vast majority of SIMBAD objects, the magnitudes are reported in Vega magnitudes, so the first warning isn’t a concern for us. However, the second will slightly impact our future simulations. PanCAKE uses the SIMBAD spectral type for the provided object to estimate a matching spectrum of that object from the synphot database. This database is not complete across spectral types, and therefore in some cases the closest matching spectral type with
+a spectrum will be used instead. The extent of this approximation should be assessed on a case-by-case basis, depending on the difference between the true and approximated spectral type, in addition to the filter an observation is being performed under.</p>
+</div>
+<div class="section" id="Stellar-Grid">
+<h3>Stellar Grid<a class="headerlink" href="#Stellar-Grid" title="Permalink to this headline">¶</a></h3>
+<p>We can also add a source to our scenes by drawing directly from the synphot database, making using of the Phoenix stellar model grid:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">reference</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="s1">&#39;HIP 68245&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;grid&#39;</span><span class="p">,</span> <span class="n">spt</span><span class="o">=</span><span class="s1">&#39;b2iv&#39;</span><span class="p">,</span> <span class="n">norm_val</span><span class="o">=</span><span class="mf">4.491</span><span class="p">,</span> <span class="n">norm_unit</span><span class="o">=</span><span class="s1">&#39;vegamag&#39;</span><span class="p">,</span> <span class="n">norm_bandpass</span><span class="o">=</span><span class="s1">&#39;2mass_ks&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Reference // Adding Source: HIP 68245
+WARNING: Spectral type &#39;b2iv&#39; not compatible with Pandeia grid, using spectral type &#39;b1v&#39; instead.
+</pre></div></div>
+</div>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">kind</span></code> property has been adjusted to use the stellar grid, and more user input is required on the spectral type of the object, in addition to parameters necessary to correctly normalise the retrieved spectrum. The normalisation bandpass can be any 2MASS, WISE, Bessel, Johnson, or JWST filter (see list at the bottom of this page).</p>
+<p>Note that a name still needs to be provided for the source, this is for bookkeeping purposes and improves the clarity of the simulation FITS headers.</p>
+</div>
+<div class="section" id="User-Input-Spectrum">
+<h3>User Input Spectrum<a class="headerlink" href="#User-Input-Spectrum" title="Permalink to this headline">¶</a></h3>
+<p>The two above methods are convenient ways to add stellar objects to a scene, however, in some cases more precision is necessary, or non-stellar objects need to be included within a scene. In such a case, the remaining method is to add the source through a user input file of its spectrum:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">input_file</span> <span class="o">=</span> <span class="s1">&#39;./hip65426b_bestfit_jansky.txt&#39;</span>
+<span class="n">target</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="s1">&#39;HIP 65426b&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.83</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">input_file</span><span class="p">,</span> <span class="n">wave_unit</span><span class="o">=</span><span class="s1">&#39;micron&#39;</span><span class="p">,</span> <span class="n">flux_unit</span><span class="o">=</span><span class="s1">&#39;Jy&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Target // Adding Source: HIP 65426b
+</pre></div></div>
+</div>
+<p>Again, the <code class="docutils literal notranslate"><span class="pre">kind</span></code> property is adjusted to let PanCAKE know what to do, and relevant properties are provided to the <code class="docutils literal notranslate"><span class="pre">add_source</span></code> function. In this case, we have provided an input file with two columns of format wavelength and flux, alongside the units of the column values. A range of different units are supported, with the <a class="reference external" href="https://synphot.readthedocs.io/en/latest/synphot/units.html">synphot units</a> webpage outlining the vast majority.</p>
+<p>This time, we have added a source representing the companion HIP 65426 b. Thus far, all of our sources have been automatically located at the center of the observational scene. However, in this case we want to place this companion relative to its host star, and have provided <code class="docutils literal notranslate"><span class="pre">r</span></code>/<code class="docutils literal notranslate"><span class="pre">theta</span></code> values to define its location.</p>
+</div>
+<div class="section" id="Extended-Sources">
+<h3>Extended Sources<a class="headerlink" href="#Extended-Sources" title="Permalink to this headline">¶</a></h3>
+<p>Unfortunately, at present PanCAKE does not offer any way to include extended sources such as disks in the constructed astrophysical scenes. If you are particularly interested in such a feature, I am very much open to collaboration and would be more than happy to support any efforts to extend PanCAKE’s functionality.</p>
+</div>
+</div>
+<div class="section" id="Scene-Visualisation">
+<h2>Scene Visualisation<a class="headerlink" href="#Scene-Visualisation" title="Permalink to this headline">¶</a></h2>
+<p>To check that your scenes have been constructed correctly, both spatially and spectrally, PanCAKE also includes two plotting functions to help visualise a scene.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">target</span><span class="o">.</span><span class="n">plot_scene</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Target Scene&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pancake_scene_construction_14_0.png" src="../_images/notebooks_pancake_scene_construction_14_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">target</span><span class="o">.</span><span class="n">plot_source_spectra</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Target Scene: Spectra&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pancake_scene_construction_15_0.png" src="../_images/notebooks_pancake_scene_construction_15_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Modifying-Scenes">
+<h2>Modifying Scenes<a class="headerlink" href="#Modifying-Scenes" title="Permalink to this headline">¶</a></h2>
+<p>In some cases it will be necessary to modify the sources within a Scene after it is created. To aid this, there are a selection of functions that can be used the move sources spatially, or renormalise an individual sources spectrum.</p>
+<div class="section" id="Spatial-Adjustments">
+<h3>Spatial Adjustments<a class="headerlink" href="#Spatial-Adjustments" title="Permalink to this headline">¶</a></h3>
+<p>All the sources within a given scene can be offset in x-y space, or rotated about a chosen center. Offsets should be specified in x, y distances in arcseconds, and rotations should be specified in degrees. A rotation direction can also be specified, but the default is to rotate counter-clockwise.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">target</span><span class="o">.</span><span class="n">offset_scene</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="n">target</span><span class="o">.</span><span class="n">rotate_scene</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;counter_clockwise&#39;</span><span class="p">)</span>
+<span class="n">target</span><span class="o">.</span><span class="n">plot_scene</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Target Scene (Modified)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pancake_scene_construction_18_0.png" src="../_images/notebooks_pancake_scene_construction_18_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Spectral-Adjustments">
+<h3>Spectral Adjustments<a class="headerlink" href="#Spectral-Adjustments" title="Permalink to this headline">¶</a></h3>
+<p>An individual source within a scene can be renormalised base on input normalisation parameters if necessary.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">target</span><span class="o">.</span><span class="n">renormalise_source</span><span class="p">(</span><span class="s1">&#39;HIP 65426b&#39;</span><span class="p">,</span> <span class="n">norm_val</span><span class="o">=</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">norm_unit</span><span class="o">=</span><span class="s1">&#39;mJy&#39;</span><span class="p">,</span> <span class="n">norm_bandpass</span><span class="o">=</span><span class="s1">&#39;2mass_ks&#39;</span><span class="p">)</span>
+<span class="n">target</span><span class="o">.</span><span class="n">plot_source_spectra</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Target Scene: Spectra (Modified)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pancake_scene_construction_20_0.png" src="../_images/notebooks_pancake_scene_construction_20_0.png" />
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="Ancilliary-Information">
+<h2>Ancilliary Information<a class="headerlink" href="#Ancilliary-Information" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Compatible-normalisation-bandpasses:">
+<h3>Compatible normalisation bandpasses:<a class="headerlink" href="#Compatible-normalisation-bandpasses:" title="Permalink to this headline">¶</a></h3>
+<p>2mass_j, 2mass_h, 2mass_ks, wise_w1, wise_w2, wise_w3, wise_w4, bessel_j, bessel_h, bessel_k, cousins_r, cousins_i, johnson_u, johnson_b, johnson_v, johnson_r, johnson_i, johnson_j, johnson_k, f070w, f090w, f115w, f140m, f150w, f150w2, f162m, f164n, f182m, f187n, f200w, f210m, f210m_nd, f212n, f250m, f277w, f300m, f322w2, f323n, f335m, f335m_nd, f356w, f360m, f405n, f410m, f430m, f444w, f460m, f466n, f470n, f480m, wlp4, f1065c, f1140c, f1550c, f2300c, f560w, f770w, f1000w, f1130w, f1280w,
+f1500w, f1800w, f2100w, f2550w, fnd</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
