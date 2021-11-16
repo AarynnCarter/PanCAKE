@@ -20,12 +20,7 @@ class Scene():
     __NEXT_ID = 1
     def __init__(self, name=None, **kwargs):
         '''
-        Initialisation function
-
-        Parameters
-        ----------
-        name : str
-            Name of the scene
+        Initialisation function, can pass a string name. 
         '''
         #Load a default pandeia scene to assign properties to. NIRCam/Coroangraphy doesn't matter here, just need an empty scene dict
 
