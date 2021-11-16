@@ -20,6 +20,8 @@ class Scene():
     __NEXT_ID = 1
     def __init__(self, name=None, **kwargs):
         '''
+        Initialisation function
+
         Parameters
         ----------
         name : str
