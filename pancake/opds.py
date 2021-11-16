@@ -1,8 +1,14 @@
 '''
+All code in this module is from Jarron Leisenring and the
+pyNRC / WebbPSF_ext packages, repoduced with permission.
 
-ALL CODE BELOW IS FROM JARRON LEISENRING
+The primary reason for direct duplication is to avoid complicating
+the installation of PanCAKE.
+
+See following links for potentially more up to date implementations:
+
 https://github.com/JarronL/pynrc/blob/develop/pynrc/opds.py
-
+https://github.com/JarronL/webbpsf_ext/blob/main/webbpsf_ext/opds.py
 '''
 
 # Import libraries

@@ -19,19 +19,54 @@ from scipy.interpolate import interp1d
 
 import webbpsf
 
-#####################################################################################################################
-#####################################################################################################################
-#####################################################################################################################
-'''
-Sequence class used to construct an observational sequence from invidual specified
-observations of user defined scenes. 
-'''
 class Sequence():
+    '''
+    Sequence class used to construct an observational sequence from invidual specified
+    observations of user defined scenes. 
+    '''
     def __init__(self, **kwargs):
         self.observation_sequence = []
-
-    #Add observation does the heavy lifting, with a wide variety of input options. 
+ 
     def add_observation(self, scene, exposures, mode='coronagraphy', nircam_mask='default', nircam_subarray='default', miri_subarray='default', telescope='jwst', optimise_margin=0.05, optimize_margin=None, max_sat=0.95, rolls=None, nircam_sgd=None, miri_sgd=None, scale_exposures=None, verbose=True):
+        '''
+        Add observation does the heavy lifting, with a wide variety of input options.
+
+        Parameters
+        ----------
+        scene : pancake.Scene() object
+            The scene we want to observe
+        exposures: list of tuples
+            The exposures we want to perform, possible formats are
+            - [(FILTER, PATTERN, NGROUP, NINT),...]
+            - [(FILTER, 'optimise', t_exp),...] with t_exp in seconds
+        mode : str
+            Observing mode, 'coronagraphy' is working, 'imaging' a future development. 
+        nircam_mask : str
+            The NIRCam coronagraphic mask to use, 'default' we use round masks 
+        nircam_subarray : str
+            NIRCam subarray to use, 'default' will use the one assigned to the chosen mask
+        miri_subaray : str
+            MIRI subarray to use, 'default' will use the one assigned to the chosen mask
+        telescope : str
+            Telescope to observe with, only 'jwst' is possible at this time.
+        optimise_margin : float
+            Fraction of the input t_exp that we can deviate from the overall t_exp for a given exposure
+        optimize_margin : str / None
+            For the Americans
+        max_sat : float
+            Maximum fraction of saturation to reach when optimising
+        rolls : list of floats
+            PA angles to observe scene at
+        nircam_sgd : str / None
+            NIRCam small grid dither pattern to use, if any
+        miri_sgd : str / None
+            MIRI small grid dither pattern to use, if any
+        scale_exposures : pancake.Scene()   
+            Scene to scale the provided t_exp in order to reach ~the same number of photons
+        verbose : bool
+            Boolean toggle for terminal printing.
+        '''
+
         #First copy scene so that the user provided scene isn't modified
         scene = deepcopy(scene)
 
@@ -195,6 +230,54 @@ class Sequence():
             #                     self.observation_sequence.append(deepcopy(temp_obs_dict))
 
     def run(self, ta_error='saved', wavefront_evolution=True, on_the_fly_PSFs=False, wave_sampling=3, save_file=False, resume=False, verbose=True, cache='none', cache_path='default' ,offaxis_nircam=[1,1], offaxis_miri=[1,1], debug_verbose=False, initial_wavefront_realisation=4):
+        '''
+        Perform all simulations for the exposures defined within this sequence.
+
+        Parameters
+        ----------
+        ta_error : str / float
+            Target acquisition errors
+            - 'saved' to use a saved random seed of offsets
+            - 'random' for a random error
+            - int or float for random error with set amplitude in mas
+            - 'none' for no error
+        wavefront_evolution : bool
+            Whether to evolve the wavefront error throughout the observation, requires RA and Dec
+            for at least one source within the scenes being observed. 
+        on_the_fly_PSFs : bool
+            Whehter to calculate PSF's on the fly using WebbPSF (more accurate) or use the precomputed
+            library (faster).
+        wave_sampling : int
+            If on_the_fly_PSFs == True, sets the number of wavelengths to be sampled in each filter
+        save_file : str
+            File name to save simulations to
+        resume : bool
+            Toggle to resume an interrupted run under the same save_file path
+        verbose : bool
+            Toggle for printing statments to terminal 
+        cache : str
+            Type of cache to use when generating PSFs, options are
+            - 'none' for no caching
+            - 'ram' for LRU ram caching
+            - 'disk' for hard drive caching
+        cache_path : str
+            Directory path to save / load cached PSFs under 'disk' caching
+        offaxis_nircam : list
+            x, y coordinates in arcseconds for NIRCam offaxis PSF calculations
+        offaxis_miri : list
+            x, y coordinates in arcseconds for MIRI offaxis PSF calculations
+        debug_verbose : bool
+            Toggle printing of debug statements, toggled off by default as they flood the terminal
+            and do no impact anything.
+        initial_wavefront_realisation : int, 1-10
+            10 possible wavefronts to use to start a simulation, doesn't greatly impact results
+
+        Returns
+        -------
+        hdulist : FITS HDUList()
+            All simulations as a FITS HDUlist dataset
+        '''
+
         #PanCAKE adjustable options
         pancake_options = options
         pancake_options.verbose = debug_verbose
@@ -351,7 +434,7 @@ class Sequence():
             image_header['NGROUP'] =  base_obs_dict['configuration']['detector']['ngroup'] 
             image_header['NINT'] = base_obs_dict['configuration']['detector']['nint']
             image_header['TEXP'] = (determine_exposure_time(image_header['SUBARRAY'], image_header['PATTERN'], image_header['NGROUP'], image_header['NINT']), 'seconds')
-            image_header['PIXSCALE'] = (determine_pixel_scale(image_header['INSTRMNT'], image_header['FILTER']), 'arcsec/pixel')
+            image_header['PIXSCALE'] = (determine_pixel_scale(image_header['FILTER']), 'arcsec/pixel')
             #image_header['ROLLANG'] = (base_obs_dict['strategy']['scene_rotation'], 'degrees')
             image_header['ROLLANG'] = (base_obs_dict['scene_rollang'], 'degrees')
             image_header['DITHER'] = base_obs_dict['dither_strategy']
@@ -384,6 +467,27 @@ class Sequence():
         return hdulist
 
     def _relative_exposure_time(self, scene, filt, master_scene, master_exposure_time=3600):
+        '''
+        #Figure out how much longer (or shorter) an observation should be with reference to the relative flux of the
+        brightest sources between two scenes. Inaccurate if the flux of the brightest source isn't >> than other sources. 
+
+        Parameters
+        ----------
+        scene : pancake.Scene()
+            Pancake scene to scale
+        filt : str
+            Filter we are comparing fluxes in
+        master_scene : str
+            Pancake scene to scale the flux relative to
+        master_exposure_time : float
+            Exposure time in seconds of the master scene observation
+
+        Returns
+        -------
+        exposure_time : float
+            New exposure time for the scene
+        '''
+
         #Figure out how much longer (or shorter) an observation should be with reference to the relative flux of the
         #brightest sources between two scenes. Inaccurate if the flux of the brightest source isn't >> than other sources. 
         magnitude=50
@@ -408,6 +512,31 @@ class Sequence():
         return exposure_time
 
     def _extract_readout(self, scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=True):
+        ''' 
+        Wrapper function to determine readout parameters for a given observation
+
+        Parameters
+        ----------
+        scene : pancake.Scene()
+            Pancake scene being obesrved
+        exposure : tuple
+            The exposure we want to perform, possible formats are
+            - (FILTER, PATTERN, NGROUP, NINT)
+            - (FILTER, 'optimise', t_exp)
+        subarray : str
+            Subarray we are observing in
+        obs_dict : dict
+            pandeia formatted observation dictionary
+        optimise_margin : float
+            Fraction of the input t_exp that we can deviate from the overall t_exp for a given exposure
+        scale_exposures : pancake.Scene()   
+            Scene to scale the provided t_exp in order to reach ~the same number of photons
+        max_sat : float
+            Maximum fraction of saturation to reach. 
+        verbose : bool
+            Boolean toggle for terminal printing.
+
+        '''
         filt = exposure[0].lower()
         if exposure[1] in ['optimise', 'optimize']:
             #Need to optimise the exposure readouts
@@ -459,8 +588,26 @@ class Sequence():
         '''
         We want to calculate a range of optical path difference (OPD) maps dependent on how the observatory
         moves throughout the sequenced observations. 
-        '''
 
+
+        Parameters
+        ----------
+        opd_estimate : str
+            'requirements' or 'predicted' initial OPD wavefront
+        opd_realisation : int, 1-10
+            10 possible wavefronts to use to start a simulation, doesn't greatly impact results
+        pa_range : str
+            What range of PA's to aim for when calculating movement of telescope
+            between scenes - options are, 'median', 'minimum', 'maximum'
+
+        Returns
+        -------
+        nircam_opd_lhdul : HDUList()
+            HDUList for OPD wavefronts at the start, middle, and end of all observations for NIRCam
+        miri_opd_lhdul
+            HDUList for OPD wavefronts at the start, middle, and end of all observations for MIRI
+
+        '''
         # First thing we need to do is gather the geometric properties of the scenes in the sequence so that we 
         # know what the ra, dec, lambda, beta, and pitch angle should be for each observation. 
         geom_props = self._get_geom_props(pa_range=pa_range)
@@ -598,6 +745,26 @@ class Sequence():
         return nircam_opd_lhdul, miri_opd_lhdul
 
     def _get_geom_props(self, pa_range='median'):
+        '''
+        Get geometric properties of the scenes in an observational sequence, estimate
+        the possible pitch angles for the scenes throughout the year, and assign which
+        pitch angles to observe at. 
+
+        Parameters
+        ----------
+        pa_range : str
+            The range of PA's between scenes that we want to adopt for the simulation
+            - 'minimum', the smallest possible range in PA between scenes (lowest wavefront drift)
+            - 'median', the median possible range in PA between scenes
+            - 'maximum', the maximum possible range in PA between scenes (highest wavefront drift)
+
+        Returns
+        -------
+        geom_props : dict
+            Geometric properties for each scene within the sequence, including
+            RA, Dec, Ecliptic Longitude/Latitude, and observatory PA. 
+        '''
+
         ##### First get the RA, Dec
         geom_props = {}
         for obs_dict in self.observation_sequence[:]:
@@ -696,6 +863,23 @@ class Sequence():
         return geom_props
 
     def _find_ra_dec(self, obs_dict):
+        '''
+        Simple helper function to grab the RA and Dec of a scene
+        from an input Pandeia/PanCAKE dictionary.
+
+        Parameters
+        ----------
+        obs_dict : dict
+            Pandeia dictionary created during Scene building
+
+        Returns
+        -------
+        ra : float
+            Right ascension
+        dec : float
+            Declination
+        '''
+
         #Search for RA and DEC values
         ra, dec = None, None
         for source in obs_dict['scene']:
@@ -708,9 +892,23 @@ class Sequence():
         return ra, dec
 
     def _slew_angdist_to_time(self, slew_angdist):
-        #Slew distance must be in degrees. 
-        
-        #Slew distance and time costs taken from https://jwst-docs.stsci.edu/jppom/visit-overheads-timing-model/slew-times
+        ''' 
+        Function to determine the time necessary to perform a slew of a given
+        angular distance. 
+
+        All values taken from:
+        https://jwst-docs.stsci.edu/jppom/visit-overheads-timing-model/slew-times
+
+        Parameters
+        ----------
+        slew_angdist : float
+            Angular slew distance (in degrees)
+
+        Returns
+        -------
+        slew_time : float
+            Slew time (in seconds)
+        '''
         slew_angdists = np.array([0.0000000, 0.0600000, 0.0600001, 15.0000000, 20.0000000, 20.0000001, 30.0000000, 50.0000000, 100.0000000,
             150.0000000, 300.0000000, 1000.0000000, 3600.0000000, 4000.0000000, 10000.0000000, 10800.0000000, 10800.0000001, 14400.0000000,
             18000.0000000, 21600.0000000, 25200.0000000, 28800.0000000, 32400.0000000, 36000.0000000, 39600.0000000, 43200.0000000,
@@ -722,7 +920,7 @@ class Sequence():
             955.648, 984.320, 1012.224, 1039.104, 1065.344, 1090.816, 1115.648, 1336.448, 1537.408, 1744.000, 1939.328, 2112.192, 2278.272,
             2440.320, 2599.936, 2757.632, 2914.240, 3069.888, 3224.832, 3379.328, 3533.376, 3687.104, 3840.512])
 
-        slew_angdists_deg = slew_angdists /3600 
+        slew_angdists_deg = slew_angdists / 3600 
         time_angdist_interp = interp1d(slew_angdists_deg, slew_times)
 
         slew_time = time_angdist_interp(slew_angdist)
@@ -731,6 +929,20 @@ class Sequence():
 
 
     def _get_ordered_scene_names(self, duplicates=True):
+        '''
+        Helper function to get all scene names from an input
+        Pandeia+PanCAKE dictionary.
+
+        Parameters
+        ----------
+        duplicates : bool
+            Include duplicate scene names in the returned list.
+
+        Returns
+        -------
+        scene_names : list of strings
+            All the scene names from the dictionary
+        '''
         scene_names = []
         for obs_dict in self.observation_sequence:
             scene_names.append(obs_dict['scene_name'])
@@ -739,6 +951,21 @@ class Sequence():
         return scene_names
 
 def load_run(save_file):
+    '''
+    Load a previously performed / incomplete PanCAKE
+    simulation run. 
+
+    Parameters
+    ----------
+    save_file : str
+        File path for the saved simulation.     
+    
+    Returns
+    -------
+    hdul : FITS HDUList
+        Extracted file in HDUList format. 
+    '''
+
     #Load in a recently performed and saved run
     with fits.open(save_file) as save_data:
         hdul = deepcopy(save_data)

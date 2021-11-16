@@ -1,7 +1,8 @@
-from __future__ import absolute_import, print_function
 """
 This file contains a number of pancake utilities which may be useful in running pancake.
 """
+from __future__ import absolute_import, print_function
+
 import os
 import json
 import numpy as np 
@@ -32,6 +33,16 @@ def determine_pandeia_offset(config):
     Uses Pandeia's PSF library to determine which PSF offset pandeia would use for a particular
     configuration (for comparison with the offset that pancake would use in on-the-fly PSF
     generation).
+
+    Parameters
+    ----------
+    config : dict
+        Pandeia dictionary for the observation
+
+    Returns
+    -------
+    - : dict
+        Dictionary of 'scene' and 'reference' offsets.
     """
     instrument = config['configuration']['instrument']['instrument']
     aperture = config['configuration']['instrument']['aperture']
@@ -54,6 +65,21 @@ def stellar_spectrum(stellar_type, bandpass, magnitude):
     """
     Create a spectrum dictionary that assumes a Phoenix model with a key found in pandeia, and set
     the magnitude to the provided value in the provided bandpass (in ABMAG)
+
+    Parameters
+    ----------
+    stellar_type : str
+        Spectral type of star
+    bandpass : str
+        Bandpass for normalisation
+    magnitude : float
+        Vega magnitude in aforementioned bandpass
+
+
+    Returns 
+    -------
+    spectrum : dict
+        Spectrum parameters for input into Pandeia
     """
     spectrum = {'spectrum_parameters': ['normalization', 'sed']}
     spectrum['sed'] = {'sed_type': 'phoenix', 'key': stellar_type}
@@ -69,10 +95,21 @@ def stellar_spectrum(stellar_type, bandpass, magnitude):
     
     return spectrum
 
-def pandeia_spectrum(stellar_type):#, norm_val=5, norm_unit='vegamag', norm_bandpass='2mass_ks', **kwargs):
+def pandeia_spectrum(stellar_type):
     """
     Generate a spectrum using the Pandeia Phoenix data files. 
     Returns two arrays containing the wavelength and flux values, unormalised. 
+
+    Parameters
+    ----------
+    stellar_type : str
+        Spectral type of star
+
+    Returns 
+    -------
+    spectrum.wave : pysynphot spectrum wavelength axis
+    spectrum.flux : pysynphot spectrum wavelength axis
+
     """
     pandeia_spectra = {'config':'phoenix/spectra.json'}
     psed_wav, psed_flux = psed.Phoenix(key=stellar_type, spectra=pandeia_spectra, webapp=True).get_spectrum() #Webapp=True so that only SpT is required
@@ -86,6 +123,20 @@ def pandeia_spectrum(stellar_type):#, norm_val=5, norm_unit='vegamag', norm_band
 def user_spectrum(filename, wave_unit='micron', flux_unit='mJy'):
     '''
     Read in a user spectrum from a specified file. 
+
+    Parameters
+    ----------
+    filename : str 
+        Filepath for user spectrum file
+    wave_unit : str
+        Unit for wavelength axis (column 1)
+    flux_unit : str
+        Unit for flux axis (column 2)
+
+    Returns
+    -------
+    spectrum.wave : pysynphot spectrum wavelength axis
+    spectrum.flux : pysynphot spectrum wavelength axis
     '''
     if not os.path.isfile(filename):
         raise OSError('File "{}" not located, unable to extract spectrum.'.format(filename))
@@ -108,6 +159,27 @@ def user_spectrum(filename, wave_unit='micron', flux_unit='mJy'):
     return spectrum_wave, spectrum_flux
 
 def normalise_spectrum(input_wave, input_flux, norm_val=5, norm_unit='vegamag', norm_bandpass='2mass_ks'):
+    '''
+    Normalise a spectrum to a given bandpass
+
+    Parameters
+    ----------
+    input_wave : synphot wavelengths
+        Wavelengths 
+    input_flux : synphot fluxes
+        Flux values in mJy
+    norm_val : float
+        Value to normalise to
+    norm_unit : str
+        Unit for normalisation value
+    norm_bandpass : str
+        Bandpass to normalise in
+
+    Returns
+    -------
+    spectrum.wave : pysynphot spectrum wavelength axis
+    spectrum.flux : pysynphot spectrum wavelength axis
+    '''
 
     #Get bandpass for normalisation
     NormBandpass = read_bandpass(norm_bandpass)
@@ -128,12 +200,29 @@ def normalise_spectrum(input_wave, input_flux, norm_val=5, norm_unit='vegamag', 
     return spectrum_wave, spectrum_flux
 
 def normalize_spectrum(*args, **kwargs):
+    # This one's for y'all
     return normalise_spectrum(*args, **kwargs)
 
 def query_simbad(query_string, query_timeout_sec=5.0, default_spt='a0v', verbose=True):
     """
     Query simbad for details on a target object, adapted from the JWST Coronagraphic Visibility Tool
     Will in current state attempt to extract: RA, Dec, Spectral Type and Kmagnitude
+
+    Parameters
+    ----------
+    query_string : str
+        String to query in SIMBAD, i.e. a stellar name / identifier. 
+    query_timeout_sec : float
+        Time to allow for query to complete 
+    default_spt : str
+        Default spectral type to adopt if SIMBAD spectral type cannot be interpreted
+    verbose : bool
+        Whether to print information to the terminal
+
+    Returns
+    -------
+    query_results : dict
+        Extracted SIMBAD results.
     """
     if not isinstance(query_string, str):
         raise TypeError('Name of source must be a string type')
@@ -202,8 +291,22 @@ def query_simbad(query_string, query_timeout_sec=5.0, default_spt='a0v', verbose
 
 def convert_spt_to_pandeia(raw_spectral_type):
     '''
-    Function to take a spectral type string, either from Simbad or directly from the user, and return an approximation 
-    that Pandeia can use. If the spectral type string cannot be understood, then the spectral type will be assumed as A0V
+    Function to take a spectral type string, either from Simbad or directly from the user, 
+    and return an approximation that Pandeia can use. If the spectral type string cannot 
+    be understood, then the spectral type will be assumed as A0V.
+
+    Makes use of a lot of if statements, perhaps someone smarter could streamline this
+    at a later date. 
+
+    Parameters
+    ----------
+    raw_spectral_type : str
+        Spectral type to convert to Pandeia compatability. 
+
+    Returns
+    -------
+    pandeia_spectral_type : str
+        Pandeia compatible spectral type
     '''
     raw_spectral_type = raw_spectral_type.lower()
     pandeia_spectral_type = None
@@ -520,6 +623,33 @@ def convert_spt_to_pandeia(raw_spectral_type):
     return pandeia_spectral_type
 
 def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1):
+    '''
+    Function to estimate optimal readout parameters for a given observation based
+    on an input exposure time. 
+
+    Parameters
+    ----------
+    obs_dict : dict
+        Pandeia dictionary for this observation
+    t_exp : float
+        Desired exposure time in seconds
+    optimise_margin : float
+        Fraction of t_exp "wiggle-room" in estimating optimal readout
+    min_sat : float
+        Minimum allowable fraction of saturation
+    max_sat : float
+        Maximum allowable fraction of saturation
+
+    Returns
+    -------
+    pattern : str
+        Optimal readout pattern
+    groups : int
+        Optimal number of groups
+    integrations : int
+        Optimal number of integrations
+    '''
+
     pattern, groups, integrations = None, None, None
     
     t_margin = t_exp * optimise_margin #Convert optimise margin to margin in seconds
@@ -695,6 +825,27 @@ def optimize_readout(*args, **kwargs):
     return optimise_readout(*args, **kwargs)
 
 def compute_magnitude(spectrum_wave, spectrum_flux, filt, wave_unit='micron', flux_unit='mJy'):
+    '''
+    Calculate the magnitude of a spectrum in a given filter. 
+
+    Parameters
+    ----------
+    spectrum_wave : synphot wavelengths
+        Wavelengths 
+    spectrum_flux : synphot fluxes
+        Flux values in mJy
+    filt : str
+        Filter / bandpass to use
+    wave_unit : str
+        Unit of spectrum wave axis
+    flux_unit : str
+        Unit of spectrum flux axis
+
+    Returns
+    -------
+    magnitude : float
+        Vega magnitude in provided filter. 
+    '''
 
     Bandpass = read_bandpass(filt)
     SED = SourceSpectrum(Empirical1D, points=spectrum_wave << u.Unit(wave_unit), lookup_table=spectrum_flux << u.Unit(flux_unit))
@@ -706,6 +857,28 @@ def compute_magnitude(spectrum_wave, spectrum_flux, filt, wave_unit='micron', fl
     return magnitude
 
 def equatorial_to_ecliptic(ra, dec, form=None, verbose=False):
+    '''
+    Function to covert equatorial RA and Dec into the ecliptic
+    longitude and latitude. 
+    
+    Parameters
+    ----------
+    ra : float
+        Right ascension
+    dec : float
+        Declination
+    form : str
+        Format of values, 'degrees' or anything else for radians. 
+    verbose : bool
+        Print information to terminal
+
+    Returns
+    -------
+    lamb : float    
+        Ecliptic longtiude
+    beta : float
+        Ecliptic latitude
+    ''' 
     ecl = 23.43 * (np.pi / 180)
 
     if form == 'degrees':

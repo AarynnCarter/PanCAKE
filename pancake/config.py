@@ -44,10 +44,13 @@ class EngineConfiguration(object):
 
     @property
     def verbose(self):
+        '''
+        Print information to terminal
+        '''
         return self._verbose
     
     @verbose.setter
-    def verbose(self, value):
+    def verbose(self, value):.
         if isinstance(value, bool):
             self._verbose = value
     

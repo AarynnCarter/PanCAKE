@@ -261,12 +261,12 @@ def random_seed(self):
 	return None
 
 def process_config(raw_config, target_scene, reference_scene):
-	"""
+	'''
 	Deprecated
 
 	Process a variable that might be a file name, full JWST configuration dictionary, or instrument
 	configuration dictionary, along with optional target and reference scenes.
-	"""
+	'''
 	if isinstance(raw_config, str):
 		# A JSON file. In this case, it should be a full pandeia config dictionary
 		if os.path.isfile(raw_config):
@@ -299,7 +299,7 @@ def process_config(raw_config, target_scene, reference_scene):
 	return config
 
 def calculate_subtracted(raw_config, target=None, reference=None, ta_error=False, sgd=False, stepsize=20.e-3):
-	"""
+	'''
 	Deprecated - This is a function to calculate subtracted images with an optional reference image 
 	small-grid dither (SGD). It does the following:
 		- Create a pandeia configuration file from which to build the target and reference scenes
@@ -346,7 +346,7 @@ def calculate_subtracted(raw_config, target=None, reference=None, ta_error=False
 	psf: artificial PSF created with klip
 	subtracted: numpy array containing <iterations> reference-subtracted target images
 
-	"""
+	'''
 	from .scene import create_SGD, get_ta_error, offset_scene
 	from .analysis import klip_projection, register_to_target
 	
@@ -399,7 +399,7 @@ def calculate_subtracted(raw_config, target=None, reference=None, ta_error=False
 	return output
 
 def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=True, iterations=5, keep_options=False):
-	"""
+	'''
 	Deprecated - This is a replacement for the Pandeia calculate_contrast function. It is designed to use the
 	various internal analysis functions to do the following:
 		- Load one of the pandeia_coronagraphy custom templates
@@ -446,8 +446,8 @@ def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=T
 	contrast: list of numpy arrays containing:
 		bins: bins used for the normalized contrast profile
 		contrast: normalized contrast profile
-		
-	"""
+
+	'''
 	from .scene import get_ta_error, offset_scene
 	from skimage import draw
 	from scipy.ndimage import convolve

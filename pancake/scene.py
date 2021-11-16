@@ -19,7 +19,14 @@ class Scene():
     '''
     __NEXT_ID = 1
     def __init__(self, name=None, **kwargs):
+        '''
+        Parameters
+        ----------
+        name : str
+            Name of the scene
+        '''
         #Load a default pandeia scene to assign properties to. NIRCam/Coroangraphy doesn't matter here, just need an empty scene dict
+
         self.pandeia_scene = build_default_calc('jwst', 'nircam', 'coronagraphy')['scene']
         self.pandeia_scene[0]['assigned'] = False #No source has been assigned to this 'default' scene yet 
         self.source_list = []
@@ -31,6 +38,25 @@ class Scene():
             self.scene_name = name
 
     def add_source(self, name, kind='simbad', r=0.0, theta=0.0, verbose=True, **kwargs):
+        '''
+        Add a source to the Scene
+
+        Parameters
+        ----------
+        name : str
+            Name of the source to be added
+        kind : str
+            Kind of source to add, options are
+            - 'simbad' for SIMBAD query of name string
+            - 'grid' to use Pandeia Phoenix  with 'spt', 'norm_val', 'norm_unit', 'norm_bandpass' passed as kwargs
+            - 'file' to use input file, with 'wave_unit' and 'flux_unit' passed as kwargs
+        r : float
+            Radial separation of source from center in arcseconds
+        theta : float
+            PA of source, should be N->E counterclockwise
+        verbose : bool
+            Print update statements to terminal
+        '''
         if verbose: print('{} // Adding Source: {}'.format(self.scene_name, name))
         raw_id = len(self.source_list)
         
@@ -104,8 +130,27 @@ class Scene():
         working_source['spectrum']['sed']['sed_type'] = 'input'
         working_source['spectrum']['sed']['spectrum'] = [spectrum_wave, spectrum_flux]
 
-    #Renormalise a source
+    def renormalize_source(self, *args, **kwargs):
+        '''
+        I assure you it's pronounced 'zed'.
+        '''
+        return renormalise_source(self, *args, **kwargs)
+
     def renormalise_source(self, source, norm_val=5, norm_unit='vegamag', norm_bandpass='2mass_ks'):
+        ''' 
+        Renormalise a source already within a scene.
+
+        Parameters
+        ----------
+        source : str
+            Name of source to renormalise
+        norm_val : float
+            Value to renormalise to
+        norm_unit : str
+            Unit to perform renormalisation to
+        norm_bandpass : str
+            String for the bandpass we are normalising under, 2MASS, WISE or anything in synphot by default.  
+        '''
         try:
             raw_id = self.source_list.index(source)
         except:
@@ -119,6 +164,21 @@ class Scene():
         working_source['spectrum']['sed']['spectrum'] = [renorm_spec_wave, renorm_spec_flux]
 
     def source_magnitude(self, source, filt):
+        '''
+        Calculate the magnitude of particular source in a given filter
+
+        Parameters
+        ----------
+        source : str
+            Name of source
+        filt : str
+            Filter to calculate magnitude in
+
+        Returns
+        -------
+        magnitude : float
+            Magnitude of object in apparent vegamag
+        '''
         try:
             raw_id = self.source_list.index(source)
         except:
@@ -130,14 +190,35 @@ class Scene():
 
         return magnitude
 
-    #Offset scene in x, y space in arcseconds
     def offset_scene(self,x,y):
+        '''
+        Offset scene in x, y space in arcseconds
+
+        Parameters
+        ----------
+        x : float
+            x offset in arcseconds
+        y : float
+            y offset in arcseconds
+        '''
         for source in self.pandeia_scene:
             source['position']['x_offset'] += x
             source['position']['y_offset'] += y
 
-    #Rotate scene given an angle in degrees
     def rotate_scene(self, theta, center=[0.,0.], direction='counter_clockwise'):
+        '''
+        Rotate scene given an angle in degrees
+        
+        Parameters
+        ----------
+        theta : float
+            Angular distance to rotate
+        center : list
+            x and y coordinate to act as rotation center
+        direction : str
+            Direction to perform rotation, 'clockwise' or 'counter_clockwise'
+            default is counter clockwise. 
+        '''
         if direction == 'counter_clockwise': 
             #Subtract from 360 to convert to a counter clockwise rotation
             theta = 360-theta
@@ -149,6 +230,18 @@ class Scene():
             source['position']['y_offset'] = newxy[1]
     
     def plot_source_spectra(self, sources='all', title='', newfig=True):
+        '''
+        Produce a plot of the spectra of sources within a scene. 
+
+        Parameters
+        ----------
+        sources : str / list of strings
+            List of source names, or 'all' to plot all source spectra
+        title : str
+            Title of plot
+        newfig : bool
+            Start a new figure, default is True
+        '''
         if newfig:
             plt.figure(figsize=(8,5))
             ax = plt.subplot(111)
@@ -171,6 +264,17 @@ class Scene():
         plt.show()
 
     def plot_scene(self, title='', newfig=True):
+        '''
+        Plot the scene and its sources spatially. 
+
+        Parameters
+        ----------
+        title : str
+            Title of plot
+        newfig : bool
+            Start a new figure, default is True
+        '''
+
         if newfig:
             plt.figure(figsize=(5,5))
             ax = plt.subplot(111,projection='polar')
@@ -185,25 +289,48 @@ class Scene():
         plt.show()
 
 
-def create_SGD(ta_error=False, fsm_error='default', stepsize=20.e-3, pattern_name=None, sim_num=0):
+def create_SGD(ta_error='none', fsm_error='default', stepsize=20.e-3, pattern_name=None, sim_num=0):
     '''
     Create small grid dither pointing set. There are two
     ways to specify dither patterns:
-    
-        ta_error : add TA error to each point in the SGD?
 
-        stepsize : floating point value for a 3x3 grid.
+    ta_error - add TA error to each point in the SGD?
 
-        pattern_name : string name of a pattern corresponding to
-                  one of the named dither patterns in APT.
+    stepsize - floating point value for a 3x3 grid.
+
+    pattern_name - string name of a pattern corresponding to
+              one of the named dither patterns in APT.
 
     If you specify pattern_name, then stepsize is ignored.
 
     See https://jwst-docs-stage.stsci.edu/display/JTI/NIRCam+Small-Grid+Dithers
     for information on the available dither patterns and their names.
-    '''
-    #loop to set offsets
+    
+    Parameters
+    ----------
+    ta_error : str / int / float
+        Target acquisition error
+        - 'saved' to use a saved random seed of offsets
+        - 'random' for a random error
+        - int or float for random error with set amplitude in mas
+        - 'none' for no error
+    fsm_error : str 
+        Options of 'none' for no error, or 'default' for 2e-3 mas
+    stepsize : float
+        Manual step size for dither
+    pattern_name : str
+        Default small grid dither pattern name
+    sim_num : int
+        Specific simulation number / draw from a 'saved' ta_error
 
+    Returns
+    -------
+    sgds : list
+        list of x, y offsets for each step in the dither pattern. 
+
+    '''
+    
+    # Small grid dither patterns
     if pattern_name is not None:
         pattern_name = pattern_name.upper()
         if pattern_name == "5-POINT-BOX":
@@ -269,7 +396,6 @@ def create_SGD(ta_error=False, fsm_error='default', stepsize=20.e-3, pattern_nam
         saved_ta_x = rngx.normal(loc=0.,scale=5e-3,size=50)
         saved_ta_y = rngy.normal(loc=0.,scale=5e-3,size=50)
         ta_x, ta_y = saved_ta_x[sim_num], saved_ta_y[sim_num]
-
     elif ta_error=='random':
         # Simulate the TA error from a 5mas normal distribution
         ta_x, ta_y = get_ta_error(error='default')
@@ -295,7 +421,17 @@ def create_SGD(ta_error=False, fsm_error='default', stepsize=20.e-3, pattern_nam
     return sgds
 
 def get_ta_error(error='default'):
-    ''' 5mas 1-sigma/axis error (~7mas radial)
+    ''' 
+    5mas 1-sigma/axis error (~7mas radial)
+
+    Parameters
+    ----------
+    error : str / float
+        String of 'default' for 5e-3, or input float
+
+    Returns
+    -------
+    x,y random error
     '''
     if error == 'default': 
         error = 5e-3
@@ -303,6 +439,15 @@ def get_ta_error(error='default'):
 
 def get_fsm_error(error='default'):
     '''2mas 1/sigma/axis error from the fine steering mirror
+
+    Parameters
+    ----------
+    error : str / float
+        String of 'default' for 2e-3, 'none' for 0, or input float
+
+    Returns
+    -------
+    x,y random error
     '''
     if error == 'default':
         error = 2e-3
