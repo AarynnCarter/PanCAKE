@@ -122,6 +122,16 @@ def calculate_all(raw_config):
 	sub-reports. In pandeia 1.2, the sub-reports are not actually returned properly, so the overall
 	calculation needs to be run 3 times.
 
+	Parameters
+	----------
+	raw_config : dict
+		Dictionary compatible with Pandeia calculations
+
+	Returns
+	-------
+	output : dict
+		Various products from the pandeia calculation 
+
 	"""
 	output = {'target': {}, 'reference': {}, 'contrast': {}}
 	pandeia_version = pkg_resources.get_distribution('pandeia.engine').version
@@ -400,7 +410,9 @@ def calculate_subtracted(raw_config, target=None, reference=None, ta_error=False
 
 def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=True, iterations=5, keep_options=False):
 	'''
-	Deprecated - This is a replacement for the Pandeia calculate_contrast function. It is designed to use the
+	Deprecated
+
+	This is a replacement for the Pandeia calculate_contrast function. It is designed to use the
 	various internal analysis functions to do the following:
 		- Load one of the pandeia_coronagraphy custom templates
 		- Repeat <iterations> times:

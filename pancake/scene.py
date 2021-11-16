@@ -131,9 +131,7 @@ class Scene():
         working_source['spectrum']['sed']['spectrum'] = [spectrum_wave, spectrum_flux]
 
     def renormalize_source(self, *args, **kwargs):
-        '''
-        I assure you it's pronounced 'zed'.
-        '''
+        #I assure you it's pronounced 'zed'.
         return renormalise_source(self, *args, **kwargs)
 
     def renormalise_source(self, source, norm_val=5, norm_unit='vegamag', norm_bandpass='2mass_ks'):
@@ -327,7 +325,7 @@ def create_SGD(ta_error='none', fsm_error='default', stepsize=20.e-3, pattern_na
     -------
     sgds : list
         list of x, y offsets for each step in the dither pattern. 
-
+ 
     '''
     
     # Small grid dither patterns
