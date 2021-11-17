@@ -1,6 +1,0 @@
-:py:mod:`pancake.resources`
-===========================
-
-.. py:module:: pancake.resources
-
-
