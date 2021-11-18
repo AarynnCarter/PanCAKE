@@ -17,7 +17,7 @@ Please note this an early release version of the code, so these webpages are sti
    Installation <install>
    Basic Tutorial </notebooks/pancake_basic_tutorial.ipynb>
    Astrophysical Scene Construction </notebooks/pancake_scene_construction.ipynb>
-   Observational Sequence Construction <sequence>
+   Observational Sequence Construction </notebooks/pancake_sequence_construction.ipynb>
    Simulation Execution <simulation>
    Postprocessing <postprocessing> 
 

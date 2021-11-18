@@ -1,0 +1,764 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Observational Sequence Construction &mdash; PanCAKE 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PanCAKE
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pancake_basic_tutorial.html">Basic Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pancake_scene_construction.html">Astrophysical Scene Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulation.html">Simulation Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postprocessing.html">Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PanCAKE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Observational Sequence Construction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/notebooks/pancake_sequence_construciton.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="https://github.com/aarynncarter/PanCAKE/tree/gh-pages/notebooks/pancake_sequence_construciton.ipynb">Download full notebook here</a></p>
+</div>
+<div class="section" id="Observational-Sequence-Construction">
+<h1>Observational Sequence Construction<a class="headerlink" href="#Observational-Sequence-Construction" title="Permalink to this headline">¶</a></h1>
+<p>After the construction of astrophysical scenes to observe, the next stage in a PanCAKE simulation is to describe a sequence of observations that should be simulated. In the <a class="reference external" href="https://aarynncarter.com/PanCAKE/notebooks/pancake_basic_tutorial.html">Basic Tutorial</a> we briefly covered this, however, this page inclues much more detail on the construction steps and tunable parameters.</p>
+<div class="section" id="The-Basics">
+<h2>The Basics<a class="headerlink" href="#The-Basics" title="Permalink to this headline">¶</a></h2>
+<p>At first we need to create some scenes to observe, and initialise an empty sequence of observations:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pancake</span>
+
+<span class="c1"># Define the target scene</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">pancake</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="s1">&#39;Target&#39;</span><span class="p">)</span>
+<span class="n">target</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="s1">&#39;HIP 65426&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;simbad&#39;</span><span class="p">)</span>
+
+<span class="c1"># Define the reference scene</span>
+<span class="n">reference</span> <span class="o">=</span> <span class="n">pancake</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="s1">&#39;Reference&#39;</span><span class="p">)</span>
+<span class="n">reference</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="s1">&#39;HIP 68245&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;simbad&#39;</span><span class="p">)</span>
+
+<span class="c1"># Initialise Observational Sequence</span>
+<span class="n">seq</span> <span class="o">=</span> <span class="n">pancake</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">Sequence</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Target // Adding Source: HIP 65426
+WARNING: Couldn&#39;t determine magnitude system, assuming Vega magnitudes.
+WARNING: Spectral type &#39;a2v&#39; not compatible with Pandeia grid, using spectral type &#39;a1v&#39; instead.
+Reference // Adding Source: HIP 68245
+WARNING: Couldn&#39;t determine magnitude system, assuming Vega magnitudes.
+WARNING: Spectral type &#39;b2iv&#39; not compatible with Pandeia grid, using spectral type &#39;b1v&#39; instead.
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Adding-Observations">
+<h2>Adding Observations<a class="headerlink" href="#Adding-Observations" title="Permalink to this headline">¶</a></h2>
+<p>With an empty sequence defined, we can start to add observations of our scenes in the chronological order in which we want them to be performed using the <code class="docutils literal notranslate"><span class="pre">add_observation()</span></code> method:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<p>Here all we have done is specify the scene we want to observe (the target) and the readout parameters for an exposure we wish to perform. Note that there is no need to specify the instrument, subarray, or even coronagraphic mask and default estimations will be used. In some cases this may not be preferred, in which case see the Observation Specifics section below for further information.</p>
+<p>The exposure has been split into four properties: Filter, Readout Pattern, Number of Groups, and Number of Integrations. Be careful which way round you put the groups and integrations (Tip: they are ordered alphabetically)! If you have no idea what a readout pattern, groups, or integrations are take a look at the <a class="reference external" href="https://jwst-docs.stsci.edu/understanding-exposure-times">JWST Documentation</a>. If you know what these are, but don’t know what pattern / numbers to choose, see the Optimising
+Readout Parameters section below.</p>
+<p>If we want to add more exposures, or exposures for different scenes, we simply need to specify calls to <code class="docutils literal notranslate"><span class="pre">add_observation()</span></code> until the desired observing sequence is complete.</p>
+<div class="section" id="Grouping-Exposures">
+<h3>Grouping Exposures<a class="headerlink" href="#Grouping-Exposures" title="Permalink to this headline">¶</a></h3>
+<p>It’s a little inefficient to list the exposures one by one, so the <code class="docutils literal notranslate"><span class="pre">add_observation()</span></code> method also has the functionality to intake multiple exposures simultaneously:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;F1065C&#39;</span><span class="p">,</span> <span class="s1">&#39;FASTR1&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<p>Where we have simply added a another tuple which describes a second exposure we’d like to perform. Note that the ‘F444W’ filter is from NIRCam, and the ‘F1065C’ filter is from MIRI - there is no inherent need to separate your NIRCam and MIRI exposures. However, for a given <code class="docutils literal notranslate"><span class="pre">add_observation()</span></code> call, the default behaviour of PanCAKE is to add exposures to the observational sequence by the coronagraph they are using. In some cases, this will lead to the observations not being simulated in the
+order that they are listed, and if this is not what you would like you will need to separate the exposures in to distinct <code class="docutils literal notranslate"><span class="pre">add_observation()</span></code> calls.</p>
+</div>
+</div>
+<div class="section" id="Optimising-Readout-Parameters">
+<h2>Optimising Readout Parameters<a class="headerlink" href="#Optimising-Readout-Parameters" title="Permalink to this headline">¶</a></h2>
+<p>With multiple readout patterns varying from instrument to instrument, with further varying limits on the number of allowable groups and integrations, it isn’t straightforward to determine what parameters to actually use to optimise the SNR you would get for a given amount of time. The correct way to perform such an assessment would be to perform simulations across the readout parameters of interest to identify what maximises the SNR at a desired location within the simulated FOV. Unfortunately,
+this is too computationally intensive for PanCAKE in its current form.</p>
+<p>Nevertheless, there is an optimisation routine available which can be used to estimate close to optimal readout parameters relatively quickly. To use it, simply replace the readout parameters for an <code class="docutils literal notranslate"><span class="pre">'optimise'</span></code> string and the number of seconds you want to observe the object for:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;F1065C&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Optimising Readout // Target // Exposure: F444W, 3600 seconds
+--&gt; Pattern: DEEP8, Number of Groups: 20, Number of Integrations: 9 = 3743s
+Optimising Readout // Target // Exposure: F1065C, 3600 seconds
+--&gt; Pattern: FAST, Number of Groups: 1251, Number of Integrations: 12 = 3598s
+</pre></div></div>
+</div>
+<p>As can be seen, the readout parameters have been automatically determined and assigned for future observations. If you want to re-run your code multiple times, you can now replace the optimisation request for these calculated parameters to save time.</p>
+<p>It is important to understand that this optimisation scheme is built upon the assumption that the best overall contrast will be achieved with a combination of readout parameters that results in the largest amount of time between detector resets (i.e. the longest integration times) whilst simultaneously avoiding detector saturation and/or significant cosmic ray contamination. Such constraints maximise the number of photons detected from the astrophysical scene, whilst also minimising the impact
+of read noise. In reality, it may be that better contrasts can be obtained at wider separations by allowing the innermost regions of the image to saturate, and shorter integrations may be desirable if there is a need to obtain more integration-level images within a defined timescale. Use of this optimisation procedure should be considered carefully; however, in standard circumstances this assumption is unlikely to result in readout parameter estimations that are significantly different from the
+true optimal values. For futher information on the optimisation, see Section 3.2 and Figure 1 from the <a class="reference external" href="https://www.spiedigitallibrary.org/conference-proceedings-of-spie/11823/118230H/Simulating-JWST-high-contrast-observations-with-PanCAKE/10.1117/12.2594501.full?SSO=1">PanCAKE SPIE Paper</a>.</p>
+<div class="section" id="Scaling-Exposures">
+<h3>Scaling Exposures<a class="headerlink" href="#Scaling-Exposures" title="Permalink to this headline">¶</a></h3>
+<p>When observing a reference object, in many cases we want to match the number of photons received during our science object, and not necessarily match the exposure time. If our reference is much brighter than the target, we can reduce the exposure time significantly and make our observations much more efficient.</p>
+<p>In PanCAKE, this “scaling” of the exposure time can be performed automatically, and new readout parameters can be optimised:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">scale_exposures</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+<span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F1065C&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)],</span> <span class="n">scale_exposures</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--&gt; Scaling provided exposure times by relative flux of: &#34;Target&#34;
+---&gt; Pattern: DEEP8, Number of Groups: 7, Number of Integrations: 2 = 276s
+Optimising Readout // Reference // Exposure: F1065C, 3600 seconds
+--&gt; Scaling provided exposure times by relative flux of: &#34;Target&#34;
+--&gt; Pattern: FAST, Number of Groups: 1116, Number of Integrations: 2 = 535s
+</pre></div></div>
+</div>
+<p>Here we have demonstrated that the scaling can be performed on a precise set of readout parameters, or one that needs to be optimised. Note that the user input no longer defines the exposure to be performed, but rather a baseline exposure to scale from. To scale the exposure, we have provided the target scene object, in this case the routine will identify the brightest object in both the <code class="docutils literal notranslate"><span class="pre">reference</span></code> and <code class="docutils literal notranslate"><span class="pre">target</span></code> scenes and scale relative to their flux ratio in the provided exposure filter.</p>
+<p>If you’d prefer to scale things based on a fraction of the defined exposure time, a float or integer can also be used instead:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">scale_exposures</span><span class="o">=</span><span class="mf">0.33</span><span class="p">)</span>
+<span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F1065C&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)],</span> <span class="n">scale_exposures</span><span class="o">=</span><span class="mf">0.33</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--&gt; Scaling provided exposure times by 0.33
+---&gt; Pattern: DEEP8, Number of Groups: 7, Number of Integrations: 5 = 690s
+Optimising Readout // Reference // Exposure: F1065C, 3600 seconds
+--&gt; Scaling provided exposure times by 0.33
+--&gt; Pattern: FAST, Number of Groups: 1214, Number of Integrations: 4 = 1164s
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Fine-tuning-Optimisation">
+<h3>Fine-tuning Optimisation<a class="headerlink" href="#Fine-tuning-Optimisation" title="Permalink to this headline">¶</a></h3>
+<p>Whilst the optimisation routine is relatively inflexible, there exists some level of fine-tunability through the maximum allowable saturation fraction, and the optimisation margin.</p>
+<p>By default the optimisation routine will only select readout parameters that correspond to a fraction of full well saturation (for any pixel in the image) of 0.95. If you want to be less strict, or potentially even allow some level of saturation, this value can be adjusted:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)],</span> <span class="n">max_sat</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)],</span> <span class="n">max_sat</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Optimising Readout // Reference // Exposure: F444W, 3600 seconds
+--&gt; Pattern: DEEP8, Number of Groups: 4, Number of Integrations: 50 = 3689s
+Optimising Readout // Reference // Exposure: F444W, 3600 seconds
+--&gt; Pattern: DEEP8, Number of Groups: 10, Number of Integrations: 18 = 3637s
+</pre></div></div>
+</div>
+<p>You may have noticed in the above examples that even though an exposure time of 3600 seconds has been specified, the adopted readout parameters correspond to slightly different exposure durations. Selecting readout parameters that are optimal <em>and</em> provide a precise exposure time is very difficult owing to the JWST readout structure. Instead PanCAKE looks for potential exposures within a margin of the provided exposure time. By default this margin is 5% of the provided exposure, but can also be
+defined manually:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)],</span> <span class="n">optimise_margin</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;optimise&#39;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)],</span> <span class="n">optimise_margin</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Optimising Readout // Reference // Exposure: F444W, 3600 seconds
+--&gt; Pattern: DEEP8, Number of Groups: 6, Number of Integrations: 31 = 3613s
+Optimising Readout // Reference // Exposure: F444W, 3600 seconds
+--&gt; Pattern: DEEP8, Number of Groups: 8, Number of Integrations: 23 = 3664s
+</pre></div></div>
+</div>
+<p>and we can see that the wider margin of 20% allows for more optimal readout parameters using an exposure only 50 seconds longer than that found with a restrictive margin of 1%.</p>
+</div>
+</div>
+<div class="section" id="Observation-Specifics">
+<h2>Observation Specifics<a class="headerlink" href="#Observation-Specifics" title="Permalink to this headline">¶</a></h2>
+<p>In many cases, it will be necessary to provide further specific information to PanCAKE to further define or expand a desired observation.</p>
+<div class="section" id="Coronagraphic-Mask">
+<h3>Coronagraphic Mask<a class="headerlink" href="#Coronagraphic-Mask" title="Permalink to this headline">¶</a></h3>
+<p>PanCAKE has differing behaviour with respect to selecting coronagraphic masks depending on whether the NIRCam or MIRI instrument is being used. For MIRI, the coronagraphic mask is intrinsically tied to the observational filter, and there is no need (or capability) to manually define this. However, for NIRCam there are five independent coronagraphic masks, and most filters are compatible with more than one mask (<a class="reference external" href="https://jwst-docs.stsci.edu/jwst-near-infrared-camera/nircam-instrumentation/nircam-filters-for-coronagraphy">NIRCam Filters For
+Coronagraphy</a>). The default allocations depending on the input filter are as follows:</p>
+<p><strong>MASK210R:</strong> &lt;2.4 micron filters <strong>MASKLWB:</strong> F277W <strong>MASK335R:</strong> Remaining filters &gt;2.4 micron</p>
+<p>However, the NIRCam mask can also be explictly defined using the <code class="docutils literal notranslate"><span class="pre">nircam_mask</span></code> parameter if necesssary:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">nircam_mask</span><span class="o">=</span><span class="s1">&#39;MASK430R&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Telescope-Rolls">
+<h3>Telescope Rolls<a class="headerlink" href="#Telescope-Rolls" title="Permalink to this headline">¶</a></h3>
+<p>To facilitate ADI PSF subtraction routines, it is necessary to roll the telescope and perform an additional observation of our target scene. By default PanCAKE will perform a single roll; however, additional rolls can be defined using the <code class="docutils literal notranslate"><span class="pre">rolls</span></code> parameter:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">rolls</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+<span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">rolls</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING: Roll differences of more than 15 degrees are extremely difficult/impossible to schedule.
+</pre></div></div>
+</div>
+<p>Here we have demonstrated the two different input options. A list of precise roll values in degrees can be provided, or alternatively a <code class="docutils literal notranslate"><span class="pre">max</span></code> string can be provided to request two rolls at 0 and 14 degrees. Note that the maximum roll possible for JWST to avoid significant solar illumination is ~14 degrees, and whilst rolls larger than this can be simulated, they will not be schedulable.</p>
+</div>
+<div class="section" id="Small-Grid-Dithers">
+<h3>Small Grid-Dithers<a class="headerlink" href="#Small-Grid-Dithers" title="Permalink to this headline">¶</a></h3>
+<p>Similarly to performing multiple target rolls, it can be beneficial to obtain multiple dithered observations of reference scenes to improve the PSF diversity and facilitate better RDI PSF subtraction routines (more info <a class="reference external" href="https://jwst-docs.stsci.edu/methods-and-roadmaps/jwst-high-contrast-imaging/jwst-high-contrast-imaging-proposal-planning/hci-small-grid-dithers">here</a>). For coronagraphy, these “small-grid dithers” can be applied using the <code class="docutils literal notranslate"><span class="pre">nircam_sgd</span></code> and <code class="docutils literal notranslate"><span class="pre">miri_sgd</span></code> parameters:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F444W&#39;</span><span class="p">,</span> <span class="s1">&#39;DEEP8&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">nircam_sgd</span><span class="o">=</span><span class="s1">&#39;5-POINT-BOX&#39;</span><span class="p">)</span>
+<span class="n">seq</span><span class="o">.</span><span class="n">add_observation</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">exposures</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;F1065C&#39;</span><span class="p">,</span> <span class="s1">&#39;FASTR1&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)],</span> <span class="n">miri_sgd</span><span class="o">=</span><span class="s1">&#39;5-POINT-SMALL-GRID&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>where we have provided the name of the dither pattern to be used. As NIRCam and MIRI have different dither offsets / nomenclature, the desired small grid dither pattern must be described individually for each instrument. Information on the NIRCam dithers can be found <a class="reference external" href="https://jwst-docs.stsci.edu/jwst-near-infrared-camera/nircam-operations/nircam-dithers-and-mosaics/nircam-subpixel-dithers/nircam-small-grid-dithers">here</a> and the MIRI dithers
+<a class="reference external" href="https://jwst-docs.stsci.edu/jwst-mid-infrared-instrument/miri-operations/miri-dithering/miri-coronagraphic-imaging-dithering">here</a>.</p>
+</div>
+</div>
+<div class="section" id="Ancillary-Information">
+<h2>Ancillary Information<a class="headerlink" href="#Ancillary-Information" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Compatible-Filters:">
+<h3>Compatible Filters:<a class="headerlink" href="#Compatible-Filters:" title="Permalink to this headline">¶</a></h3>
+<p><strong>NIRCam:</strong> F182M, F187N, F200W, F210M, F212N, F250M, F277W, F300M, F322W2, F335M, F356W, F360M, F410M, F430M, F444W, F460M, F480M</p>
+<p><strong>MIRI:</strong> F1065C, F1140C, F1550C ### Compatible Masks:</p>
+<p><strong>NIRCam:</strong> MASKSWB, MASKLWB, MASK210R, MASK335R, MASK430R</p>
+<p><strong>MIRI:</strong> Tied to the chosen filter.</p>
+</div>
+<div class="section" id="Compatible-Dither-Patterns:">
+<h3>Compatible Dither Patterns:<a class="headerlink" href="#Compatible-Dither-Patterns:" title="Permalink to this headline">¶</a></h3>
+<p><strong>NIRCam:</strong> 5-POINT-BOX, 5-POINT-DIAMOND, 9-POINT-CIRCLE, 3-POINT-BAR, 5-POINT-BAR</p>
+<p><strong>MIRI:</strong> 5-POINT-SMALL-GRID, 9-POINT-SMALL-GRID</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aarynn Carter.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
