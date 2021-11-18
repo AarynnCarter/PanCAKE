@@ -115,6 +115,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Ancillary-Information">Ancillary Information</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Compatible-Filters:">Compatible Filters:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Compatible-Masks:">Compatible Masks:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Compatible-Dither-Patterns:">Compatible Dither Patterns:</a></li>
 </ul>
 </li>
@@ -674,7 +675,11 @@ Optimising Readout // Reference // Exposure: F444W, 3600 seconds
 <h3>Coronagraphic Mask<a class="headerlink" href="#Coronagraphic-Mask" title="Permalink to this headline">¶</a></h3>
 <p>PanCAKE has differing behaviour with respect to selecting coronagraphic masks depending on whether the NIRCam or MIRI instrument is being used. For MIRI, the coronagraphic mask is intrinsically tied to the observational filter, and there is no need (or capability) to manually define this. However, for NIRCam there are five independent coronagraphic masks, and most filters are compatible with more than one mask (<a class="reference external" href="https://jwst-docs.stsci.edu/jwst-near-infrared-camera/nircam-instrumentation/nircam-filters-for-coronagraphy">NIRCam Filters For
 Coronagraphy</a>). The default allocations depending on the input filter are as follows:</p>
-<p><strong>MASK210R:</strong> &lt;2.4 micron filters <strong>MASKLWB:</strong> F277W <strong>MASK335R:</strong> Remaining filters &gt;2.4 micron</p>
+<div class="line-block">
+<div class="line"><strong>MASK210R:</strong> &lt;2.4 micron filters</div>
+<div class="line"><strong>MASKLWB:</strong> F277W</div>
+<div class="line"><strong>MASK335R:</strong> Remaining filters &gt;2.4 micron</div>
+</div>
 <p>However, the NIRCam mask can also be explictly defined using the <code class="docutils literal notranslate"><span class="pre">nircam_mask</span></code> parameter if necesssary:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -731,7 +736,10 @@ WARNING: Roll differences of more than 15 degrees are extremely difficult/imposs
 <div class="section" id="Compatible-Filters:">
 <h3>Compatible Filters:<a class="headerlink" href="#Compatible-Filters:" title="Permalink to this headline">¶</a></h3>
 <p><strong>NIRCam:</strong> F182M, F187N, F200W, F210M, F212N, F250M, F277W, F300M, F322W2, F335M, F356W, F360M, F410M, F430M, F444W, F460M, F480M</p>
-<p><strong>MIRI:</strong> F1065C, F1140C, F1550C ### Compatible Masks:</p>
+<p><strong>MIRI:</strong> F1065C, F1140C, F1550C</p>
+</div>
+<div class="section" id="Compatible-Masks:">
+<h3>Compatible Masks:<a class="headerlink" href="#Compatible-Masks:" title="Permalink to this headline">¶</a></h3>
 <p><strong>NIRCam:</strong> MASKSWB, MASKLWB, MASK210R, MASK335R, MASK430R</p>
 <p><strong>MIRI:</strong> Tied to the chosen filter.</p>
 </div>
