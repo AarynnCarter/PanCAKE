@@ -562,7 +562,7 @@ class Sequence():
         else:
             #Parameters have been specified explicitly
             if scale_exposures != None:
-                exposure_time = determine_exposure_time(subarray, exposure[1], exposure[2], exposure[3])
+                exposure_time = determine_exposure_time(subarray, exposure[1].lower(), exposure[2], exposure[3])
                 if isinstance(scale_exposures, (int, float)):
                     #Scale readout parameters by a numeric value
                     if verbose: print('--> Scaling provided exposure times by {}'.format(scale_exposures))
