@@ -18,7 +18,7 @@ With the environment created, enter it ::
 
 and install the PanCAKE package and all relevant dependencies ::
 
-	pip install git+git://github.com/AarynnCarter/PanCAKE.git
+	pip install git+https://github.com/AarynnCarter/PanCAKE.git
 
 Necessary Data Files
 ^^^^^^^^^^^^^^^^^^^^
