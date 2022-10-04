@@ -68,7 +68,7 @@ pancake.scene module
 pancake.sequence module
 -----------------------
 
-.. automodule:: pancake.scene
+.. automodule:: pancake.sequence
     :members:
     :undoc-members:
     :show-inheritance:

@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-pancake.opds">pancake.opds module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pancake.pandeia_subclasses">pancake.pandeia_subclasses module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pancake.scene">pancake.scene module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-0">pancake.sequence module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pancake.sequence">pancake.sequence module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pancake.transformations">pancake.transformations module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pancake.utilities">pancake.utilities module</a></li>
 </ul>
@@ -2020,203 +2020,100 @@ for information on the available dither patterns and their names.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-0">
-<span id="pancake-sequence-module"></span><h2>pancake.sequence module<a class="headerlink" href="#module-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-pancake.sequence">
+<span id="pancake-sequence-module"></span><h2>pancake.sequence module<a class="headerlink" href="#module-pancake.sequence" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="id0">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pancake.scene.</span></span><span class="sig-name descname"><span class="pre">Scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pancake.sequence.Sequence">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pancake.sequence.</span></span><span class="sig-name descname"><span class="pre">Sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/sequence.html#Sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pancake.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Scene class to mirror the construction of a typical Pandeia ‘Scene’, reinventing the wheel a little bit, but means that
-users don’t need to import pandeia in their main code and that aspects of data input can be streamlined.</p>
+<p>Sequence class used to construct an observational sequence from invidual specified
+observations of user defined scenes.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">add_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simbad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.add_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a source to the Scene</p>
+<dt class="sig sig-object py" id="pancake.sequence.Sequence.add_observation">
+<span class="sig-name descname"><span class="pre">add_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposures</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coronagraphy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nircam_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nircam_subarray</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miri_subarray</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">telescope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jwst'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimise_margin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_margin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_sat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nircam_sgd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miri_sgd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_exposures</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/sequence.html#Sequence.add_observation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pancake.sequence.Sequence.add_observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add observation does the heavy lifting, with a wide variety of input options.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the source to be added</p></li>
-<li><p><strong>kind</strong> (<em>str</em>) – Kind of source to add, options are
-- ‘simbad’ for SIMBAD query of name string
-- ‘grid’ to use Pandeia Phoenix  with ‘spt’, ‘norm_val’, ‘norm_unit’, ‘norm_bandpass’ passed as kwargs
-- ‘file’ to use input file, with ‘wave_unit’ and ‘flux_unit’ passed as kwargs</p></li>
-<li><p><strong>r</strong> (<em>float</em>) – Radial separation of source from center in arcseconds</p></li>
-<li><p><strong>theta</strong> (<em>float</em>) – PA of source, should be N-&gt;E counterclockwise</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em>) – Print update statements to terminal</p></li>
+<li><p><strong>scene</strong> (<em>pancake.Scene</em><em>(</em><em>) </em><em>object</em>) – The scene we want to observe</p></li>
+<li><p><strong>exposures</strong> (<em>list of tuples</em>) – The exposures we want to perform, possible formats are
+- [(FILTER, PATTERN, NGROUP, NINT),…]
+- [(FILTER, ‘optimise’, t_exp),…] with t_exp in seconds</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Observing mode, ‘coronagraphy’ is working, ‘imaging’ a future development.</p></li>
+<li><p><strong>nircam_mask</strong> (<em>str</em>) – The NIRCam coronagraphic mask to use, ‘default’ we use round masks</p></li>
+<li><p><strong>nircam_subarray</strong> (<em>str</em>) – NIRCam subarray to use, ‘default’ will use the one assigned to the chosen mask</p></li>
+<li><p><strong>miri_subaray</strong> (<em>str</em>) – MIRI subarray to use, ‘default’ will use the one assigned to the chosen mask</p></li>
+<li><p><strong>telescope</strong> (<em>str</em>) – Telescope to observe with, only ‘jwst’ is possible at this time.</p></li>
+<li><p><strong>optimise_margin</strong> (<em>float</em>) – Fraction of the input t_exp that we can deviate from the overall t_exp for a given exposure</p></li>
+<li><p><strong>optimize_margin</strong> (<em>str / None</em>) – For the Americans</p></li>
+<li><p><strong>max_sat</strong> (<em>float</em>) – Maximum fraction of saturation to reach when optimising</p></li>
+<li><p><strong>rolls</strong> (<em>list of floats</em>) – PA angles to observe scene at</p></li>
+<li><p><strong>nircam_sgd</strong> (<em>str / None</em>) – NIRCam small grid dither pattern to use, if any</p></li>
+<li><p><strong>miri_sgd</strong> (<em>str / None</em>) – MIRI small grid dither pattern to use, if any</p></li>
+<li><p><strong>scale_exposures</strong> (<em>pancake.Scene</em><em>(</em><em>)</em>) – Scene to scale the provided t_exp in order to reach ~the same number of photons</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Boolean toggle for terminal printing.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">offset_scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.offset_scene"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Offset scene in x, y space in arcseconds</p>
+<dt class="sig sig-object py" id="pancake.sequence.Sequence.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'saved'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavefront_evolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_the_fly_PSFs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wave_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offaxis_nircam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offaxis_miri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_wavefront_realisation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/sequence.html#Sequence.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pancake.sequence.Sequence.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform all simulations for the exposures defined within this sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>float</em>) – x offset in arcseconds</p></li>
-<li><p><strong>y</strong> (<em>float</em>) – y offset in arcseconds</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">plot_scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newfig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.plot_scene"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the scene and its sources spatially.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>title</strong> (<em>str</em>) – Title of plot</p></li>
-<li><p><strong>newfig</strong> (<em>bool</em>) – Start a new figure, default is True</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">plot_source_spectra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newfig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.plot_source_spectra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
-<dd><p>Produce a plot of the spectra of sources within a scene.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sources</strong> (<em>str / list of strings</em>) – List of source names, or ‘all’ to plot all source spectra</p></li>
-<li><p><strong>title</strong> (<em>str</em>) – Title of plot</p></li>
-<li><p><strong>newfig</strong> (<em>bool</em>) – Start a new figure, default is True</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">renormalise_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vegamag'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_bandpass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2mass_ks'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.renormalise_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Renormalise a source already within a scene.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<em>str</em>) – Name of source to renormalise</p></li>
-<li><p><strong>norm_val</strong> (<em>float</em>) – Value to renormalise to</p></li>
-<li><p><strong>norm_unit</strong> (<em>str</em>) – Unit to perform renormalisation to</p></li>
-<li><p><strong>norm_bandpass</strong> (<em>str</em>) – String for the bandpass we are normalising under, 2MASS, WISE or anything in synphot by default.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">renormalize_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.renormalize_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">rotate_scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'counter_clockwise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.rotate_scene"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotate scene given an angle in degrees</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>theta</strong> (<em>float</em>) – Angular distance to rotate</p></li>
-<li><p><strong>center</strong> (<em>list</em>) – x and y coordinate to act as rotation center</p></li>
-<li><p><strong>direction</strong> (<em>str</em>) – Direction to perform rotation, ‘clockwise’ or ‘counter_clockwise’
-default is counter clockwise.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">source_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#Scene.source_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the magnitude of particular source in a given filter</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<em>str</em>) – Name of source</p></li>
-<li><p><strong>filt</strong> (<em>str</em>) – Filter to calculate magnitude in</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>magnitude</strong> – Magnitude of object in apparent vegamag</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="id9">
-<span class="sig-prename descclassname"><span class="pre">pancake.scene.</span></span><span class="sig-name descname"><span class="pre">create_SGD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ta_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsm_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stepsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#create_SGD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create small grid dither pointing set. There are two
-ways to specify dither patterns:</p>
-<p>ta_error - add TA error to each point in the SGD?</p>
-<p>stepsize - floating point value for a 3x3 grid.</p>
-<dl class="simple">
-<dt>pattern_name - string name of a pattern corresponding to</dt><dd><p>one of the named dither patterns in APT.</p>
-</dd>
-</dl>
-<p>If you specify pattern_name, then stepsize is ignored.</p>
-<p>See <a class="reference external" href="https://jwst-docs-stage.stsci.edu/display/JTI/NIRCam+Small-Grid+Dithers">https://jwst-docs-stage.stsci.edu/display/JTI/NIRCam+Small-Grid+Dithers</a>
-for information on the available dither patterns and their names.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ta_error</strong> (<em>str / int / float</em>) – Target acquisition error
+<li><p><strong>ta_error</strong> (<em>str / float</em>) – Target acquisition errors
 - ‘saved’ to use a saved random seed of offsets
 - ‘random’ for a random error
 - int or float for random error with set amplitude in mas
 - ‘none’ for no error</p></li>
-<li><p><strong>fsm_error</strong> (<em>str</em>) – Options of ‘none’ for no error, or ‘default’ for 2e-3 mas</p></li>
-<li><p><strong>stepsize</strong> (<em>float</em>) – Manual step size for dither</p></li>
-<li><p><strong>pattern_name</strong> (<em>str</em>) – Default small grid dither pattern name</p></li>
-<li><p><strong>sim_num</strong> (<em>int</em>) – Specific simulation number / draw from a ‘saved’ ta_error</p></li>
+<li><p><strong>wavefront_evolution</strong> (<em>bool</em>) – Whether to evolve the wavefront error throughout the observation, requires RA and Dec
+for at least one source within the scenes being observed.</p></li>
+<li><p><strong>on_the_fly_PSFs</strong> (<em>bool</em>) – Whehter to calculate PSF’s on the fly using WebbPSF (more accurate) or use the precomputed
+library (faster).</p></li>
+<li><p><strong>wave_sampling</strong> (<em>int</em>) – If on_the_fly_PSFs == True, sets the number of wavelengths to be sampled in each filter</p></li>
+<li><p><strong>save_file</strong> (<em>str</em>) – File name to save simulations to</p></li>
+<li><p><strong>resume</strong> (<em>bool</em>) – Toggle to resume an interrupted run under the same save_file path</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Toggle for printing statments to terminal</p></li>
+<li><p><strong>cache</strong> (<em>str</em>) – Type of cache to use when generating PSFs, options are
+- ‘none’ for no caching
+- ‘ram’ for LRU ram caching
+- ‘disk’ for hard drive caching</p></li>
+<li><p><strong>cache_path</strong> (<em>str</em>) – Directory path to save / load cached PSFs under ‘disk’ caching</p></li>
+<li><p><strong>offaxis_nircam</strong> (<em>list</em>) – x, y coordinates in arcseconds for NIRCam offaxis PSF calculations</p></li>
+<li><p><strong>offaxis_miri</strong> (<em>list</em>) – x, y coordinates in arcseconds for MIRI offaxis PSF calculations</p></li>
+<li><p><strong>debug_verbose</strong> (<em>bool</em>) – Toggle printing of debug statements, toggled off by default as they flood the terminal
+and do no impact anything.</p></li>
+<li><p><strong>initial_wavefront_realisation</strong> (<em>int</em><em>, </em><em>1-10</em>) – 10 possible wavefronts to use to start a simulation, doesn’t greatly impact results</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>sgds</strong> – list of x, y offsets for each step in the dither pattern.</p>
+<dd class="field-even"><p><strong>hdulist</strong> – All simulations as a FITS HDUlist dataset</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p>FITS HDUList()</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="id10">
-<span class="sig-prename descclassname"><span class="pre">pancake.scene.</span></span><span class="sig-name descname"><span class="pre">get_fsm_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#get_fsm_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
-<dd><p>2mas 1/sigma/axis error from the fine steering mirror</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>error</strong> (<em>str / float</em>) – String of ‘default’ for 2e-3, ‘none’ for 0, or input float</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>x,y random error</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="id11">
-<span class="sig-prename descclassname"><span class="pre">pancake.scene.</span></span><span class="sig-name descname"><span class="pre">get_ta_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/scene.html#get_ta_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
-<dd><p>5mas 1-sigma/axis error (~7mas radial)</p>
+<dt class="sig sig-object py" id="pancake.sequence.load_run">
+<span class="sig-prename descclassname"><span class="pre">pancake.sequence.</span></span><span class="sig-name descname"><span class="pre">load_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pancake/sequence.html#load_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pancake.sequence.load_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a previously performed / incomplete PanCAKE
+simulation run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>error</strong> (<em>str / float</em>) – String of ‘default’ for 5e-3, or input float</p>
+<dd class="field-odd"><p><strong>save_file</strong> (<em>str</em>) – File path for the saved simulation.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p><strong>hdul</strong> – Extracted file in HDUList format.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>x,y random error</p>
+<dd class="field-odd"><p>FITS HDUList</p>
 </dd>
 </dl>
 </dd></dl>
