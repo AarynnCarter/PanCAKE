@@ -284,7 +284,7 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 						x += offaxis_psf_xcen
 						y += offaxis_psf_ycen
 						offaxis_psf_stamp = scipy.ndimage.map_coordinates(offaxis_image, [y, x])
-	
+
 	##### Return a dictionary of the extracted images, their pas, centers, filenames, and some offaxis PSF information. 
 	extracted = {'images':np.array(images), 'pas':np.array(pas), 'centers':np.array(centers), 'filenames':filenames, 'offaxis_psf_stamp':offaxis_psf_stamp, 'offaxis_peak_flux':offaxis_peak_flux}
 
@@ -402,7 +402,6 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 	
 	inner_working_angle = 0#.5*lambda_d_pixel
 	outer_working_angle = int(np.sqrt(2*(target_extracted['images'][0].shape[0]/2)**2))  #Go right to the corners
-
 
 	##### Create the KLIP target dataset
 	target_dataset = Instrument.GenericData(target_extracted['images'], target_extracted['centers'], IWA=inner_working_angle, parangs=target_extracted['pas'], filenames=target_extracted['filenames'])
@@ -680,7 +679,6 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 		Dictionary output of the contrast, relative magnitude sensitivity, absolute magnitude sensitivity and separation. Alternative
 		formats of the separation, the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided. 
 	"""
-
 	##### First thing we need to do is open the file with the subtracted images. 
 	with fits.open(subtracted_hdu_file) as hdulist:
 		subtracted_hdu = hdulist[0]
@@ -805,6 +803,10 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 			# Now want to run KLIP on these planet injected images
 			fileprefix = "FAKE_INJECTED_{}".format(num_pas) #Adjustable if necessary
 			filesuffix = "-KLmodes-all.fits" #Don't adjust
+			if 'RDI' in subtraction:
+				with warnings.catch_warnings():
+					warnings.simplefilter('ignore', FutureWarning)
+					input_psflib.prepare_library(input_dataset)
 			parallelized.klip_dataset(input_dataset, outputdir=outputdir, fileprefix=fileprefix, annuli=annuli, subsections=subsections, numbasis=numbasis, mode=subtraction, psf_library=input_psflib, movement=movement, verbose=False)
 	
 			#Reopen produced file from pyKLIP

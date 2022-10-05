@@ -90,8 +90,7 @@ def save_to_fits(array,filename):
 
 def get_options():
 	'''
-	This returns the options object, and is used to let the various Pandeia-based subclasses get
-	the options object currently in use.
+	This returns the options object, and is used to let the various Pandeia-based subclasses get the options object currently in use.
 
 	'''
 	return options
@@ -242,7 +241,7 @@ def perform_calculation(calcfile):
 	config['calculation']['noise'] = options.noise
 	config['calculation']['effects'] = options.effects
 	options.current_config = deepcopy(config)
-	
+
 	with warnings.catch_warnings():
 		warnings.filterwarnings('ignore', category = np.VisibleDeprecationWarning) # Suppress float-indexing warnings
 		results = pandeia_calculation(config)

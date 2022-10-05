@@ -87,7 +87,7 @@ def determine_aperture(filt, nircam_aperture, mode):
 			if nircam_aperture != 'default':
 				aperture = nircam_aperture
 			else:
-				if int(filt[1:3]) < 17:
+				if int(filt[1:3]) < 24:
 					#Short wavelength
 					aperture = 'mask210r'
 				elif filt == 'f277w':

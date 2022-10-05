@@ -8,7 +8,7 @@ from copy import deepcopy
 from collections import OrderedDict
 
 from .utilities import optimise_readout, compute_magnitude, equatorial_to_ecliptic
-from .engine import calculate_target, options
+from .engine import calculate_target, get_options
 from .scene import Scene, create_SGD
 from .opds import OPDFile_to_HDUList, OTE_WFE_Drift_Model
 from .io import determine_instrument, determine_aperture, determine_subarray, determine_aperture, determine_pixel_scale, sequence_input_checks, determine_exposure_time
@@ -229,7 +229,7 @@ class Sequence():
             #                     temp_obs_dict['strategy']['scene_rotation'] = roll
             #                     self.observation_sequence.append(deepcopy(temp_obs_dict))
 
-    def run(self, ta_error='saved', wavefront_evolution=True, on_the_fly_PSFs=False, wave_sampling=3, save_file=False, resume=False, verbose=True, cache='none', cache_path='default' ,offaxis_nircam=[1,1], offaxis_miri=[1,1], debug_verbose=False, initial_wavefront_realisation=4):
+    def run(self, ta_error='saved', wavefront_evolution=True, on_the_fly_PSFs=False, wave_sampling=3, save_file=False, resume=False, verbose=True, cache='none', cache_path='default' ,offaxis_nircam=[1,1], offaxis_miri=[1,1], debug_verbose=False, initial_wavefront_realisation=4, wavefront_pa_range='median'):
         '''
         Perform all simulations for the exposures defined within this sequence.
 
@@ -271,6 +271,9 @@ class Sequence():
             and do no impact anything.
         initial_wavefront_realisation : int, 1-10
             10 possible wavefronts to use to start a simulation, doesn't greatly impact results
+        wavefront_pa_range : str
+            What range of PA's to aim for when calculating movement of telescope
+            between scenes - options are, 'median', 'minimum', 'maximum'            
 
         Returns
         -------
@@ -279,11 +282,11 @@ class Sequence():
         '''
 
         #PanCAKE adjustable options
-        pancake_options = options
-        pancake_options.verbose = debug_verbose
-        pancake_options.wave_sampling = wave_sampling
-        pancake_options.on_the_fly_PSFs = on_the_fly_PSFs
-        pancake_options.cache = cache 
+        options = get_options()
+        options.verbose = debug_verbose
+        options.wave_sampling = wave_sampling
+        options.on_the_fly_PSFs = on_the_fly_PSFs
+        options.cache = cache 
 
         if cache != 'none':
             if cache_path == 'default':
@@ -292,7 +295,7 @@ class Sequence():
                 os.makedirs(cache_path)
         else:
             cache_path = None
-        pancake_options.cache_path = cache_path
+        options.cache_path = cache_path
 
 
         #Create the HDUList for saving our results to. 
@@ -330,7 +333,7 @@ class Sequence():
         #Calculate OPD's throughout the observation if requested and on_the_fly_PSFs are being used. 
         if wavefront_evolution == True and on_the_fly_PSFs == True and len(self.observation_sequence) > 1:
             if verbose: print('Computing OPD Maps...')
-            opd_res = self._calculate_opds(opd_realisation=initial_wavefront_realisation)
+            opd_res = self._calculate_opds(opd_realisation=initial_wavefront_realisation, pa_range=wavefront_pa_range)
             if opd_res == None: 
                 wavefront_evolution = False
             else:
@@ -364,8 +367,8 @@ class Sequence():
                 offaxis_dict['scene'][j]['position']['y_offset'] += offaxis_y
 
             # Ignore any saturation, allowing counts above full well, and turn off on_the_fly_PSFs for speed. 
-            pancake_options.set_saturation(False)
-            pancake_options.on_the_fly_PSFs = False
+            options.set_saturation(False)
+            options.on_the_fly_PSFs = False
 
             # Ensure the scene isn't rotated to make extracting the PSF center easier
             offaxis_dict['strategy']['scene_rotation'] = 0 
@@ -374,8 +377,8 @@ class Sequence():
             offaxis_result = calculate_target(offaxis_dict)
             
             # Return settings to original values
-            pancake_options.set_saturation(True)
-            pancake_options.on_the_fly_PSFs = on_the_fly_PSFs
+            options.set_saturation(True)
+            options.on_the_fly_PSFs = on_the_fly_PSFs
 
             ##### Now we will compute the actual observations
             # Assemble small grid dither array. Even without any SGD this will happen, it will just use a single dither point. 
