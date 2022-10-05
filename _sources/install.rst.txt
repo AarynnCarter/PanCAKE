@@ -20,6 +20,20 @@ and install the PanCAKE package and all relevant dependencies ::
 
 	pip install git+https://github.com/AarynnCarter/PanCAKE.git
 
+Important Note
+^^^^^^^^^^^^^^
+
+At present there is a bug with the Pandeia dependency, which makes it impossible to turn off saturation. Until this is formally fixed, you can resolve the issue by navigating to your equivalent of ::
+
+	/Users/acarter/anaconda3/envs/pcake_test/lib/python3.7/site-packages/pandeia/engine/signal.py
+
+and adding the following lines after Line 74 ::
+
+	if (self.calculation_config.effects['saturation'] if self.calculation_config.effects['saturation'] is not None else self.the_detector.saturation):
+	    self.the_detector.set_saturation(True)
+	else:
+	    self.the_detector.set_saturation(False)
+
 Necessary Data Files
 ^^^^^^^^^^^^^^^^^^^^
 

@@ -92,7 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_basic_tutorial.html">Basic Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_scene_construction.html">Astrophysical Scene Construction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_sequence_construction.html">Observational Sequence Construction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
@@ -448,7 +448,7 @@
 						<span class="n">x</span> <span class="o">+=</span> <span class="n">offaxis_psf_xcen</span>
 						<span class="n">y</span> <span class="o">+=</span> <span class="n">offaxis_psf_ycen</span>
 						<span class="n">offaxis_psf_stamp</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">map_coordinates</span><span class="p">(</span><span class="n">offaxis_image</span><span class="p">,</span> <span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">])</span>
-	
+
 	<span class="c1">##### Return a dictionary of the extracted images, their pas, centers, filenames, and some offaxis PSF information. </span>
 	<span class="n">extracted</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;images&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">images</span><span class="p">),</span> <span class="s1">&#39;pas&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pas</span><span class="p">),</span> <span class="s1">&#39;centers&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">centers</span><span class="p">),</span> <span class="s1">&#39;filenames&#39;</span><span class="p">:</span><span class="n">filenames</span><span class="p">,</span> <span class="s1">&#39;offaxis_psf_stamp&#39;</span><span class="p">:</span><span class="n">offaxis_psf_stamp</span><span class="p">,</span> <span class="s1">&#39;offaxis_peak_flux&#39;</span><span class="p">:</span><span class="n">offaxis_peak_flux</span><span class="p">}</span>
 
@@ -566,7 +566,6 @@
 	
 	<span class="n">inner_working_angle</span> <span class="o">=</span> <span class="mi">0</span><span class="c1">#.5*lambda_d_pixel</span>
 	<span class="n">outer_working_angle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">target_extracted</span><span class="p">[</span><span class="s1">&#39;images&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>  <span class="c1">#Go right to the corners</span>
-
 
 	<span class="c1">##### Create the KLIP target dataset</span>
 	<span class="n">target_dataset</span> <span class="o">=</span> <span class="n">Instrument</span><span class="o">.</span><span class="n">GenericData</span><span class="p">(</span><span class="n">target_extracted</span><span class="p">[</span><span class="s1">&#39;images&#39;</span><span class="p">],</span> <span class="n">target_extracted</span><span class="p">[</span><span class="s1">&#39;centers&#39;</span><span class="p">],</span> <span class="n">IWA</span><span class="o">=</span><span class="n">inner_working_angle</span><span class="p">,</span> <span class="n">parangs</span><span class="o">=</span><span class="n">target_extracted</span><span class="p">[</span><span class="s1">&#39;pas&#39;</span><span class="p">],</span> <span class="n">filenames</span><span class="o">=</span><span class="n">target_extracted</span><span class="p">[</span><span class="s1">&#39;filenames&#39;</span><span class="p">])</span>
@@ -844,7 +843,6 @@
 <span class="sd">		Dictionary output of the contrast, relative magnitude sensitivity, absolute magnitude sensitivity and separation. Alternative</span>
 <span class="sd">		formats of the separation, the contrast prior to throughput corrections, and the estimated KLIP throughput, are also provided. </span>
 <span class="sd">	&quot;&quot;&quot;</span>
-
 	<span class="c1">##### First thing we need to do is open the file with the subtracted images. </span>
 	<span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">subtracted_hdu_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdulist</span><span class="p">:</span>
 		<span class="n">subtracted_hdu</span> <span class="o">=</span> <span class="n">hdulist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -969,6 +967,10 @@
 			<span class="c1"># Now want to run KLIP on these planet injected images</span>
 			<span class="n">fileprefix</span> <span class="o">=</span> <span class="s2">&quot;FAKE_INJECTED_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_pas</span><span class="p">)</span> <span class="c1">#Adjustable if necessary</span>
 			<span class="n">filesuffix</span> <span class="o">=</span> <span class="s2">&quot;-KLmodes-all.fits&quot;</span> <span class="c1">#Don&#39;t adjust</span>
+			<span class="k">if</span> <span class="s1">&#39;RDI&#39;</span> <span class="ow">in</span> <span class="n">subtraction</span><span class="p">:</span>
+				<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+					<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="ne">FutureWarning</span><span class="p">)</span>
+					<span class="n">input_psflib</span><span class="o">.</span><span class="n">prepare_library</span><span class="p">(</span><span class="n">input_dataset</span><span class="p">)</span>
 			<span class="n">parallelized</span><span class="o">.</span><span class="n">klip_dataset</span><span class="p">(</span><span class="n">input_dataset</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">fileprefix</span><span class="o">=</span><span class="n">fileprefix</span><span class="p">,</span> <span class="n">annuli</span><span class="o">=</span><span class="n">annuli</span><span class="p">,</span> <span class="n">subsections</span><span class="o">=</span><span class="n">subsections</span><span class="p">,</span> <span class="n">numbasis</span><span class="o">=</span><span class="n">numbasis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">subtraction</span><span class="p">,</span> <span class="n">psf_library</span><span class="o">=</span><span class="n">input_psflib</span><span class="p">,</span> <span class="n">movement</span><span class="o">=</span><span class="n">movement</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 	
 			<span class="c1">#Reopen produced file from pyKLIP</span>
