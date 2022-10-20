@@ -1238,7 +1238,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				ax.plot(separation, all_contrasts['contrast'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Contrast')
 				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['contrast_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
 				# Also add companion magnitudes if necessary. 
-				if source_props['comp_seps'] != None and source_props['comp_contrasts']:
+				if isinstance(source_props['comp_seps'], type(None)) and source_props['comp_contrasts']:
 					ax.scatter(source_props['comp_seps'], source_props['comp_contrasts'], c='w', edgecolors='k', linewidths=2, s=50)
 					for j, name in enumerate(source_props['comp_names']):
 						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_contrasts'][j]), xytext=(5, 5), textcoords='offset points')
@@ -1258,7 +1258,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				ax.plot(separation, all_contrasts['absmag'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
 				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['absmag_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
 				# Also add companion magnitudes if necessary. 
-				if source_props['comp_seps'] != None and source_props['comp_vegamags']:
+				if isinstance(source_props['comp_seps'], type(None)) and source_props['comp_vegamags']:
 					ax.scatter(source_props['comp_seps'], source_props['comp_vegamags'], c='w', edgecolors='k', linewidths=2, s=50)
 					for j, name in enumerate(source_props['comp_names']):
 						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_vegamags'][j]), xytext=(5, 5), textcoords='offset points')
