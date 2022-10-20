@@ -30,13 +30,13 @@ import webbpsf
 from webbpsf.opds import OTE_Linear_Model_WSS
 
 # Default OPD info
-opd_default = ('OPD_RevW_ote_for_NIRCam_requirements.fits', 0)
+opd_default = ('JWST_OTE_OPD_cycle1_example_2022-07-30.fits', 0)
 
 # The following won't work on readthedocs compilation
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 if not on_rtd:
     # .fits or .fits.gz?
-    opd_dir = os.path.join(webbpsf.utils.get_webbpsf_data_path(),'NIRCam','OPD')
+    opd_dir = webbpsf.utils.get_webbpsf_data_path()
     opd_file = opd_default[0]
     opd_fullpath = os.path.join(opd_dir, opd_file)
     if not os.path.exists(opd_fullpath):
@@ -61,7 +61,7 @@ def OPDFile_to_HDUList(file, slice_to_use=0):
     try:
         hdul = fits.open(file)
     except FileNotFoundError:
-        opd_dir = os.path.join(webbpsf.utils.get_webbpsf_data_path(),'NIRCam','OPD')
+        opd_dir = webbpsf.utils.get_webbpsf_data_path()
         hdul = fits.open(os.path.join(opd_dir, file))
     ndim = len(hdul[0].data.shape)
 
