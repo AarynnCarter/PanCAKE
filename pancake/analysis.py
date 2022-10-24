@@ -537,6 +537,11 @@ def get_companion_mask(companion_xy, mask_dataset, mask_psflib, offaxis_psf_stam
 	# Perform KLIP on the new images. 
 	fileprefix = "FOR_MASKING" #Adjustable if necessary
 	filesuffix = "-KLmodes-all.fits" #Don't adjust
+
+	if 'RDI' in subtraction:
+		with warnings.catch_warnings():
+			warnings.simplefilter('ignore', FutureWarning)
+			mask_psflib.prepare_library(mask_dataset)
 	parallelized.klip_dataset(mask_dataset, outputdir=outputdir, fileprefix=fileprefix, annuli=annuli, subsections=subsections, numbasis=numbasis, mode=subtraction, psf_library=mask_psflib, movement=movement, verbose=False)
 
 	# Open the KLIP file and read back in the subtracted image
@@ -1200,7 +1205,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 
 			##### Now that we've done all this, it's also possible to grab the SNR for any companions in the image
 			if get_companion_snrs:
-				if source_props['comp_xy'] == None:
+				if isinstance(source_props['comp_xy'], type(None)):
 					if verbose:	print('WARNING: Unable to compute companion SNR as no companions were identified in target image.')
 				else:
 					if verbose:	print('--> Estimating Companion SNR')
