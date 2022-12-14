@@ -394,8 +394,8 @@ def create_SGD(ta_error='none', fsm_error='default', stepsize=20.e-3, pattern_na
             scale = 10e-3
         saved_ta_x = rngx.normal(loc=0.,scale=scale,size=100)
         saved_ta_y = rngy.normal(loc=0.,scale=scale,size=100)
-        saved_ta_x = [1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3]
-        saved_ta_y = [6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3]
+        # saved_ta_x = [1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3]
+        # saved_ta_y = [6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3]
         ta_x, ta_y = saved_ta_x[sim_num], saved_ta_y[sim_num]
     elif ta_error=='random':
         # Simulate the TA error from a 1mas normal distribution
