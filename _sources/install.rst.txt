@@ -20,30 +20,21 @@ and install the PanCAKE package and all relevant dependencies ::
 
 	pip install git+https://github.com/AarynnCarter/PanCAKE.git
 
-Important Note
-^^^^^^^^^^^^^^
-
-At present there is a bug with the Pandeia dependency, which makes it impossible to turn off saturation. Until this is formally fixed, you can resolve the issue by navigating to your equivalent of ::
-
-	/Users/acarter/anaconda3/envs/pcake_test/lib/python3.7/site-packages/pandeia/engine/signal.py
-
-and adding the following lines after Line 74 ::
-
-	if (self.calculation_config.effects['saturation'] if self.calculation_config.effects['saturation'] is not None else self.the_detector.saturation):
-	    self.the_detector.set_saturation(True)
-	else:
-	    self.the_detector.set_saturation(False)
 
 Necessary Data Files
 ^^^^^^^^^^^^^^^^^^^^
 
 PanCAKE makes use of the `Pandeia <https://pypi.org/project/pandeia.engine/>`_, `WebbPSF <https://webbpsf.readthedocs.io/en/latest/>`_, and `synphot <https://synphot.readthedocs.io/en/latest/>`_ packages that require their own separate data files. You may find that certain aspects of PanCAKE will work without some of these data files, but to access all of PanCAKE's functionality, they must be downloaded.
 
-| **Pandeia:** `https://stsci.app.box.com/v/pandeia-refdata-v1p7-jwst <https://stsci.app.box.com/v/pandeia-refdata-v1p7-jwst>`_ (~2 GB)
-| **WebbPSF:** `webbpsf-data-0.9.0.tar.gz <https://stsci.box.com/shared/static/ntb71b3uusf1kzgf9bss0hzbreoja5gg.gz>`_ (~100 MB, Direct Download Link)
-| **Synphot:** `synphot5_phoenix-models.tar <https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar>`_ (~2 GB, Direct Download Link)
+| **Pandeia:** `https://stsci.app.box.com/v/pandeia-refdata-v2p0-jwst <https://stsci.app.box.com/v/pandeia-refdata-v2p0-jwst>`_ (~4 GB)
+| **WebbPSF:** `webbpsf-data-1.1.1.tar.gz <https://stsci.box.com/shared/static/t90gqazqs82d8nh25249oq1obbjfstq8.gz>`_ (~100 MB, Direct Download Link)
+| **Synphot Throughputs:** `synphot1_throughput-master.tar <https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_everything_multi_v11_sed.tar>`_ (~1 GB, Direct Download Link)
+| **Synphot Spectra:** `synphot5_phoenix-models.tar <https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar>`_ (~2 GB, Direct Download Link)
+| **Synphot Calibration:** `synphot6_calibration-spectra.tar <https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_calibration-spectra_multi_v5_synphot6.tar>`_ (~4 GB, Direct Download Link, or manually add the alpha_lyr_stis file from `here <https://archive.stsci.edu/hlsps/reference-atlases/cdbs/current_calspec/>`_)
 
-Put these folders somewhere sensible on your hard drive, and then adjust your ~/.bashrc file to include the following lines (adjusted accordingly)::
+Put these folders somewhere sensible on your hard drive, making sure you combine the Synphot files. Also 
+
+Finally adjust your ~/.bashrc file to include the following lines (adjusted accordingly to where you saved the above)::
 
 	export pandeia_refdata="/path/to/pandeia/data/directory"
 	export WEBBPSF_PATH="/path/to/webbpsf/data/directory"

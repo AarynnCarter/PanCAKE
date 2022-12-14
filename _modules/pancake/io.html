@@ -172,6 +172,8 @@
 <span class="kn">from</span> <span class="nn">synphot.models</span> <span class="kn">import</span> <span class="n">Empirical1D</span>
 <span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
 
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
+
 <span class="c1">#Load configuration files for NIRCam and MIRI to extract details from. </span>
 <span class="n">nircam_config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pandeia_refdata&quot;</span><span class="p">),</span> <span class="s1">&#39;jwst/nircam/config.json&#39;</span><span class="p">)</span>
 <span class="n">miri_config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pandeia_refdata&quot;</span><span class="p">),</span> <span class="s1">&#39;jwst/miri/config.json&#39;</span><span class="p">)</span>
@@ -220,6 +222,31 @@
 	
 	<span class="k">return</span> <span class="n">instrument</span></div>
 
+<div class="viewcode-block" id="determine_detector"><a class="viewcode-back" href="../../api.html#pancake.io.determine_detector">[docs]</a><span class="k">def</span> <span class="nf">determine_detector</span><span class="p">(</span><span class="n">filt</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">	Determine detector from the input filter, only compatible with NIRCam / MIRI. </span>
+<span class="sd">	</span>
+<span class="sd">	Parameters</span>
+<span class="sd">	----------</span>
+<span class="sd">	filt : str</span>
+<span class="sd">		JWST filter name</span>
+
+<span class="sd">	Returns</span>
+<span class="sd">	-------</span>
+<span class="sd">	detector : str</span>
+<span class="sd">		Pandeia compatible string</span>
+<span class="sd">	&#39;&#39;&#39;</span>
+
+	<span class="k">if</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">nircam_filters</span><span class="p">:</span>
+		<span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
+			<span class="n">detector</span> <span class="o">=</span> <span class="s1">&#39;sw&#39;</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">detector</span> <span class="o">=</span> <span class="s1">&#39;lw&#39;</span>
+	<span class="k">elif</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">miri_filters</span><span class="p">:</span>
+		<span class="n">detector</span> <span class="o">=</span> <span class="s1">&#39;imager&#39;</span>
+	
+	<span class="k">return</span> <span class="n">detector</span></div>
+
 <div class="viewcode-block" id="determine_aperture"><a class="viewcode-back" href="../../api.html#pancake.io.determine_aperture">[docs]</a><span class="k">def</span> <span class="nf">determine_aperture</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">nircam_aperture</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
 	<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">	Determine aperture (coronagraph) from filter and instrument mode</span>
@@ -249,17 +276,22 @@
 	<span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;coronagraphy&#39;</span><span class="p">:</span>
 		<span class="k">if</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">nircam_coro_filters</span><span class="p">:</span>
 			<span class="k">if</span> <span class="n">nircam_aperture</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
-				<span class="n">aperture</span> <span class="o">=</span> <span class="n">nircam_aperture</span>
+				<span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">24</span> <span class="ow">and</span> <span class="n">nircam_aperture</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s1">&#39;sw&#39;</span><span class="p">:</span>
+					<span class="n">aperture</span> <span class="o">=</span> <span class="n">nircam_aperture</span> <span class="o">+</span> <span class="s1">&#39;sw&#39;</span>
+				<span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">24</span> <span class="ow">and</span> <span class="n">nircam_aperture</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">!=</span> <span class="s1">&#39;lw&#39;</span><span class="p">:</span>
+					<span class="n">aperture</span> <span class="o">=</span> <span class="n">nircam_aperture</span> <span class="o">+</span> <span class="s1">&#39;lw&#39;</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">aperture</span> <span class="o">=</span> <span class="n">nircam_aperture</span>
 			<span class="k">else</span><span class="p">:</span>
 				<span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">24</span><span class="p">:</span>
 					<span class="c1">#Short wavelength</span>
-					<span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;mask210r&#39;</span>
+					<span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;mask210rsw&#39;</span>
 				<span class="k">elif</span> <span class="n">filt</span> <span class="o">==</span> <span class="s1">&#39;f277w&#39;</span><span class="p">:</span>
 					<span class="c1">#This filter can only be done by the LWB</span>
-					<span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;lwb&#39;</span>
+					<span class="n">aperture</span> <span class="o">=</span> <span class="s1">&#39;masklwblw&#39;</span>
 				<span class="k">else</span><span class="p">:</span>
 					<span class="c1">#Remaining filters</span>
-					<span class="n">aperture</span>  <span class="o">=</span> <span class="s1">&#39;mask335r&#39;</span>
+					<span class="n">aperture</span>  <span class="o">=</span> <span class="s1">&#39;mask335rlw&#39;</span>
 		<span class="k">elif</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">miri_coro_filters</span><span class="p">:</span>
 			<span class="c1">#Each MIRI coronagraphic filter uniquely tied to a aperture</span>
 			<span class="k">if</span> <span class="s1">&#39;2300&#39;</span> <span class="ow">in</span> <span class="n">filt</span><span class="p">:</span>
@@ -572,10 +604,17 @@
 <span class="sd">	transmission : 2D ndarray</span>
 <span class="sd">		2D representation of the coronagraphic transmission.</span>
 <span class="sd">	&#39;&#39;&#39;</span>
-	<span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-	<span class="n">mask_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_2DTRANS.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+	<span class="k">if</span> <span class="s1">&#39;fqpm&#39;</span> <span class="ow">in</span> <span class="n">mask</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+		<span class="n">mask_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_2DTRANS.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;jwst_nircam_psfmask_</span><span class="si">{}</span><span class="s1">.fits&#39;</span>
+		<span class="n">mask_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
 	<span class="k">try</span><span class="p">:</span>
-	   <span class="n">transmission</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">mask_file</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">mask</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1065&#39;</span><span class="p">,</span> <span class="s1">&#39;1140&#39;</span><span class="p">,</span> <span class="s1">&#39;1550&#39;</span><span class="p">]:</span>
+			<span class="n">transmission</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">mask_file</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mask_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdul</span><span class="p">:</span>
+				<span class="n">transmission</span> <span class="o">=</span> <span class="n">hdul</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 	<span class="k">except</span><span class="p">:</span>
 		<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Input coronagraphic mask &quot;</span><span class="si">{}</span><span class="s1">&quot; not recognised. Currently supported masks are: &quot;MASKSWB&quot;, &quot;MASKLWB&quot;, &quot;MASK210R&quot;, &quot;MASK335R&quot;, &quot;MASK430R&quot;, &quot;FQPM1065&quot;, &quot;FQPM1140&quot;, &quot;FQPM1550&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
 		

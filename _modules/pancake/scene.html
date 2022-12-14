@@ -92,7 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_basic_tutorial.html">Basic Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_scene_construction.html">Astrophysical Scene Construction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_sequence_construction.html">Observational Sequence Construction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
@@ -448,7 +448,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="create_SGD"><a class="viewcode-back" href="../../api.html#pancake.scene.create_SGD">[docs]</a><span class="k">def</span> <span class="nf">create_SGD</span><span class="p">(</span><span class="n">ta_error</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">fsm_error</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">20.e-3</span><span class="p">,</span> <span class="n">pattern_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sim_num</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="create_SGD"><a class="viewcode-back" href="../../api.html#pancake.scene.create_SGD">[docs]</a><span class="k">def</span> <span class="nf">create_SGD</span><span class="p">(</span><span class="n">ta_error</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">fsm_error</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">20.e-3</span><span class="p">,</span> <span class="n">pattern_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sim_num</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">instrument</span><span class="o">=</span><span class="s1">&#39;nircam&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Create small grid dither pointing set. There are two</span>
 <span class="sd">    ways to specify dither patterns:</span>
@@ -552,15 +552,21 @@
         <span class="c1"># Use a ta_error from a &quot;saved&quot; list of draws from a 5mas normal distribution (still randomnly generated, but seed is fixed)</span>
         <span class="n">rngx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
         <span class="n">rngy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">2021</span><span class="p">)</span>
-        <span class="n">saved_ta_x</span> <span class="o">=</span> <span class="n">rngx</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-        <span class="n">saved_ta_y</span> <span class="o">=</span> <span class="n">rngy</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="mf">7e-3</span>
+        <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="mf">10e-3</span>
+        <span class="n">saved_ta_x</span> <span class="o">=</span> <span class="n">rngx</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">saved_ta_y</span> <span class="o">=</span> <span class="n">rngy</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="c1"># saved_ta_x = [1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3]</span>
+        <span class="c1"># saved_ta_y = [6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3]</span>
         <span class="n">ta_x</span><span class="p">,</span> <span class="n">ta_y</span> <span class="o">=</span> <span class="n">saved_ta_x</span><span class="p">[</span><span class="n">sim_num</span><span class="p">],</span> <span class="n">saved_ta_y</span><span class="p">[</span><span class="n">sim_num</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">ta_error</span><span class="o">==</span><span class="s1">&#39;random&#39;</span><span class="p">:</span>
-        <span class="c1"># Simulate the TA error from a 5mas normal distribution</span>
-        <span class="n">ta_x</span><span class="p">,</span> <span class="n">ta_y</span> <span class="o">=</span> <span class="n">get_ta_error</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+        <span class="c1"># Simulate the TA error from a 1mas normal distribution</span>
+        <span class="n">ta_x</span><span class="p">,</span> <span class="n">ta_y</span> <span class="o">=</span> <span class="n">get_ta_error</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ta_error</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="c1"># Simulate the TA error from an X normal distribution (should provide in arcsec)</span>
-        <span class="n">ta_x</span><span class="p">,</span> <span class="n">ta_y</span> <span class="o">=</span> <span class="n">get_ta_error</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">ta_error</span><span class="p">)</span>
+        <span class="n">ta_x</span><span class="p">,</span> <span class="n">ta_y</span> <span class="o">=</span> <span class="n">get_ta_error</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">ta_error</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ta_error</span><span class="o">==</span><span class="s1">&#39;none&#39;</span><span class="p">:</span>
         <span class="n">ta_x</span><span class="p">,</span> <span class="n">ta_y</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span>
         <span class="n">fsm_error</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
@@ -579,21 +585,24 @@
         <span class="n">sgds</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">offset_x</span><span class="p">,</span> <span class="n">offset_y</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">sgds</span></div>
 
-<div class="viewcode-block" id="get_ta_error"><a class="viewcode-back" href="../../api.html#pancake.scene.get_ta_error">[docs]</a><span class="k">def</span> <span class="nf">get_ta_error</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="get_ta_error"><a class="viewcode-back" href="../../api.html#pancake.scene.get_ta_error">[docs]</a><span class="k">def</span> <span class="nf">get_ta_error</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; </span>
-<span class="sd">    5mas 1-sigma/axis error (~7mas radial)</span>
+<span class="sd">    7 mas 1-sigma/axis error </span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    error : str / float</span>
-<span class="sd">        String of &#39;default&#39; for 5e-3, or input float</span>
+<span class="sd">        String of &#39;default&#39; for 1e-3, or input float</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    x,y random error</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">error</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> 
-        <span class="n">error</span> <span class="o">=</span> <span class="mf">5e-3</span>
+        <span class="k">if</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;nircam&#39;</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="mf">7e-3</span>
+        <span class="k">elif</span> <span class="n">instrument</span> <span class="o">==</span> <span class="s1">&#39;miri&#39;</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="mf">7e-3</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="n">error</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="get_fsm_error"><a class="viewcode-back" href="../../api.html#pancake.scene.get_fsm_error">[docs]</a><span class="k">def</span> <span class="nf">get_fsm_error</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
@@ -609,7 +618,7 @@
 <span class="sd">    x,y random error</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">error</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="mf">2e-3</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="mf">3e-3</span>
     <span class="k">elif</span> <span class="n">error</span> <span class="o">==</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
         <span class="n">error</span> <span class="o">=</span> <span class="mf">0.</span>
 

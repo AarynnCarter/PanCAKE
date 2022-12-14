@@ -92,7 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_basic_tutorial.html">Basic Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_scene_construction.html">Astrophysical Scene Construction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../sequence.html">Observational Sequence Construction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/pancake_sequence_construction.html">Observational Sequence Construction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postprocessing.html">Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
@@ -194,13 +194,13 @@
 <span class="kn">from</span> <span class="nn">webbpsf.opds</span> <span class="kn">import</span> <span class="n">OTE_Linear_Model_WSS</span>
 
 <span class="c1"># Default OPD info</span>
-<span class="n">opd_default</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;OPD_RevW_ote_for_NIRCam_requirements.fits&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">opd_default</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;JWST_OTE_OPD_cycle1_example_2022-07-30.fits&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># The following won&#39;t work on readthedocs compilation</span>
 <span class="n">on_rtd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;READTHEDOCS&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;True&#39;</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">on_rtd</span><span class="p">:</span>
     <span class="c1"># .fits or .fits.gz?</span>
-    <span class="n">opd_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">webbpsf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_webbpsf_data_path</span><span class="p">(),</span><span class="s1">&#39;NIRCam&#39;</span><span class="p">,</span><span class="s1">&#39;OPD&#39;</span><span class="p">)</span>
+    <span class="n">opd_dir</span> <span class="o">=</span> <span class="n">webbpsf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_webbpsf_data_path</span><span class="p">()</span>
     <span class="n">opd_file</span> <span class="o">=</span> <span class="n">opd_default</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">opd_fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opd_dir</span><span class="p">,</span> <span class="n">opd_file</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">opd_fullpath</span><span class="p">):</span>
@@ -225,7 +225,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">hdul</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-        <span class="n">opd_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">webbpsf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_webbpsf_data_path</span><span class="p">(),</span><span class="s1">&#39;NIRCam&#39;</span><span class="p">,</span><span class="s1">&#39;OPD&#39;</span><span class="p">)</span>
+        <span class="n">opd_dir</span> <span class="o">=</span> <span class="n">webbpsf</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_webbpsf_data_path</span><span class="p">()</span>
         <span class="n">hdul</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opd_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hdul</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
@@ -322,7 +322,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_frill_drift</span><span class="p">(</span><span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="c1"># self.opd has now been updated to drifted OPD</span>
             <span class="c1"># Temporarily calculate delta and calc rms</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">opd</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opd_original</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">opd</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opd_original</span>  
             <span class="c1"># scale by RMS of delta OPD, and save</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dopd_frill</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opd</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">rms</span><span class="p">()</span> 
 
@@ -952,7 +952,7 @@
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;return_wfe_amps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;return_dopd_fin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">delta_opds</span><span class="p">,</span> <span class="n">wfe_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evolve_dopd</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span> <span class="n">slew_angles</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            
+
         <span class="k">if</span> <span class="n">slew_averages</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slew_pos_averages</span><span class="p">(</span><span class="n">delta_time</span><span class="p">,</span> <span class="n">slew_angles</span><span class="p">,</span> <span class="n">opds</span><span class="o">=</span><span class="n">delta_opds</span><span class="p">,</span> 
                                          <span class="n">wfe_dict</span><span class="o">=</span><span class="n">wfe_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
