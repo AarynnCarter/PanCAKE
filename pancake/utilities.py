@@ -20,6 +20,7 @@ from .io import read_bandpass
 import requests
 import requests.exceptions
 import re 
+import copy
 
 import warnings
 from astropy.utils.exceptions import AstropyWarning, AstropyUserWarning

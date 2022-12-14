@@ -11,7 +11,7 @@ from .utilities import optimise_readout, compute_magnitude, equatorial_to_eclipt
 from .engine import calculate_target, get_options
 from .scene import Scene, create_SGD
 from .opds import OPDFile_to_HDUList, OTE_WFE_Drift_Model
-from .io import determine_instrument, determine_aperture, determine_subarray, determine_aperture, determine_pixel_scale, sequence_input_checks, determine_exposure_time
+from .io import determine_instrument, determine_aperture, determine_subarray, determine_aperture, determine_pixel_scale, sequence_input_checks, determine_exposure_time, determine_detector
 
 from astropy.io import fits
 import astropy.units as u
@@ -90,6 +90,7 @@ class Sequence():
             instrument = determine_instrument(filt)
             aperture = determine_aperture(filt, nircam_mask, mode)
             subarray = determine_subarray(filt, mode, nircam_subarray, miri_subarray)
+            detector = determine_detector(filt)
 
             # Construct observation configuration dictionary for Pandeia input
             obs_dict = build_default_calc(telescope, instrument, mode)
@@ -99,6 +100,7 @@ class Sequence():
             obs_dict['configuration']['detector']['subarray'] = subarray.lower()
             obs_dict['configuration']['instrument']['aperture'] = aperture.lower()
             obs_dict['configuration']['instrument']['filter'] = filt.lower()
+            obs_dict['configuration']['instrument']['detector'] = detector.lower()
 
             #Extract readout information from exposure settings
             if optimize_margin != None: optimise_margin = optimize_margin #Check for US spelling
@@ -152,7 +154,7 @@ class Sequence():
                     if prev_aperture == curr_aperture:
                         #Coronagraphs are the same, don't want to roll yet. 
                         temp_scene = deepcopy(scene)
-                        temp_scene.rotate_scene(roll)
+                        temp_scene.rotate_scene(rolls[0])
                         obs_dict['scene'] = temp_scene.pandeia_scene
                         obs_dict['scene_rollang'] = rolls[0]
                         self.observation_sequence.append(deepcopy(obs_dict))
@@ -229,7 +231,7 @@ class Sequence():
             #                     temp_obs_dict['strategy']['scene_rotation'] = roll
             #                     self.observation_sequence.append(deepcopy(temp_obs_dict))
 
-    def run(self, ta_error='saved', wavefront_evolution=True, on_the_fly_PSFs=False, wave_sampling=3, save_file=False, resume=False, verbose=True, cache='none', cache_path='default' ,offaxis_nircam=[1,1], offaxis_miri=[1,1], debug_verbose=False, initial_wavefront_realisation=4, wavefront_pa_range='median'):
+    def run(self, ta_error='saved', wavefront_evolution=True, on_the_fly_PSFs=False, wave_sampling=3, save_file=False, resume=False, verbose=True, cache='none', cache_path='default' ,offaxis_nircam=[1,1], offaxis_miri=[1,1], debug_verbose=False, initial_wavefront_realisation=4, wavefront_pa_range='median', background='default', roll_ta_error='default'):
         '''
         Perform all simulations for the exposures defined within this sequence.
 
@@ -372,7 +374,14 @@ class Sequence():
 
             # Ensure the scene isn't rotated to make extracting the PSF center easier
             offaxis_dict['strategy']['scene_rotation'] = 0 
-            
+            if background != 'default':
+                offaxis_dict['background_level'] = background
+            else:
+                if filt in ['f1065c', 'f1140c', 'f1550c']:
+                    offaxis_dict['background_level'] = 'none'
+                else:
+                    pass
+
             # Calculate off-axis image. 
             offaxis_result = calculate_target(offaxis_dict)
             
@@ -383,8 +392,7 @@ class Sequence():
             ##### Now we will compute the actual observations
             # Assemble small grid dither array. Even without any SGD this will happen, it will just use a single dither point. 
             # This is also where the random target acquisition error is added.
-            sgds = create_SGD(ta_error=ta_error, pattern_name=base_obs_dict['dither_strategy'], sim_num=i)
-
+            sgds = create_SGD(ta_error=ta_error, pattern_name=base_obs_dict['dither_strategy'], sim_num=i, instrument=instrument)
             for j, sgd in enumerate(sgds):
                 if len(sgds) > 1:
                     #Print the small grid dither step we are on
@@ -406,6 +414,16 @@ class Sequence():
                     elif instrument == 'miri':
                         options.on_the_fly_webbpsf_opd = miri_opds[observation_counter]
 
+                # Set background level
+                if background != 'default':
+                    # Options are "benchmark", "low", 'medium', 'high'
+                    obs_dict['background_level'] = background
+                else:
+                    if filt in ['f1065c', 'f1140c', 'f1550c']:
+                        obs_dict['background_level'] = 'none'
+                    else:
+                        pass
+                
                 ######## RUN OBSERVATION ########
                 data = calculate_target(obs_dict) 
                 #################################
@@ -721,11 +739,12 @@ class Sequence():
         if opd_estimate not in all_opd_estimates:
             raise ValueError('Chosen OPD estimate "{}" not recognised. Compatible options are : {}'.format(opd_estimate, ', '.join(all_opd_estimates)))
 
-        base_opd =  'OPD_RevW_ote_for_{}_'+opd_estimate+'.fits.gz'
+        #base_opd =  'OPD_RevW_ote_for_{}_'+opd_estimate+'.fits.gz'
+        base_opd = 'JWST_OTE_OPD_cycle1_example_2022-07-30.fits'
 
         #Get Base OPD for NIRCam and MIRI (or just one if only one in sequence).
-        nircam_opd_file = os.path.join(webbpsf.utils.get_webbpsf_data_path(), 'NIRCam', 'OPD', base_opd.format('NIRCam'))
-        miri_opd_file = os.path.join(webbpsf.utils.get_webbpsf_data_path(), 'MIRI', 'OPD', base_opd.format('MIRI'))
+        nircam_opd_file = os.path.join(webbpsf.utils.get_webbpsf_data_path(), base_opd.format('NIRCam'))
+        miri_opd_file = os.path.join(webbpsf.utils.get_webbpsf_data_path(), base_opd.format('MIRI'))
 
         nircam_opd_hdu = OPDFile_to_HDUList(nircam_opd_file, slice_to_use=opd_realisation)
         miri_opd_hdu = OPDFile_to_HDUList(miri_opd_file, slice_to_use=opd_realisation)

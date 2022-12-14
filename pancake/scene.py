@@ -284,7 +284,7 @@ class Scene():
         plt.show()
 
 
-def create_SGD(ta_error='none', fsm_error='default', stepsize=20.e-3, pattern_name=None, sim_num=0):
+def create_SGD(ta_error='none', fsm_error='default', stepsize=20.e-3, pattern_name=None, sim_num=0, instrument='nircam'):
     '''
     Create small grid dither pointing set. There are two
     ways to specify dither patterns:
@@ -388,15 +388,21 @@ def create_SGD(ta_error='none', fsm_error='default', stepsize=20.e-3, pattern_na
         # Use a ta_error from a "saved" list of draws from a 5mas normal distribution (still randomnly generated, but seed is fixed)
         rngx = np.random.RandomState(42)
         rngy = np.random.RandomState(2021)
-        saved_ta_x = rngx.normal(loc=0.,scale=5e-3,size=50)
-        saved_ta_y = rngy.normal(loc=0.,scale=5e-3,size=50)
+        if instrument == 'nircam':
+            scale = 7e-3
+        elif instrument == 'miri':
+            scale = 10e-3
+        saved_ta_x = rngx.normal(loc=0.,scale=scale,size=100)
+        saved_ta_y = rngy.normal(loc=0.,scale=scale,size=100)
+        saved_ta_x = [1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3, 1e-3, -9e-3]
+        saved_ta_y = [6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3, 6e-3]
         ta_x, ta_y = saved_ta_x[sim_num], saved_ta_y[sim_num]
     elif ta_error=='random':
-        # Simulate the TA error from a 5mas normal distribution
-        ta_x, ta_y = get_ta_error(error='default')
+        # Simulate the TA error from a 1mas normal distribution
+        ta_x, ta_y = get_ta_error(instrument, error='default')
     elif isinstance(ta_error, (int, float)):
         # Simulate the TA error from an X normal distribution (should provide in arcsec)
-        ta_x, ta_y = get_ta_error(error=ta_error)
+        ta_x, ta_y = get_ta_error(instrument, error=ta_error)
     elif ta_error=='none':
         ta_x, ta_y = 0., 0.
         fsm_error = 'none'
@@ -415,21 +421,24 @@ def create_SGD(ta_error='none', fsm_error='default', stepsize=20.e-3, pattern_na
         sgds.append([offset_x, offset_y])
     return sgds
 
-def get_ta_error(error='default'):
+def get_ta_error(instrument, error='default'):
     ''' 
-    5mas 1-sigma/axis error (~7mas radial)
+    7 mas 1-sigma/axis error 
 
     Parameters
     ----------
     error : str / float
-        String of 'default' for 5e-3, or input float
+        String of 'default' for 1e-3, or input float
 
     Returns
     -------
     x,y random error
     '''
     if error == 'default': 
-        error = 5e-3
+        if instrument == 'nircam':
+            error = 7e-3
+        elif instrument == 'miri':
+            error = 7e-3
     return np.random.normal(loc=0.,scale=error,size=2)
 
 def get_fsm_error(error='default'):
@@ -445,7 +454,7 @@ def get_fsm_error(error='default'):
     x,y random error
     '''
     if error == 'default':
-        error = 2e-3
+        error = 3e-3
     elif error == 'none':
         error = 0.
 

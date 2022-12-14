@@ -8,6 +8,8 @@ from synphot import SourceSpectrum, SpectralElement
 from synphot.models import Empirical1D
 import astropy.units as u
 
+from astropy.io import fits
+
 #Load configuration files for NIRCam and MIRI to extract details from. 
 nircam_config_file = os.path.join(os.environ.get("pandeia_refdata"), 'jwst/nircam/config.json')
 miri_config_file = os.path.join(os.environ.get("pandeia_refdata"), 'jwst/miri/config.json')
@@ -56,6 +58,31 @@ def determine_instrument(filt):
 	
 	return instrument
 
+def determine_detector(filt):
+	'''
+	Determine detector from the input filter, only compatible with NIRCam / MIRI. 
+	
+	Parameters
+	----------
+	filt : str
+		JWST filter name
+
+	Returns
+	-------
+	detector : str
+		Pandeia compatible string
+	'''
+
+	if filt in nircam_filters:
+		if int(filt[1:3]) < 24:
+			detector = 'sw'
+		else:
+			detector = 'lw'
+	elif filt in miri_filters:
+		detector = 'imager'
+	
+	return detector
+
 def determine_aperture(filt, nircam_aperture, mode):
 	'''
 	Determine aperture (coronagraph) from filter and instrument mode
@@ -85,17 +112,22 @@ def determine_aperture(filt, nircam_aperture, mode):
 	elif mode == 'coronagraphy':
 		if filt in nircam_coro_filters:
 			if nircam_aperture != 'default':
-				aperture = nircam_aperture
+				if int(filt[1:3]) < 24 and nircam_aperture[-2:] != 'sw':
+					aperture = nircam_aperture + 'sw'
+				elif int(filt[1:3]) > 24 and nircam_aperture[-2:] != 'lw':
+					aperture = nircam_aperture + 'lw'
+				else:
+					aperture = nircam_aperture
 			else:
 				if int(filt[1:3]) < 24:
 					#Short wavelength
-					aperture = 'mask210r'
+					aperture = 'mask210rsw'
 				elif filt == 'f277w':
 					#This filter can only be done by the LWB
-					aperture = 'lwb'
+					aperture = 'masklwblw'
 				else:
 					#Remaining filters
-					aperture  = 'mask335r'
+					aperture  = 'mask335rlw'
 		elif filt in miri_coro_filters:
 			#Each MIRI coronagraphic filter uniquely tied to a aperture
 			if '2300' in filt:
@@ -408,10 +440,17 @@ def read_coronagraph_transmission(mask):
 	transmission : 2D ndarray
 		2D representation of the coronagraphic transmission.
 	'''
-	mask = mask.upper()
-	mask_file = os.path.join(os.path.dirname(__file__), "resources", "{}_2DTRANS.txt".format(mask))
+	if 'fqpm' in mask.lower():
+		mask_file = os.path.join(os.path.dirname(__file__), "resources", "{}_2DTRANS.txt".format(mask.upper()))
+	else:
+		string = 'jwst_nircam_psfmask_{}.fits'
+		mask_file = os.path.join(os.path.dirname(__file__), "resources", string.format(mask.lower()))
 	try:
-	   transmission = np.loadtxt(mask_file)
+		if mask[4:] in ['1065', '1140', '1550']:
+			transmission = np.loadtxt(mask_file)
+		else:
+			with fits.open(mask_file) as hdul:
+				transmission = hdul[1].data
 	except:
 		raise ValueError('Input coronagraphic mask "{}" not recognised. Currently supported masks are: "MASKSWB", "MASKLWB", "MASK210R", "MASK335R", "MASK430R", "FQPM1065", "FQPM1140", "FQPM1550"'.format(mask))
 		

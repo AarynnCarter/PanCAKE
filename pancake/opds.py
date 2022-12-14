@@ -158,7 +158,7 @@ class OTE_WFE_Drift_Model(OTE_Linear_Model_WSS):
             self.apply_frill_drift(amplitude=1)
             # self.opd has now been updated to drifted OPD
             # Temporarily calculate delta and calc rms
-            self.opd -= self._opd_original
+            self.opd -= self._opd_original  
             # scale by RMS of delta OPD, and save
             self.dopd_frill = self.opd / self.rms() 
 
@@ -788,7 +788,7 @@ class OTE_WFE_Drift_Model(OTE_Linear_Model_WSS):
             kwargs['return_wfe_amps'] = True
             kwargs['return_dopd_fin'] = True
             delta_opds, wfe_dict = self.evolve_dopd(delta_time, slew_angles, **kwargs)
-            
+
         if slew_averages:
             res = self.slew_pos_averages(delta_time, slew_angles, opds=delta_opds, 
                                          wfe_dict=wfe_dict, **kwargs)

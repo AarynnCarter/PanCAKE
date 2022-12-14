@@ -48,6 +48,7 @@ from pandeia.engine.constants import SPECTRAL_MAX_SAMPLES
 default_SPECTRAL_MAX_SAMPLES = SPECTRAL_MAX_SAMPLES
 from pandeia.engine.etc3D import CalculationConfig, DetectorSignal
 PandeiaDetectorSignal = DetectorSignal
+from pandeia.engine.signal import DetectorBinning
 
 from .config import EngineConfiguration
 
@@ -55,13 +56,12 @@ cache_maxsize = 256     # Number of monochromatic PSFs stored in an LRU cache
                         # Should speed up calculations that involve modifying things
                         # like exposure time and don't actually require calculating new PSFs.
 
-
 class CoronagraphyPSFLibrary(PSFLibrary, object):
     '''
     Subclass of the Pandeia PSFLibrary class, intended to allow PSFs to be generated on-the-fly
     via webbpsf rather than using cached PSFs
     '''
-    def __init__(self, path=None, aperture='all'):
+    def __init__(self, wavelength_range, path=None, psf_key='all'):
         from .engine import options
         self._options = options
         self._log("debug", "CUSTOM PSF LIBRARY ACTIVATE!")
@@ -70,7 +70,7 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
                 tel = 'jwst'
                 ins = options.current_config['configuration']['instrument']['instrument'].lower()
                 path = os.path.join(os.environ['pandeia_refdata'], tel, ins, 'psfs')
-        super(CoronagraphyPSFLibrary, self).__init__(path, aperture)
+        super(CoronagraphyPSFLibrary, self).__init__(wavelength_range, path, psf_key)
         self.latest_on_the_fly_PSF = None
         self._cache_path = options.cache_path
         if self._cache_path is None:
@@ -317,7 +317,7 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
         Return [image mask, pupil mask, fov_pixels, trim_fov_pixels, pixelscale]
         '''
     
-        aperture_keys = ['mask210r','mask335r','mask430r','masklwb','maskswb','fqpm1065','fqpm1140','fqpm1550','lyot2300']
+        aperture_keys = ['mask210r','mask335r','mask430r','masklwb','maskswb','fqpm1065','fqpm1140','fqpm1550','lyot2300', 'mask210rsw','mask335rsw','mask430rsw','masklwbsw','maskswbsw', 'mask210rlw','mask335rlw','mask430rlw','masklwblw','maskswblw']
         assert aperture_name in aperture_keys, 'Aperture {} not recognized! Must be one of {}'.format(aperture_name, aperture_keys)
 
         nc = webbpsf.NIRCam()
@@ -332,7 +332,17 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
             'fqpm1065' : ['FQPM1065','MASKFQPM', 81, None, miri.pixelscale, 'imaging'],
             'fqpm1140' : ['FQPM1140','MASKFQPM', 81, None, miri.pixelscale, 'imaging'],
             'fqpm1550' : ['FQPM1550','MASKFQPM', 81, None, miri.pixelscale, 'imaging'],
-            'lyot2300' : ['LYOT2300','MASKLYOT', 81, None, miri.pixelscale, 'imaging']
+            'lyot2300' : ['LYOT2300','MASKLYOT', 81, None, miri.pixelscale, 'imaging'],
+            'mask210rsw' : ['MASK210R','CIRCLYOT', 101, None, nc._pixelscale_short, 'sw_imaging'],
+            'mask335rsw' : ['MASK335R','CIRCLYOT', 101, None, nc._pixelscale_short, 'sw_imaging'],
+            'mask430rsw' : ['MASK430R','CIRCLYOT', 101, None, nc._pixelscale_short, 'sw_imaging'],
+            'masklwbsw' : ['MASKLWB','WEDGELYOT', 351, 101, nc._pixelscale_short, 'sw_imaging'],
+            'maskswbsw' : ['MASKSWB','WEDGELYOT', 351, 101, nc._pixelscale_short, 'sw_imaging'],
+            'mask210rlw' : ['MASK210R','CIRCLYOT', 101, None, nc._pixelscale_long, 'lw_imaging'],
+            'mask335rlw' : ['MASK335R','CIRCLYOT', 101, None, nc._pixelscale_long, 'lw_imaging'],
+            'mask430rlw' : ['MASK430R','CIRCLYOT', 101, None, nc._pixelscale_long, 'lw_imaging'],
+            'masklwblw' : ['MASKLWB','WEDGELYOT', 351, 101, nc._pixelscale_long, 'lw_imaging'],
+            'maskswblw' : ['MASKSWB','WEDGELYOT', 351, 101, nc._pixelscale_long, 'lw_imaging'],
             }
     
         return aperture_dict[aperture_name]
@@ -397,31 +407,47 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
     nircam_mode = {
                     'mask210r': 'sw_imaging', 'mask335r': 'lw_imaging', 'mask430r': 'lw_imaging',
                     'masklwb': 'lw_imaging', 'maskswb': 'sw_imaging', 'fqpm1065': 'imaging',
-                    'fqpm1140': 'imaging', 'fqpm1550': 'imaging', 'lyot2300': 'imaging'
+                    'fqpm1140': 'imaging', 'fqpm1550': 'imaging', 'lyot2300': 'imaging', 
+                    'mask210rsw': 'sw_imaging', 'mask335rsw': 'sw_imaging', 'mask430rsw': 'sw_imaging',
+                    'masklwbsw': 'sw_imaging', 'maskswbsw': 'sw_imaging','mask210rlw': 'lw_imaging', 
+                    'mask335rlw': 'lw_imaging', 'mask430rlw': 'lw_imaging',
+                    'masklwblw': 'lw_imaging', 'maskswblw': 'lw_imaging',
                   }
 
     image_mask = {
                     'mask210r': 'MASK210R', 'mask335r': 'MASK335R', 'mask430r': 'MASK430R',
                     'masklwb': 'MASKLWB', 'maskswb': 'MASKSWB', 'fqpm1065': 'FQPM1065',
-                    'fqpm1140': 'FQPM1140', 'fqpm1550': 'FQPM1550', 'lyot2300': 'LYOT2300'
+                    'fqpm1140': 'FQPM1140', 'fqpm1550': 'FQPM1550', 'lyot2300': 'LYOT2300', 
+                    'mask210rsw': 'MASK210R', 'mask335rsw': 'MASK335R', 'mask430rsw': 'MASK430R',
+                    'masklwbsw': 'MASKLWB', 'maskswbsw': 'MASKSWB', 'mask210rlw': 'MASK210R', 
+                    'mask335rlw': 'MASK335R', 'mask430rlw': 'MASK430R',
+                    'masklwblw': 'MASKLWB', 'maskswblw': 'MASKSWB'
                  }
     
     pupil_mask = {
                     'mask210r': 'CIRCLYOT', 'mask335r': 'CIRCLYOT', 'mask430r': 'CIRCLYOT', 
                     'masklwb': 'WEDGELYOT', 'maskswb': 'WEDGELYOT', 'fqpm1065': 'MASKFQPM', 
-                    'fqpm1140': 'MASKFQPM', 'fqpm1550': 'MASKFQPM', 'lyot2300': 'MASKLYOT'
+                    'fqpm1140': 'MASKFQPM', 'fqpm1550': 'MASKFQPM', 'lyot2300': 'MASKLYOT',
+                    'mask210rsw': 'CIRCLYOT', 'mask335rsw': 'CIRCLYOT', 'mask430rsw': 'CIRCLYOT', 
+                    'masklwbsw': 'WEDGELYOT', 'maskswbsw': 'WEDGELYOT', 'mask210rlw': 'CIRCLYOT', 
+                    'mask335rlw': 'CIRCLYOT', 'mask430rlw': 'CIRCLYOT', 
+                    'masklwblw': 'WEDGELYOT', 'maskswblw': 'WEDGELYOT'
                  }
     
     fov_pixels = {
                     'mask210r': 101, 'mask335r': 101, 'mask430r': 101, 'masklwb': 351, 
                     'maskswb': 351, 'fqpm1065': 81, 'fqpm1140': 81, 'fqpm1550': 81, 
-                    'lyot2300': 81
+                    'lyot2300': 81, 'mask210rsw': 101, 'mask335rsw': 101, 'mask430rsw': 101, 
+                    'masklwbsw': 351, 'maskswbsw': 351, 'mask210rlw': 101, 'mask335rlw': 101, 
+                    'mask430rlw': 101, 'masklwblw': 351, 'maskswblw': 351
                  }
     
     trim_fov_pixels = {
                         'mask210r': None, 'mask335r': None, 'mask430r': None, 'masklwb': 101, 
                         'maskswb': 101, 'fqpm1065': None, 'fqpm1140': None, 'fqpm1550': None, 
-                        'lyot2300': None
+                        'lyot2300': None,'mask210rsw': None, 'mask335rsw': None, 'mask430rsw': None, 
+                        'masklwbsw': 101, 'maskswbsw': 101, 'mask210rlw': None, 'mask335rlw': None, 
+                        'mask430rlw': None, 'masklwblw': 101, 'maskswblw': 101
                       }
 
 
@@ -440,7 +466,9 @@ class CoronagraphyConvolvedSceneCube(pandeia.engine.astro_spectrum.ConvolvedScen
         self._log("debug", "CORONAGRAPHY SCENE CUBE ACTIVATE!")
         pandeia.engine.astro_spectrum.SPECTRAL_MAX_SAMPLES = self._max_samples
         if 'psf_library' in kwargs and not isinstance(kwargs['psf_library'], CoronagraphyPSFLibrary):
-            kwargs['psf_library'] = CoronagraphyPSFLibrary()
+            self.instrument = instrument
+            wrange = self.instrument.get_wave_range()
+            kwargs['psf_library'] = CoronagraphyPSFLibrary(wrange)
         super(CoronagraphyConvolvedSceneCube, self).__init__(scene, instrument, **kwargs)
 
     @property
@@ -495,8 +523,11 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         webapp = kwargs.get('webapp', False)
         empty_scene = kwargs.get('empty_scene', False)
         
+        # Get wavelength range
+        wrange = self.current_instrument.get_wave_range()
+
         # Add coronagraphy-specific PSF library for on-the-fly PSF generation
-        kwargs['psf_library'] = CoronagraphyPSFLibrary()
+        kwargs['psf_library'] = CoronagraphyPSFLibrary(wrange)
 
         # how are we projecting the signal onto the detector plane?
         self.projection_type = self.current_instrument.projection_type
@@ -506,6 +537,9 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
 
         # Get the detector parameters (read noise, etc.)
         self.det_pars = self.current_instrument.get_detector_pars()
+
+        # Get the detector parameters (read noise, etc.)
+        self.the_detector = self.current_instrument.the_detector
 
         # Initialize detector mask
         self.det_mask = 1.0
@@ -550,12 +584,12 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
 
             # Saturation map for the slice
             slice_saturation = self.get_saturation_mask(rate=slice_rate_plus_bg['fp_pix'])
-            exposure_spec = self.current_instrument.exposure_spec
+            exposure_spec = self.current_instrument.the_detector.exposure_spec
             if hasattr(exposure_spec, 'get_groups_before_sat'):
                 slice_group = exposure_spec.get_groups_before_sat(slice_rate_plus_bg['fp_pix'],
-                                                                  self.det_pars['fullwell'])
+                                                                  self.det_pars.detector_config['fullwell'])
             else:
-                slice_group = self._groups_before_sat(slice_rate_plus_bg['fp_pix'], self.det_pars['fullwell'])
+                slice_group = self._groups_before_sat(slice_rate_plus_bg['fp_pix'], self.det_pars.detector_config['fullwell'])
 
             # The grid in the slice
             slice_pixgrid = self.get_pix_grid(slice_rate)
@@ -588,26 +622,26 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         self.rate = self.on_detector(self.rate_list)
         self.rate_plus_bg = self.on_detector(self.rate_plus_bg_list)
 
-        exposure_spec = self.current_instrument.exposure_spec
+        exposure_spec = self.current_instrument.the_detector.exposure_spec
         if hasattr(exposure_spec, 'get_groups_before_sat'):
             self.ngroup_map = exposure_spec.get_groups_before_sat(slice_rate_plus_bg['fp_pix'],
-                                                                  self.det_pars['fullwell'])
+                                                                  self.det_pars.detector_config['fullwell'])
         else:
-            self.ngroup_map = self._groups_before_sat(slice_rate_plus_bg['fp_pix'], self.det_pars['fullwell'])
+            self.ngroup_map = self._groups_before_sat(slice_rate_plus_bg['fp_pix'], self.det_pars.detector_config['fullwell'])
 
         if hasattr(exposure_spec, 'get_saturation_fraction'):
-            saturation_fraction = exposure_spec.get_saturation_fraction(self.rate_plus_bg, self.det_pars['fullwell'])
+            saturation_fraction = exposure_spec.get_saturation_fraction(self.rate_plus_bg, self.det_pars.detector_config['fullwell'])
         else:
-            saturation_fraction = exposure_spec.saturation_time / (self.det_pars['fullwell'] / self.rate_plus_bg)
+            saturation_fraction = exposure_spec.saturation_time / (self.det_pars.detector_config['fullwell'] / self.rate_plus_bg)
         self.fraction_saturation = np.max(saturation_fraction)
         
         self.detector_pixels = self.current_instrument.get_detector_pixels(self.wave_pix)
         self.brightest_pixel = np.max(self.rate_plus_bg)
 
         # Get the read noise correlation matrix and store it as an attribute.
-        if self.det_pars['rn_correlation']:
+        if self.det_pars.detector_config['rn_correlation']:
             self.read_noise_correlation_matrix = self.current_instrument.get_readnoise_correlation_matrix(self.rate.shape)
-    
+
     def spectral_detector_transform(self):
         """
         Create engine API format dict section containing properties of wavelength coordinates
@@ -714,7 +748,7 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         Calculate background in e-/s/pixel/micron at the focal plane. Also correct for any excess in predicted background
         if there are pupil losses in the PSF. (#2529)
         """
-        bg_fp_rate = self.focal_plane_rate(self.ote_rate(self.background.mjy_pix))
+        bg_fp_rate = self.focal_plane_rate(self.ote_rate(self.background.mjy_pix), self.wave)
         wave_range = self.current_instrument.get_wave_range()
         pupil_thru = self.current_instrument.psf_library.get_pupil_throughput(wave_range['wmin'],
                                                                               self.current_instrument.instrument[
@@ -804,7 +838,7 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         ote_rate = self.ote_rate(flux)
 
         # The source rate at the focal plane in interacting photons/s/pixel/micron
-        fp_rate = self.focal_plane_rate(ote_rate)
+        fp_rate = self.focal_plane_rate(ote_rate, self.wave)
 
         # the fp_pix_variance is the variance of the per-pixel electron rate and includes the chromatic effects
         # of quantum yield.
@@ -828,7 +862,7 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
             raise EngineOutputError(value="Unsupported projection_type: %s" % self.projection_type)
 
         # Include IPC effects, if available and requested
-        if self.det_pars['ipc'] and self.calculation_config.effects['ipc']:
+        if self.det_pars.detector_config['ipc'] and self.calculation_config.effects['ipc']:
             kernel = self.current_instrument.get_ipc_kernel()
             fp_pix_rate_ipc = self.ipc_convolve(fp_pix_rate, kernel)
         else:
@@ -860,16 +894,16 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         ote_rate = f_lambda * a_lambda
         return ote_rate
 
-    def focal_plane_rate(self, rate):
+    def focal_plane_rate(self, rate, wave):
         """
         Takes the output from self.ote_rate() and multiplies it by the components
         of efficiency within the system and returns the source rate at the focal plane in
         e-/s/pixel/micron.
         """
-        filter_eff = self.current_instrument.get_filter_eff(self.wave)
-        disperser_eff = self.current_instrument.get_disperser_eff(self.wave)
-        internal_eff = self.current_instrument.get_internal_eff(self.wave)
-        qe = self.current_instrument.get_detector_qe(self.wave)
+        filter_eff = self.current_instrument.get_filter_eff(wave)
+        disperser_eff = self.current_instrument.get_disperser_eff(wave)
+        internal_eff = self.current_instrument.get_internal_eff(wave)
+        qe = self.current_instrument.get_detector_qe(wave)
 
         fp_rate = rate * filter_eff * disperser_eff * internal_eff * qe
         return fp_rate
@@ -947,6 +981,15 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         spec_electron_variance_pix = spec_rate_pix_sampled * q_yield * (q_yield + fano_factor) * var_fudge
         products = wave_pix_trunc, spec_electron_rate_pix, spec_electron_variance_pix
 
+        # bin the instrument wavelength grid in pixels
+        if self.dispersion_axis == 'x':
+            bin_x = self.current_instrument.get_dispersion_binning()
+            bin_y = self.current_instrument.get_spatial_binning()
+        else:
+            bin_x = self.current_instrument.get_spatial_binning()
+            bin_y = self.current_instrument.get_dispersion_binning()
+        self.binning = DetectorBinning(spec_electron_rate_pix, bin_x, bin_y, self.grid, dispersion_axis=self.dispersion_axis, wave=wave_pix_trunc)
+
         return products
 
     def image_rate(self, rate):
@@ -978,6 +1021,11 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         # analytic in the simple 1 or 2 electron case: Ve = (qy + fano) * Re.  since Re is the photon rate
         # scaled by the quantum yield, Re = qy * Rp, we get: Ve = qy * (qy + fano) * Rp
         electron_variance_pix = integrate.simps(rate * q_yield * (q_yield + fano_factor) * var_fudge, self.wave)
+
+        # bin the instrument wavelength grid in pixels
+        bin_x = self.current_instrument.get_spatial_binning()
+        bin_y = self.current_instrument.get_spatial_binning()
+        self.binning = DetectorBinning(electron_rate_pix, bin_x, bin_y, self.grid)
 
         products = electron_rate_pix, electron_variance_pix
 
@@ -1132,6 +1180,15 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
                         spec_variance[:i, :] += bg_electron_variance[i] * dispersion[i]
                         spec_variance[i + rate_pix.shape[0]:, :] += bg_electron_variance[i] * dispersion[i]
 
+        # bin the instrument wavelength grid in pixels
+        if self.dispersion_axis == 'x':
+            bin_x = self.current_instrument.get_dispersion_binning()
+            bin_y = self.current_instrument.get_spatial_binning()
+        else:
+            bin_x = self.current_instrument.get_spatial_binning()
+            bin_y = self.current_instrument.get_dispersion_binning()
+        self.binning = DetectorBinning(spec_rate, bin_x, bin_y, self.grid, dispersion_axis=self.dispersion_axis, wave=wave_pix_trunc, projection_type=self.projection_type)
+
         # dispersion_axis determines whether wavelength is the first or second axis
         if self.dispersion_axis == 'x' or self.projection_type == 'multiorder':
             products = wave_pix_trunc, spec_rate, spec_variance
@@ -1189,10 +1246,10 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         saturation_mask = np.zeros(rate.shape)
 
         if self.calculation_config.effects['saturation']:
-            fullwell = self.det_pars['fullwell']
-            exp_pars = self.current_instrument.exposure_spec
-            unsat_ngroups = exp_pars.get_unsaturated_groups(rate, fullwell)
-            ngroup = exp_pars.ngroup
+            fullwell = self.det_pars.detector_config['fullwell']
+            exp_pars = self.current_instrument.the_detector
+            unsat_ngroups = exp_pars.get_unsaturated(rate, fullwell)
+            ngroup = exp_pars.exposure_spec.ngroup
 
             saturation_mask[(unsat_ngroups < ngroup)] = 1
             saturation_mask[(unsat_ngroups < 2)] = 2
@@ -1203,22 +1260,21 @@ class CoronagraphyDetectorSignal(CoronagraphyConvolvedSceneCube):
         """
         Fix for Pandeia 1.2/1.3, since exposure spec doesn't have this in 1.2
         """
-        exposure_spec = self.current_instrument.exposure_spec
+        exposure_spec = self.current_instrument.the_detector.exposure_spec
         tfffr = exposure_spec.tfffr
         nframe = exposure_spec.nframe
         tframe = exposure_spec.tframe
-        nskip = exposure_spec.nskip
-        time_to_saturation = self.det_pars['fullwell'] / slope.clip(1e-10, np.max(slope))
-        if exposure_spec.det_type == 'sias':
+        ndrop2 = exposure_spec.ndrop2
+        ndrop1 = exposure_spec.ndrop1
+        time_to_saturation = self.det_pars.detector_config['fullwell'] / slope.clip(1e-10, np.max(slope))
+        if self.det_pars.detector_config['det_type'] == 'sias':
             groups_before_sat = (time_to_saturation - tfffr) / (nframe * tframe)
-        elif exposure_spec.det_type == 'h2rg':
-            groups_before_sat = (((time_to_saturation - tfffr) / tframe) - nframe) / (nframe + nskip + 1.)
+        elif self.det_pars.detector_config['det_type'] == 'h2rg':
+            groups_before_sat = (((time_to_saturation - tfffr) / tframe) - nframe - ndrop1) / (nframe + ndrop2 + 1.)
         else:
             raise ValueError("Unknown detector type {}".format(exposure_spec.det_type))
         slice_group = np.floor(groups_before_sat)
         return slice_group
-
-
 
 class SeparateTargetReferenceCoronagraphy(Coronagraphy):
     '''

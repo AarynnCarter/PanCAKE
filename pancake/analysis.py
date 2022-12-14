@@ -94,12 +94,12 @@ def transmission_corrected(input_stamp, input_dx, input_dy, filt, mask, mode='mu
 		xoff, yoff = 0, 0
 
 	##### Now need to get the portion of the transmission map that corresponds to the input stamp image. 
-	trans_x, trans_y = transmission.shape
+	trans_y, trans_x = transmission.shape
 	trans_dx = np.arange(-(trans_x-1)/2, (trans_x)/2) 
 	trans_dy = np.arange(-(trans_y-1)/2, (trans_y)/2) 
 
 	#Create interpolation for the tranmission map we are using 
-	trans_interp  = interp2d(trans_dx, trans_dy, transmission)
+	trans_interp  = interp2d(trans_dx, trans_dy, transmission, kind='cubic')
 
 	#Use the interpolation to identify the transmission at each pixel in the input image. 
 	transmission_stamp = trans_interp(input_dx[0] + xoff, input_dy.transpose()[0]+ yoff)
@@ -182,7 +182,7 @@ def identify_primary_sources(pancake_results, target, references=None, target_pr
 
 	return primary_sources
 
-def extract_simulated_images(pancake_results, observations, primary_sources, all_rolls, references=None, extract_offaxis=False, filename_prefix='image'):
+def extract_simulated_images(pancake_results, observations, primary_sources, all_rolls, references=None, extract_offaxis=False, filename_prefix='image', low_pass=False):
 	"""
 	Function to extract a subset of simulated images from the output of a PanCAKE simulation into a more flexible format. 
 	
@@ -251,10 +251,24 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 					#Final index is for offaxis images, all indexes before this are what we're interested in. 
 
 					# Grab X and Y offsets of the primary source.
-					# NOTE: Y offset must have its sign reversed due to differences between Pandeia scene construction and analysis of the image arrays
+					# NOTE: Y offset must have its sign reversed due to differences between Pandeia scene construction and analysis of the image arrays. This has been checked!
 					xoff = head['S{}XOFF{}'.format(primary_source_id, j+1)] / pixel_scale 
 					yoff = -head['S{}YOFF{}'.format(primary_source_id, j+1)] / pixel_scale
-					raw_centers = np.array(image.shape) / 2.0
+					raw_centers = np.array([image.shape[1]-1, image.shape[0]-1]) / 2.0
+
+					# In reality, we can't measure the centers perfectly. So let's add a small error
+					# to the centers with values based on comparisons with on sky data. 
+					if wavelength < 4e-6:
+						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1e-3,size=2)
+					elif wavelength < 5e-6:
+						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1.5e-3,size=2)
+					elif wavelength < 12e-6:
+						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1e-3,size=2)
+					else:
+						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=5e-3,size=2)
+					# Scale by pixel scale
+					xoff += meas_xoff / pixel_scale
+					yoff += meas_yoff / pixel_scale
 
 					# Append calculated values. 
 					images.append(image)
@@ -272,7 +286,10 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 						offaxis_target_center = [raw_centers[0]+offaxis_xoff, raw_centers[1]+offaxis_yoff]
 
 						# Fit a 2D Gaussian to our offaxis source. 
-						offaxis_image_smooth = pyklip.klip.nan_gaussian_filter(offaxis_image, lambda_d_pixel/2.355)
+						if low_pass != False:
+							offaxis_image_smooth = pyklip.klip.nan_gaussian_filter(offaxis_image, lambda_d_pixel/2.355)
+						else:
+							offaxis_image_smooth = offaxis_image
 						offaxis_bestfit = fakes.gaussfit2d(offaxis_image_smooth, offaxis_target_center[0], offaxis_target_center[1], searchrad=4, guessfwhm=lambda_d_pixel, guesspeak=np.max(offaxis_image_smooth), refinefit=True)
 
 						# Identify the peak flux and centroid of the Gaussian fit
@@ -290,7 +307,7 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 
 	return extracted
  
-def process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=None, reference_obs=None, target_rolls='default', reference_rolls='default', subtraction='ADI'):
+def process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=None, reference_obs=None, target_rolls='default', reference_rolls='default', subtraction='ADI', low_pass=False):
 	"""
 	Function to process a set of desired simulated images from PanCAKE and convert them into pyKLIP datasets to enable easier stellar PSF subtraction
 	and contrast curve estimation. 
@@ -347,6 +364,7 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 		target_rolls = [min([abs(j) for j in targ_available_rolls])]
 		if len(targ_available_rolls) > 1:
 			print('WARNING: No ADI requested, using the Roll={} simulation(s) for {}/{}/{}'.format(target_rolls[0], target, filt, mask))
+			print('-------- Additional rolls can be included using the "target_rolls" parameter/ ')
 	else:
 		# User has specifically provide the rolls to use, check they exist. 
 		for roll in target_rolls:
@@ -354,7 +372,7 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 				raise ValueError("Unable to find any target observations at roll angle '{}' within simulated results. Possible roll angles include: {}".format(roll, ', '.join([str(t) for t in targ_available_rolls])))
 
 	##### Need to access the saved simulation files and extract the necessary target data. 
-	target_extracted = extract_simulated_images(pancake_results, target_obs, primary_sources, target_rolls, extract_offaxis=True, filename_prefix='target')
+	target_extracted = extract_simulated_images(pancake_results, target_obs, primary_sources, target_rolls, extract_offaxis=True, filename_prefix='target', low_pass=low_pass)
 	
 	##### If we are doing RDI at any point, also need to select the RDI rolls and extract the reference images. 
 	if 'RDI' in subtraction:
@@ -392,7 +410,7 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 				raise ValueError("Invalid format of reference rolls provided. Reference rolls must be provided either as an integer/float, a list of integer/floats, or a list of lists of integer/floats of equal length to the provided references.")
 	
 		##### Now, access the saved simulation files and extract the necessary reference data. 
-		ref_extracted = extract_simulated_images(pancake_results, reference_obs, primary_sources, all_ref_available_rolls, references=references, filename_prefix='reference')
+		ref_extracted = extract_simulated_images(pancake_results, reference_obs, primary_sources, all_ref_available_rolls, references=references, filename_prefix='reference', low_pass=low_pass)
 
 	##### Determine the 1 lambda / D inner working angle for this filter, and outer working angle based on image size
 	pixel_scale = pancake_results[target_obs[0]].header['PIXSCALE']
@@ -400,11 +418,20 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 	lambda_d_arcsec = (wavelength / 6.5) * (180 / np.pi) * 3600
 	lambda_d_pixel = lambda_d_arcsec / pixel_scale 
 	
-	inner_working_angle = 0#.5*lambda_d_pixel
+	inner_working_angle = 0 #.5*lambda_d_pixel
 	outer_working_angle = int(np.sqrt(2*(target_extracted['images'][0].shape[0]/2)**2))  #Go right to the corners
 
+	# Need to realign images based on the shifts
+	image_center = np.array([target_extracted['images'][0].shape[1]-1, target_extracted['images'][0].shape[0]-1])/2.
+	data = deepcopy(target_extracted['images'])
+	centers = deepcopy(target_extracted['centers'])
+	for i, image in enumerate(data):
+		recentered_image = pyklip.klip.align_and_scale(image, new_center=image_center, old_center=centers[i])
+		centers[i] = image_center
+		data[i] = recentered_image
+
 	##### Create the KLIP target dataset
-	target_dataset = Instrument.GenericData(target_extracted['images'], target_extracted['centers'], IWA=inner_working_angle, parangs=target_extracted['pas'], filenames=target_extracted['filenames'])
+	target_dataset = Instrument.GenericData(data, centers, IWA=inner_working_angle, parangs=target_extracted['pas'], filenames=target_extracted['filenames'])
 	target_dataset.OWA = outer_working_angle
 
 	##### Create the KLIP PSF library if necessary
@@ -413,7 +440,7 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 		psflib_filenames = np.append(ref_extracted['filenames'], target_extracted['filenames'], axis=0)
 		psflib_centers = np.append(ref_extracted['centers'], target_extracted['centers'], axis=0)
 
-		image_center = np.array(psflib_data[0].shape) / 2.0
+		image_center = np.array([psflib_data[0].shape[1]-1, psflib_data[0].shape[0]-1])/2.
 		#Need to align the images so that they have the same centers. 
 		for j, image in enumerate(psflib_data):
 			recentered_image = pyklip.klip.align_and_scale(image, new_center=image_center, old_center=psflib_centers[j])
@@ -589,7 +616,6 @@ def meas_contrast_basic(dat, iwa, owa, resolution, center=None, low_pass_filter=
 			separations in pixels and corresponding 5 sigma FPF
 
 	"""
-
 	if center is None:
 		starx = dat.shape[1]//2
 		stary = dat.shape[0]//2
@@ -604,7 +630,6 @@ def meas_contrast_basic(dat, iwa, owa, resolution, center=None, low_pass_filter=
 	seps = np.arange(numseps) * dr + iwa + resolution/2.0
 	dsep = resolution
 	# find equivalent Gaussian PSF for this resolution
-
 
 	# run a low pass filter on the data, check if input is boolean or a number
 	if not isinstance(low_pass_filter, bool):
@@ -632,7 +657,7 @@ def meas_contrast_basic(dat, iwa, owa, resolution, center=None, low_pass_filter=
 
 	return seps, np.array(noise_std)
 
-def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis_flux, raw_input_dataset, raw_input_psflib, primary_vegamag=0, pixel_scale=0.063, annuli=1, subsections=1, numbasis=25, movement=1, subtraction='ADI', companion_xy=None, verbose=True, outputdir='./RESULTS/', plot_klip_throughput=False):
+def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis_flux, raw_input_dataset, raw_input_psflib, primary_vegamag=0, pixel_scale=0.063, annuli=1, subsections=1, numbasis=25, movement=1, subtraction='ADI', companion_xy=None, verbose=True, outputdir='./RESULTS/', plot_klip_throughput=False, low_pass=False):
 	"""
 	Function to compute contrast curves from a pyKLIP subtracted image file. Contrast curves will be corrected for both the coronagraphic and KLIP throughput, in addition to being converted to relative, and absolute magnitude sensitivity limits. 
 
@@ -695,8 +720,8 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 	lambda_d_arcsec = (wavelength / 6.5) * (180 / np.pi) * 3600
 	lambda_d_pixel = lambda_d_arcsec / pixel_scale 
 	
-	# Set the IWA to 0.5 lambda/D, contrast will be calculated from 1 lambda / D
-	inner_working_angle = 0.5*lambda_d_pixel 
+	inner_working_angle = 0 #Images are already NaN'ed within 0.5 lambda/D
+
 	# For the OWA, get inaccurate measurements close to the edges of the simulated image, so only go 95% of the way. 
 	# In reality many more pixels will be available as simulation is a small portion of detector, so this effect is artificial.
 	outer_working_angle = 0.95*int(raw_image.shape[0]/2) 
@@ -713,12 +738,12 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 		# Identify a level at which pixels should be set to nans, be slightly more aggresive for MIRI
 		if mask in ['MASKSWB', 'MASKLWB']: 
 			nan_cut = 0.5
+			nan_mask = np.where(mask_throughput<nan_cut)
+			raw_image[nan_mask] = np.nan
+			image[nan_mask] = np.nan
 		elif mask in ['FQPM1065', 'FQPM1140', 'FQPM1550']: 
-			nan_cut = 0.65
-
-		nan_mask = np.where(mask_throughput<nan_cut)
-		raw_image[nan_mask] = np.nan
-		image[nan_mask] = np.nan
+			raw_image = mask_pa(raw_image, [(7.5,87.5), (97.5,182.5), (187.5,272.5), (277.5,360), (0, 2.5)])
+			image = mask_pa(image, [(7.5,87.5), (97.5,182.5), (187.5,272.5), (277.5,360), (0, 2.5)])
 
 	##### Also, if there are companions in the image, these should be masked out. 
 	if companion_xy != None: 
@@ -732,23 +757,31 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 	raw_image /= offaxis_flux
 	image /= offaxis_flux
 
-	##### Grab a contrast measurement before and after the coronagraphic throughput correction
-	uncorr_contrast_seps, uncorr_contrast = pyklip.klip.meas_contrast(dat=raw_image, iwa=inner_working_angle, owa=outer_working_angle, resolution=lambda_d_pixel, center=center, low_pass_filter=lambda_d_pixel/2.355)
-	contrast_seps, contrast = pyklip.klip.meas_contrast(dat=image, iwa=inner_working_angle, owa=outer_working_angle, resolution=lambda_d_pixel, center=center, low_pass_filter=lambda_d_pixel/2.355)
+	if low_pass == True: 
+		low_pass = lambda_d_pixel/2.355
 
-	uncorr_contrast_seps_raw5sig, uncorr_contrast_raw5sig = meas_contrast_basic(dat=raw_image, iwa=inner_working_angle, owa=outer_working_angle, resolution=1, center=center, low_pass_filter=lambda_d_pixel/2.355)
-	contrast_seps_raw5sig, contrast_raw5sig = meas_contrast_basic(dat=image, iwa=inner_working_angle, owa=outer_working_angle, resolution=1, center=center, low_pass_filter=lambda_d_pixel/2.355)
+	resolution = lambda_d_pixel
+	##### Grab a contrast measurement before and after the coronagraphic throughput correction
+	uncorr_contrast_seps, uncorr_contrast = pyklip.klip.meas_contrast(dat=raw_image, iwa=inner_working_angle, owa=outer_working_angle, resolution=resolution, center=center, low_pass_filter=low_pass)
+	contrast_seps, contrast = pyklip.klip.meas_contrast(dat=image, iwa=inner_working_angle, owa=outer_working_angle, resolution=resolution, center=center, low_pass_filter=low_pass)
+
+	uncorr_contrast_seps_raw5sig, uncorr_contrast_raw5sig = meas_contrast_basic(dat=raw_image, iwa=inner_working_angle, owa=outer_working_angle, resolution=1, center=center, low_pass_filter=low_pass)
+	contrast_seps_raw5sig, contrast_raw5sig = meas_contrast_basic(dat=image, iwa=inner_working_angle, owa=outer_working_angle, resolution=1, center=center, low_pass_filter=low_pass)
 
 	##### At this stage contrast is usable, but has not been calibrated for the KLIP throughput. 
 	##### Need to inject planets into the raw_image and see how well they are recovered 
 	#Define injection values 
-	min_sep = inner_working_angle # Minimum injection separation
+	min_sep = 1 # Minimum injection separation
 	max_sep = outer_working_angle # Maximum injection separation
-	
-	nplanets = 1   #Just inject 1 planet at a time, but can do multiple at once. 
-	inter_planet_sep = 2 # Radial separation in pixels between each planet injection.
-	start_pas = np.linspace(0, 360*(nplanets-1)/nplanets, nplanets) #Starting PA's for the injected planets. 
-	num_pas = 5 # Number of different PA's to look at for each separation. Should avoid values of 1,2,4 for MIRI as they will lie behind the 4QPM edges. 
+	inter_planet_sep = 1 # Radial separation in pixels between each planet injection.
+	if 'FQPM' in mask.upper():
+		nplanets = 4
+		num_pas = 1
+		start_pas = [45, 135, 215, 305] 
+	else:
+		nplanets = 3   #Just inject 1 planet at a time, but can do multiple at once. 
+		start_pas = np.linspace(0, 360*(nplanets-1)/nplanets, nplanets) #Starting PA's for the injected planets. 
+		num_pas = 3 # Number of different PA's to look at for each separation. Should avoid values of 1,2,4 for MIRI as they will lie behind the 4QPM edges. 
 
 	# Maximum separation of first iteration and number of loops needed. 
 	max_sep_1 = min_sep + (inter_planet_sep * (nplanets-1))
@@ -758,13 +791,15 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 	psf_stamp_input = np.array([offaxis_psf_stamp]) 
 
 	retrieved_fluxes_all, planet_pas_all, planet_seps_all, input_contrasts_all = [], [], [], []
+
+	contrast_interp = interp1d(contrast_seps, uncorr_contrast, kind='slinear', bounds_error=False, fill_value='extrapolate')
 	if verbose:	print('--> Determining KLIP Throughput')
 	for n in range(n_sep_loops):
 		# Create array of separations and contrasts to be injected at, spaced by desired distance b/t planets
 		planet_seps = np.arange(min_sep + (n*nplanets*inter_planet_sep), max_sep_1+1 + (n*nplanets*inter_planet_sep), inter_planet_sep)
 
 		# Gather contrasts at the separation of the injected planet for the *uncorrected* images, i.e coronagraph throughput is still there. 
-		input_contrasts = (np.interp(planet_seps, contrast_seps, uncorr_contrast))*4000
+		input_contrasts = contrast_interp(planet_seps)*1000
 
 		# Loop over however many PA's were requested. 
 		for num_pa in range(num_pas):
@@ -817,21 +852,24 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 			#Reopen produced file from pyKLIP
 			injected_file = "{}{}{}".format(outputdir, fileprefix, filesuffix)
 			with fits.open(injected_file) as hdulist:
-				raw_injected_image = hdulist[0].data[0]
+				injected_image = hdulist[0].data[0]
 				injected_image_centers = [hdulist[0].header["PSFCENTX"], hdulist[0].header["PSFCENTY"]]
-				injected_image = transmission_corrected(raw_injected_image, image_dx, image_dy, filt, mask, mode='divide') #Correct for coronagraph transmission again
 
 			# Retrieve the planetary flux and append it to our initial array
 			retrieved_planet_fluxes, used_contrasts, used_seps, used_pas = [], [], [], []
 			for input_contrast, sep, pa, inj in zip(input_contrasts, planet_seps, planet_pas, injected):
 				# Planet injection step.
 				if inj == True:
-					# Before we retrieve the flux, we need to apply a low pass filter (smoothing) to the images, as this is what was done to 
-					# obtain the contrast curve. Make sure to use the same value of lambda_d_pixel/2.355. 
-	
-					injected_image = pyklip.klip.nan_gaussian_filter(injected_image, lambda_d_pixel/2.355)
+					# Before we retrieve the flux, we may need to apply a low pass filter (smoothing) to the images 
+					# if this is what was done to obtain the contrast curve. 
+					# Make sure to use the same value of lambda_d_pixel/2.355. 
+					if low_pass != False:
+						injected_image = pyklip.klip.nan_gaussian_filter(injected_image, low_pass)
 					input_theta = (270 - pa) % 360
 					fake_flux = fakes.retrieve_planet_flux(frames=injected_image, centers=injected_image_centers, astr_hdrs=input_dataset.output_wcs[0], sep=sep, pa=None, thetas=input_theta, searchrad=int(lambda_d_pixel*2), guessfwhm=lambda_d_pixel)
+
+					# Flux measured should be modified by the KLIP throughput, and the coronagraphic throughput
+					# included in the field_dependent_correction during injection. 
 
 					retrieved_planet_fluxes.append(fake_flux)
 					used_contrasts.append(input_contrast)
@@ -863,11 +901,19 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 	# Counteract this by setting all negative throughput values to a very low value of 1e-10
 	med_inject_vars["throughput"][np.where(med_inject_vars['throughput']<0)] = 1e-10
 
+	# Also shouldn't really have a throughput greater than 1, so let's knock those down
+	med_inject_vars["throughput"][np.where(med_inject_vars['throughput']>1)] = 1
+
+	# Fudge factor for MIRI F1550C
+	if filt.lower() == 'f1550c' and 'RDI' in subtraction:
+		#Manually adjust the throughput to match observations
+		med_inject_vars["throughput"] = med_inject_vars["throughput"] * 0.5
+
 	# Find the throughput for the separations the contrast curve has been computed at
 	throughput_interp = np.interp(contrast_seps, med_inject_vars['separation'], med_inject_vars["throughput"])
 
-	# Apply median KLIP throughput to the 5 sigma contrast curve which **has** been already corrected for the coronagraph throughput 
-	klip_corrected_contrast = contrast / throughput_interp
+	# Apply median KLIP throughput to the 5 sigma contrast curve which hasn't been corrected for the coronagraph throughput 
+	klip_corrected_contrast = uncorr_contrast / throughput_interp
 
 	##### Convert to relative / absolute magnitudes.
 	relmag = -2.5*np.log10(klip_corrected_contrast)
@@ -875,12 +921,12 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 
 	##### Now make it all again, but for the basic 5 sigma curves with no small separation correction
 	throughput_interp2 = np.interp(contrast_seps_raw5sig, med_inject_vars['separation'], med_inject_vars['throughput'])
-	klip_corrected_contrast_raw5sig = contrast_raw5sig / throughput_interp2
+	klip_corrected_contrast_raw5sig = uncorr_contrast_raw5sig / throughput_interp2
 	relmag_raw5sig = -2.5*np.log10(klip_corrected_contrast_raw5sig)
 	absmag_raw5sig = relmag_raw5sig + primary_vegamag
 
 	# Prepare dictionary to return contrasts, give things more descriptive names for users. 
-	all_contrasts = {'separation':contrast_seps, 'separation_arcsec':contrast_seps*pixel_scale, 'separation_lambdad':contrast_seps/lambda_d_pixel, 'contrast_noklipthrput_nocorothrput':uncorr_contrast, 'contrast_noklipthrput':contrast, 'contrast':klip_corrected_contrast, 'klipthrput':throughput_interp, 'relmag':relmag, 'absmag':absmag, 'separation_raw5sig':contrast_seps_raw5sig, 'separation_arcsec_raw5sig':contrast_seps_raw5sig*pixel_scale, 'separation_lambdad_raw5sig':contrast_seps_raw5sig/lambda_d_pixel,'contrast_noklipthrput_nocorothrput_raw5sig':uncorr_contrast_raw5sig, 'contrast_noklipthrput_raw5sig':contrast_raw5sig, 'contrast_raw5sig':klip_corrected_contrast_raw5sig, 'relmag_raw5sig':relmag_raw5sig, 'absmag_raw5sig':absmag_raw5sig}
+	all_contrasts = {'separation':contrast_seps, 'separation_arcsec':contrast_seps*pixel_scale, 'separation_lambdad':contrast_seps/lambda_d_pixel, 'contrast_noklipthrput_nocorothrput':uncorr_contrast, 'contrast_noklipthrput':contrast, 'contrast':klip_corrected_contrast, 'klipcorothrput':throughput_interp, 'relmag':relmag, 'absmag':absmag, 'separation_raw5sig':contrast_seps_raw5sig, 'separation_arcsec_raw5sig':contrast_seps_raw5sig*pixel_scale, 'separation_lambdad_raw5sig':contrast_seps_raw5sig/lambda_d_pixel,'contrast_noklipthrput_nocorothrput_raw5sig':uncorr_contrast_raw5sig, 'contrast_noklipthrput_raw5sig':contrast_raw5sig, 'contrast_raw5sig':klip_corrected_contrast_raw5sig, 'relmag_raw5sig':relmag_raw5sig, 'absmag_raw5sig':absmag_raw5sig}
 
 	if plot_klip_throughput:
 		plt.figure()
@@ -895,6 +941,21 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 		plt.show()
 
 	return all_contrasts
+
+def mask_pa(image, pa_ranges=[]):
+	# Mask out bar mask occulter.
+    image_masked = image.copy()
+    cent = np.array([image.shape[1]-1, image.shape[0]-1])/2.
+    yy, xx = np.indices(image.shape) # pix
+    tt = np.rad2deg(-1.*np.arctan2((xx-cent[0]), (yy-cent[1]))) % 360. # deg
+
+    for i in range(len(pa_ranges)):
+        if (i == 0):
+            image_masked[:] = np.nan
+        mask = (tt >= pa_ranges[i][0]) & (tt <= pa_ranges[i][1])
+        image_masked[mask] = image[mask]
+
+    return image_masked
 
 def get_source_properties(template_obs, primary_source):
 	'''
@@ -916,7 +977,8 @@ def get_source_properties(template_obs, primary_source):
 	pixel_scale = header['PIXSCALE']
 	num_sources = header['NSOURCES']
 
-	raw_center = np.array(template_obs.data[0].shape) / 2.0
+	#raw_center = np.array(template_obs.data[0].shape) / 2.0
+	raw_center = np.array([template_obs.data[0].shape[1]-1, template_obs.data[0].shape[0]-1])
 
 	sources = [header['SOURCE{}'.format(j+1)] for j in range(num_sources)]
 	primary_source_id = sources.index(primary_source)
@@ -1027,7 +1089,7 @@ def companion_snrs(subtracted_hdu_file, filt, mask, companion_xy, mask_radius=7)
 
 	return companion_snrs
 
-def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, save_contrasts=True):
+def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, low_pass_filter=False, save_contrasts=True):
 	'''
 	Overarching function to compute contrast curves from output PanCAKE results. 
 
@@ -1145,6 +1207,9 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 
 		### Now loop over all of the masks
 		for mask in used_masks:
+			# Trim if necessary
+			if mask[-2:] in ['SW', 'LW']:
+				mask = mask[:-2]
 			print('{} // {}+{}'.format(target, filt.upper(), mask.upper()))
 
 			### Get the target observations just for this mask
@@ -1162,7 +1227,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				reference_obs = None
 
 			##### Create the KLIP datasets
-			processed = process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=references, reference_obs=reference_obs, target_rolls=target_rolls, reference_rolls=reference_rolls, subtraction=subtraction)
+			processed = process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=references, reference_obs=reference_obs, target_rolls=target_rolls, reference_rolls=reference_rolls, subtraction=subtraction, low_pass=low_pass_filter)
 
 			##### Perform the subtraction
 			### Prior to the subtraction, must duplicate the datasets for KLIP throughput calculations
@@ -1249,6 +1314,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_contrasts'][j]), xytext=(5, 5), textcoords='offset points')
 				ax.legend(frameon=False, fontsize=14)
 				ax.set_yscale('log')
+				ax.set_ylim([1e-7, 1e-2])
 				ax.set_ylabel("Contrast", fontsize=16)
 				ax.set_xlabel('Separation (")', fontsize=16)
 				ax.tick_params(which='both', direction='in', labelsize=14, axis='both', top=True, right=True)
