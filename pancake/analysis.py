@@ -182,7 +182,7 @@ def identify_primary_sources(pancake_results, target, references=None, target_pr
 
 	return primary_sources
 
-def extract_simulated_images(pancake_results, observations, primary_sources, all_rolls, references=None, extract_offaxis=False, filename_prefix='image', low_pass=False):
+def extract_simulated_images(pancake_results, observations, primary_sources, all_rolls, references=None, extract_offaxis=False, filename_prefix='image', low_pass=False, regis_err='default'):
 	"""
 	Function to extract a subset of simulated images from the output of a PanCAKE simulation into a more flexible format. 
 	
@@ -203,6 +203,9 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 		Boolean choice of whether to extract offaxis images or not
 	filename_prefix : str
 		Simple prefix string used to assign a unique name to each simulated image.
+	regis_err : str
+		Error when registering the unsubtracted images to a common center
+
 	
 	Returns
 	-------
@@ -243,6 +246,9 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 			primary_source_id = source_keys[sources.index(primary_sources[1+ref_scene_index])][-1]
 			rolls = all_rolls[ref_scene_index] # Just get the rolls for this particular scene. 
 
+		if regis_err == 'saved':
+			rngx = np.random.RandomState(2005)
+			rngy = np.random.RandomState(2810)
 		# Loop over the PA rolls requested. 
 		if rollang in rolls: 
 			# Loop over each simulated image for this observation. 
@@ -257,15 +263,34 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 					raw_centers = np.array([image.shape[1]-1, image.shape[0]-1]) / 2.0
 
 					# In reality, we can't measure the centers perfectly. So let's add a small error
-					# to the centers with values based on comparisons with on sky data. 
-					if wavelength < 4e-6:
-						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1e-3,size=2)
-					elif wavelength < 5e-6:
-						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1.5e-3,size=2)
-					elif wavelength < 12e-6:
-						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1e-3,size=2)
+					# to the centers with values based on comparisons with on sky data (or other options) 
+					if regis_err == 'default':
+						if wavelength < 4e-6:
+							meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1e-3,size=2)
+						elif wavelength < 5e-6:
+							meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1.5e-3,size=2)
+						elif wavelength < 12e-6:
+							meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=1e-3,size=2)
+						else:
+							meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=5e-3,size=2)
+					elif regis_err == 'zero':
+						meas_xoff, meas_yoff = 0, 0
+					elif regis_err == 'saved':
+						if wavelength < 4e-6:
+							meas_xoff = rngx.normal(loc=0.,scale=1e-3,size=100)[j]
+							meas_yoff = rngy.normal(loc=0.,scale=1e-3,size=100)[j]
+						elif wavelength < 5e-6:
+							meas_xoff = rngx.normal(loc=0.,scale=1.5e-3,size=100)[j]
+							meas_yoff = rngy.normal(loc=0.,scale=1.5e-3,size=100)[j]
+						elif wavelength < 12e-6:
+							meas_xoff = rngx.normal(loc=0.,scale=1e-3,size=100)[j]
+							meas_yoff = rngy.normal(loc=0.,scale=1e-3,size=100)[j]
+						else:
+							meas_xoff = rngx.normal(loc=0.,scale=5e-3,size=100)[j]
+							meas_yoff = rngy.normal(loc=0.,scale=5e-3,size=100)[j]
 					else:
-						meas_xoff, meas_yoff = np.random.normal(loc=0.,scale=5e-3,size=2)
+						raise ValueError('Provided registration error "{}" not recognised. Options are "default", "saved", "zero"')
+
 					# Scale by pixel scale
 					xoff += meas_xoff / pixel_scale
 					yoff += meas_yoff / pixel_scale
@@ -307,7 +332,7 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 
 	return extracted
  
-def process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=None, reference_obs=None, target_rolls='default', reference_rolls='default', subtraction='ADI', low_pass=False):
+def process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=None, reference_obs=None, target_rolls='default', reference_rolls='default', subtraction='ADI', low_pass=False, regis_err='default'):
 	"""
 	Function to process a set of desired simulated images from PanCAKE and convert them into pyKLIP datasets to enable easier stellar PSF subtraction
 	and contrast curve estimation. 
@@ -336,6 +361,8 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 		Which reference PA roll images to use. Alternatively, 'default' to use all of them for ADI modes, or roll=0 for RDI. 
 	subtraction : str
 		pyKLIP compatible subtraction string, available options are 'ADI', 'RDI', or 'ADI+RDI'
+	regis_err : str
+		Error when registering the unsubtracted images to a common center
 
 	Returns
 	-------
@@ -372,7 +399,7 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 				raise ValueError("Unable to find any target observations at roll angle '{}' within simulated results. Possible roll angles include: {}".format(roll, ', '.join([str(t) for t in targ_available_rolls])))
 
 	##### Need to access the saved simulation files and extract the necessary target data. 
-	target_extracted = extract_simulated_images(pancake_results, target_obs, primary_sources, target_rolls, extract_offaxis=True, filename_prefix='target', low_pass=low_pass)
+	target_extracted = extract_simulated_images(pancake_results, target_obs, primary_sources, target_rolls, extract_offaxis=True, filename_prefix='target', low_pass=low_pass, regis_err=regis_err)
 	
 	##### If we are doing RDI at any point, also need to select the RDI rolls and extract the reference images. 
 	if 'RDI' in subtraction:
@@ -410,7 +437,7 @@ def process_simulations(pancake_results, target, target_obs, filt, mask, primary
 				raise ValueError("Invalid format of reference rolls provided. Reference rolls must be provided either as an integer/float, a list of integer/floats, or a list of lists of integer/floats of equal length to the provided references.")
 	
 		##### Now, access the saved simulation files and extract the necessary reference data. 
-		ref_extracted = extract_simulated_images(pancake_results, reference_obs, primary_sources, all_ref_available_rolls, references=references, filename_prefix='reference', low_pass=low_pass)
+		ref_extracted = extract_simulated_images(pancake_results, reference_obs, primary_sources, all_ref_available_rolls, references=references, filename_prefix='reference', low_pass=low_pass, regis_err=regis_err)
 
 	##### Determine the 1 lambda / D inner working angle for this filter, and outer working angle based on image size
 	pixel_scale = pancake_results[target_obs[0]].header['PIXSCALE']
@@ -944,18 +971,18 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 
 def mask_pa(image, pa_ranges=[]):
 	# Mask out bar mask occulter.
-    image_masked = image.copy()
-    cent = np.array([image.shape[1]-1, image.shape[0]-1])/2.
-    yy, xx = np.indices(image.shape) # pix
-    tt = np.rad2deg(-1.*np.arctan2((xx-cent[0]), (yy-cent[1]))) % 360. # deg
+	image_masked = image.copy()
+	cent = np.array([image.shape[1]-1, image.shape[0]-1])/2.
+	yy, xx = np.indices(image.shape) # pix
+	tt = np.rad2deg(-1.*np.arctan2((xx-cent[0]), (yy-cent[1]))) % 360. # deg
 
-    for i in range(len(pa_ranges)):
-        if (i == 0):
-            image_masked[:] = np.nan
-        mask = (tt >= pa_ranges[i][0]) & (tt <= pa_ranges[i][1])
-        image_masked[mask] = image[mask]
+	for i in range(len(pa_ranges)):
+		if (i == 0):
+			image_masked[:] = np.nan
+		mask = (tt >= pa_ranges[i][0]) & (tt <= pa_ranges[i][1])
+		image_masked[mask] = image[mask]
 
-    return image_masked
+	return image_masked
 
 def get_source_properties(template_obs, primary_source):
 	'''
@@ -1089,7 +1116,7 @@ def companion_snrs(subtracted_hdu_file, filt, mask, companion_xy, mask_radius=7)
 
 	return companion_snrs
 
-def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, low_pass_filter=False, save_contrasts=True):
+def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, low_pass_filter=False, save_contrasts=True, regis_err='default'):
 	'''
 	Overarching function to compute contrast curves from output PanCAKE results. 
 
@@ -1143,6 +1170,8 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 		Toggle for plotting of calculated klip_throughout, may interrupt code execution
 	save_contrasts : bool
 		Toggle for saving computed contrasts to a file. 
+	regis_err : str
+		Error when registering the unsubtracted images to a common center
 
 	Returns
 	-------
@@ -1227,7 +1256,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				reference_obs = None
 
 			##### Create the KLIP datasets
-			processed = process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=references, reference_obs=reference_obs, target_rolls=target_rolls, reference_rolls=reference_rolls, subtraction=subtraction, low_pass=low_pass_filter)
+			processed = process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=references, reference_obs=reference_obs, target_rolls=target_rolls, reference_rolls=reference_rolls, subtraction=subtraction, low_pass=low_pass_filter, regis_err=regis_err)
 
 			##### Perform the subtraction
 			### Prior to the subtraction, must duplicate the datasets for KLIP throughput calculations
@@ -1334,7 +1363,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 					for j, name in enumerate(source_props['comp_names']):
 						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_vegamags'][j]), xytext=(5, 5), textcoords='offset points')
 				ax.legend(frameon=False, fontsize=14)
-				ax.set_ylim(ax.get_ylim()[::-1])
+				ax.set_ylim([ax.get_ylim()[::-1][0], 0])
 				ax.set_ylabel("Apparent Magnitude", fontsize=16)
 				ax.set_xlabel('Separation (")', fontsize=16)
 				ax.tick_params(which='both', direction='in', labelsize=14, axis='both', top=True, right=True)
