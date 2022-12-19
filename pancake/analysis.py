@@ -315,6 +315,8 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 							offaxis_image_smooth = pyklip.klip.nan_gaussian_filter(offaxis_image, lambda_d_pixel/2.355)
 						else:
 							offaxis_image_smooth = offaxis_image
+
+						print(offaxis_image_smooth, offaxis_target_center)
 						offaxis_bestfit = fakes.gaussfit2d(offaxis_image_smooth, offaxis_target_center[0], offaxis_target_center[1], searchrad=4, guessfwhm=lambda_d_pixel, guesspeak=np.max(offaxis_image_smooth), refinefit=True)
 
 						# Identify the peak flux and centroid of the Gaussian fit
@@ -1005,7 +1007,7 @@ def get_source_properties(template_obs, primary_source):
 	num_sources = header['NSOURCES']
 
 	#raw_center = np.array(template_obs.data[0].shape) / 2.0
-	raw_center = np.array([template_obs.data[0].shape[1]-1, template_obs.data[0].shape[0]-1])
+	raw_center = np.array([template_obs.data[0].shape[1]-1, template_obs.data[0].shape[0]-1])/2.
 
 	sources = [header['SOURCE{}'.format(j+1)] for j in range(num_sources)]
 	primary_source_id = sources.index(primary_source)
@@ -1337,7 +1339,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				ax.plot(separation, all_contrasts['contrast'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Contrast')
 				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['contrast_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
 				# Also add companion magnitudes if necessary. 
-				if isinstance(source_props['comp_seps'], type(None)) and source_props['comp_contrasts']:
+				if not isinstance(source_props['comp_seps'], type(None)) and source_props['comp_contrasts']:
 					ax.scatter(source_props['comp_seps'], source_props['comp_contrasts'], c='w', edgecolors='k', linewidths=2, s=50)
 					for j, name in enumerate(source_props['comp_names']):
 						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_contrasts'][j]), xytext=(5, 5), textcoords='offset points')
@@ -1358,7 +1360,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				ax.plot(separation, all_contrasts['absmag'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
 				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['absmag_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
 				# Also add companion magnitudes if necessary. 
-				if isinstance(source_props['comp_seps'], type(None)) and source_props['comp_vegamags']:
+				if not isinstance(source_props['comp_seps'], type(None)) and source_props['comp_vegamags']:
 					ax.scatter(source_props['comp_seps'], source_props['comp_vegamags'], c='w', edgecolors='k', linewidths=2, s=50)
 					for j, name in enumerate(source_props['comp_names']):
 						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_vegamags'][j]), xytext=(5, 5), textcoords='offset points')
