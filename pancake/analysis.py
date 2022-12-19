@@ -316,7 +316,6 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 						else:
 							offaxis_image_smooth = offaxis_image
 
-						print(offaxis_image_smooth, offaxis_target_center)
 						offaxis_bestfit = fakes.gaussfit2d(offaxis_image_smooth, offaxis_target_center[0], offaxis_target_center[1], searchrad=4, guessfwhm=lambda_d_pixel, guesspeak=np.max(offaxis_image_smooth), refinefit=True)
 
 						# Identify the peak flux and centroid of the Gaussian fit
