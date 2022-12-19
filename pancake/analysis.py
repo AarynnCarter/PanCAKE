@@ -1310,6 +1310,7 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_contrast'] = source_props['comp_contrasts']
 					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_seps'] = source_props['comp_seps']
 					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_names'] = source_props['comp_names']
+					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_vegamags'] = source_props['comp_vegamags']
 
 			# Save output contrasts to a file so things don't need to be calculated again.
 			if save_contrasts:
