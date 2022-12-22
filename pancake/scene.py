@@ -224,7 +224,7 @@ class Scene():
             source['position']['x_offset'] = newxy[0]
             source['position']['y_offset'] = newxy[1]
     
-    def plot_source_spectra(self, sources='all', title='', newfig=True):
+    def plot_source_spectra(self, sources='all', title='', newfig=True, xlim=(0.5,30), ylim=(1e-3,None)):
         '''
         Produce a plot of the spectra of sources within a scene. 
 
@@ -245,8 +245,8 @@ class Scene():
                 ax.plot(s['spectrum']['sed']['spectrum'][0], s['spectrum']['sed']['spectrum'][1], label=s['pancake_parameters']['name'])
         ax.set_xscale('log')
         ax.set_yscale('log')
-        ax.set_xlim(0.5,30)
-        ax.set_ylim(1e-3,None)
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
         ax.set_title(title,y=1.1,fontsize=14)
         ax.tick_params(which='both', direction='in', labelsize=12, axis='both', top=True, right=True)
         ax.xaxis.set_ticklabels([], minor=True)
