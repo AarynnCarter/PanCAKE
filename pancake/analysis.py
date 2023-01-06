@@ -182,7 +182,7 @@ def identify_primary_sources(pancake_results, target, references=None, target_pr
 
 	return primary_sources
 
-def extract_simulated_images(pancake_results, observations, primary_sources, all_rolls, references=None, extract_offaxis=False, filename_prefix='image', low_pass=False, regis_err='default'):
+def extract_simulated_images(pancake_results, observations, primary_sources, all_rolls, references=None, extract_offaxis=False, filename_prefix='image', low_pass=False, regis_err='saved'):
 	"""
 	Function to extract a subset of simulated images from the output of a PanCAKE simulation into a more flexible format. 
 	
@@ -333,7 +333,7 @@ def extract_simulated_images(pancake_results, observations, primary_sources, all
 
 	return extracted
  
-def process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=None, reference_obs=None, target_rolls='default', reference_rolls='default', subtraction='ADI', low_pass=False, regis_err='default'):
+def process_simulations(pancake_results, target, target_obs, filt, mask, primary_sources, references=None, reference_obs=None, target_rolls='default', reference_rolls='default', subtraction='ADI', low_pass=False, regis_err='saved'):
 	"""
 	Function to process a set of desired simulated images from PanCAKE and convert them into pyKLIP datasets to enable easier stellar PSF subtraction
 	and contrast curve estimation. 
@@ -1117,7 +1117,7 @@ def companion_snrs(subtracted_hdu_file, filt, mask, companion_xy, mask_radius=7)
 
 	return companion_snrs
 
-def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, low_pass_filter=False, save_contrasts=True, regis_err='default'):
+def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, low_pass_filter=False, save_contrasts=True, regis_err='saved'):
 	'''
 	Overarching function to compute contrast curves from output PanCAKE results. 
 
