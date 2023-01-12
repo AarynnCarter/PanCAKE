@@ -623,7 +623,7 @@ def convert_spt_to_pandeia(raw_spectral_type):
     
     return pandeia_spectral_type
 
-def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1):
+def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, min_groups=4):
     '''
     Function to estimate optimal readout parameters for a given observation based
     on an input exposure time. 
@@ -723,7 +723,7 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1):
                     #Now follow a similar methodology as with MIRI
                     best_ngroup = None
                     #Start at highest possible number of groups and work our way down until one fits within the margin. 
-                    for ngroup in reversed(range(1,max_groups+1)):
+                    for ngroup in reversed(range(min_groups,max_groups+1)):
                         integration_time = subarray_frame_time * ((nframe + nskip)*(ngroup-1) + nframe)
                         min_int = int(np.ceil( (t_exp-t_margin) / integration_time))
                         max_int = int(np.floor( (t_exp+t_margin) / integration_time))
