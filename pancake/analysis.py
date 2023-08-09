@@ -944,18 +944,18 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 	# Apply median KLIP throughput to the 5 sigma contrast curve which hasn't been corrected for the coronagraph throughput 
 	klip_corrected_contrast = uncorr_contrast / throughput_interp
 
-	##### Convert to relative / absolute magnitudes.
+	##### Convert to relative magnitude contrast and apparent magnitude sensitivity
 	relmag = -2.5*np.log10(klip_corrected_contrast)
-	absmag = relmag + primary_vegamag
+	appmag = relmag + primary_vegamag #Because we add the primary magntiude, no longer a contrast but a sensitivity. 
 
 	##### Now make it all again, but for the basic 5 sigma curves with no small separation correction
 	throughput_interp2 = np.interp(contrast_seps_raw5sig, med_inject_vars['separation'], med_inject_vars['throughput'])
 	klip_corrected_contrast_raw5sig = uncorr_contrast_raw5sig / throughput_interp2
 	relmag_raw5sig = -2.5*np.log10(klip_corrected_contrast_raw5sig)
-	absmag_raw5sig = relmag_raw5sig + primary_vegamag
+	appmag_raw5sig = relmag_raw5sig + primary_vegamag
 
 	# Prepare dictionary to return contrasts, give things more descriptive names for users. 
-	all_contrasts = {'separation':contrast_seps, 'separation_arcsec':contrast_seps*pixel_scale, 'separation_lambdad':contrast_seps/lambda_d_pixel, 'contrast_noklipthrput_nocorothrput':uncorr_contrast, 'contrast_noklipthrput':contrast, 'contrast':klip_corrected_contrast, 'klipcorothrput':throughput_interp, 'relmag':relmag, 'absmag':absmag, 'separation_raw5sig':contrast_seps_raw5sig, 'separation_arcsec_raw5sig':contrast_seps_raw5sig*pixel_scale, 'separation_lambdad_raw5sig':contrast_seps_raw5sig/lambda_d_pixel,'contrast_noklipthrput_nocorothrput_raw5sig':uncorr_contrast_raw5sig, 'contrast_noklipthrput_raw5sig':contrast_raw5sig, 'contrast_raw5sig':klip_corrected_contrast_raw5sig, 'relmag_raw5sig':relmag_raw5sig, 'absmag_raw5sig':absmag_raw5sig}
+	all_contrasts = {'separation':contrast_seps, 'separation_arcsec':contrast_seps*pixel_scale, 'separation_lambdad':contrast_seps/lambda_d_pixel, 'contrast_noklipthrput_nocorothrput':uncorr_contrast, 'contrast_noklipthrput':contrast, 'contrast':klip_corrected_contrast, 'klipcorothrput':throughput_interp, 'relmag':relmag, 'appmag_sens':appmag, 'separation_raw5sig':contrast_seps_raw5sig, 'separation_arcsec_raw5sig':contrast_seps_raw5sig*pixel_scale, 'separation_lambdad_raw5sig':contrast_seps_raw5sig/lambda_d_pixel,'contrast_noklipthrput_nocorothrput_raw5sig':uncorr_contrast_raw5sig, 'contrast_noklipthrput_raw5sig':contrast_raw5sig, 'contrast_raw5sig':klip_corrected_contrast_raw5sig, 'relmag_raw5sig':relmag_raw5sig, 'appmag_sens_raw5sig':appmag_raw5sig}
 
 	if plot_klip_throughput:
 		plt.figure()
@@ -1358,8 +1358,8 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				plt.figure(figsize=(12,7)) 
 				ax = plt.gca()
 				separation = contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['separation_arcsec']
-				ax.plot(separation, all_contrasts['absmag'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
-				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['absmag_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
+				ax.plot(separation, all_contrasts['appmag'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
+				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['appmag_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
 				# Also add companion magnitudes if necessary. 
 				if not isinstance(source_props['comp_seps'], type(None)) and not isinstance(source_props['comp_vegamags'], type(None)):
 					ax.scatter(source_props['comp_seps'], source_props['comp_vegamags'], c='w', edgecolors='k', linewidths=2, s=50)
