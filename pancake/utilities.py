@@ -12,6 +12,7 @@ import pandeia.engine.sed as psed
 
 from synphot import SourceSpectrum, SpectralElement, Observation
 from synphot.models import Empirical1D
+from synphot.units import VEGAMAG
 import astropy.units as u
 
 from .engine import calculate_target
@@ -187,12 +188,18 @@ def normalise_spectrum(input_wave, input_flux, norm_val=5, norm_unit='vegamag', 
 
     #Create SED, ensuring to specify the input units are the Pandeia defaults micron and mJy
     SED = SourceSpectrum(Empirical1D, points=input_wave << u.Unit('micron'), lookup_table=input_flux << u.Unit('mJy'))
+    VegaSED = SourceSpectrum.from_vega() 
 
     # Normalize to input values, note that the units are retrieved from astropy, but some are explicitly defined in
     # the synphot package such as vegamag, abmag, flam, fnu. By virtue of running the SourceSpectrum/SpectralElement 
     # classes these synphot units are loaded in but if things change in the future, this may break things. 
-    VegaSED = SourceSpectrum.from_vega()
-    SED = SED.normalize(norm_val*u.Unit(norm_unit), band=NormBandpass, vegaspec=VegaSED)
+    #
+    # Synphot changed nomenclature for vegamag as of https://github.com/spacetelescope/synphot_refactor/pull/331
+    # Catch and change here if needed instead of rewriting documentation / user interface. 
+    if norm_unit == 'vegamag':
+        SED = SED.normalize(norm_val*VEGAMAG, band=NormBandpass, vegaspec=VegaSED)
+    else:
+        SED = SED.normalize(norm_val*u.Unit(norm_unit), band=NormBandpass, vegaspec=VegaSED)
 
     #Return to Pandeia units
     spectrum_wave = SED.waveset.to('micron')
