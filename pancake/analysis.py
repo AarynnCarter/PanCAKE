@@ -1358,8 +1358,8 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 				plt.figure(figsize=(12,7)) 
 				ax = plt.gca()
 				separation = contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['separation_arcsec']
-				ax.plot(separation, all_contrasts['appmag'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
-				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['appmag_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
+				ax.plot(separation, all_contrasts['appmag_sens'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
+				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['appmag_sens_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
 				# Also add companion magnitudes if necessary. 
 				if not isinstance(source_props['comp_seps'], type(None)) and not isinstance(source_props['comp_vegamags'], type(None)):
 					ax.scatter(source_props['comp_seps'], source_props['comp_vegamags'], c='w', edgecolors='k', linewidths=2, s=50)
