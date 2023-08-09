@@ -80,8 +80,15 @@ class Scene():
         if kind == 'simbad':
             #Attempt to query data for the input 'name' string from simbad
             query_results = query_simbad(name, verbose=verbose)
+            try:
+                sptval = kwargs.get('spt').lower()
+                print('Attempting to use Provided Spectral Type: {}'.format(sptval))
+            except:
+                sptval = query_results['spt']
+                print('Attempting to use SIMBAD Spectral Type: {}'.format(sptval))
 
-            approx_spt = convert_spt_to_pandeia(query_results['spt'])
+            approx_spt = convert_spt_to_pandeia(sptval)
+
             working_source['pancake_parameters']['spt'] = approx_spt
             for qresult in ['ra', 'dec', 'norm_bandpass', 'norm_val', 'norm_unit']:
                 working_source['pancake_parameters'][qresult] = query_results[qresult]

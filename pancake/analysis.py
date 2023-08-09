@@ -876,7 +876,8 @@ def compute_contrast(subtracted_hdu_file, filt, mask, offaxis_psf_stamp, offaxis
 					warnings.simplefilter('ignore', FutureWarning)
 					input_psflib.prepare_library(input_dataset)
 			parallelized.klip_dataset(input_dataset, outputdir=outputdir, fileprefix=fileprefix, annuli=annuli, subsections=subsections, numbasis=numbasis, mode=subtraction, psf_library=input_psflib, movement=movement, verbose=False)
-	
+
+
 			#Reopen produced file from pyKLIP
 			injected_file = "{}{}{}".format(outputdir, fileprefix, filesuffix)
 			with fits.open(injected_file) as hdulist:

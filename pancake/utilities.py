@@ -605,7 +605,7 @@ def convert_spt_to_pandeia(raw_spectral_type):
                 if pandeia_spectral_type[1] in ['1', '3']:
                     pandeia_spectral_type[1] = str(int(pandeia_spectral_type[1]) - 1)
                 elif pandeia_spectral_type[1] in ['4', '6', '7', '8', '9']:
-                    pandeia_spectral_type[1] = 'm5v'
+                    pandeia_spectral_type[1] = '5'
                 else:
                     print(failure_message)
                     return failed_spt
@@ -623,7 +623,7 @@ def convert_spt_to_pandeia(raw_spectral_type):
     
     return pandeia_spectral_type
 
-def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, min_groups=4):
+def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, min_groups=4, min_ints=1):
     '''
     Function to estimate optimal readout parameters for a given observation based
     on an input exposure time. 
@@ -728,6 +728,12 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
                         min_int = int(np.ceil( (t_exp-t_margin) / integration_time))
                         max_int = int(np.floor( (t_exp+t_margin) / integration_time))
 
+                        # May want to override minimum number of integrations
+                        if min_ints == 1:
+                            min_int = int(np.ceil( (t_exp-t_margin) / integration_time))
+                        else:
+                            min_int = min_ints
+
                         #Range of possible ints for this number of groups, if one or more match find which one is closest 
                         best_nint = None
                         best_diff = np.inf
@@ -792,6 +798,12 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
                 min_int = int(np.ceil( (t_exp-t_margin) / (subarray_frame_time*ngroup)))
                 max_int = int(np.floor( (t_exp+t_margin) / (subarray_frame_time*ngroup)))
                 
+                # May want to override minimum number of integrations
+                if min_ints == 1:
+                    min_int = int(np.ceil( (t_exp-t_margin) / (subarray_frame_time*ngroup)))
+                else:
+                    min_int = min_ints
+
                 #Range of possible ints for this number of groups, if one or more match find which one is closest 
                 best_nint = None
                 best_diff = np.inf

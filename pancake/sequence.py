@@ -27,7 +27,7 @@ class Sequence():
     def __init__(self, **kwargs):
         self.observation_sequence = []
  
-    def add_observation(self, scene, exposures, mode='coronagraphy', nircam_mask='default', nircam_subarray='default', miri_subarray='default', telescope='jwst', optimise_margin=0.05, optimize_margin=None, max_sat=0.95, rolls=None, nircam_sgd=None, miri_sgd=None, scale_exposures=None, verbose=True, min_groups=4):
+    def add_observation(self, scene, exposures, mode='coronagraphy', nircam_mask='default', nircam_subarray='default', miri_subarray='default', telescope='jwst', optimise_margin=0.05, optimize_margin=None, max_sat=0.95, rolls=None, nircam_sgd=None, miri_sgd=None, scale_exposures=None, verbose=True, min_groups=4, min_ints=1):
         '''
         Add observation does the heavy lifting, with a wide variety of input options.
 
@@ -104,7 +104,7 @@ class Sequence():
 
             #Extract readout information from exposure settings
             if optimize_margin != None: optimise_margin = optimize_margin #Check for US spelling
-            pattern, groups, integrations = self._extract_readout(scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=verbose, min_groups=min_groups)
+            pattern, groups, integrations = self._extract_readout(scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=verbose, min_groups=min_groups, min_ints=min_ints)
 
             obs_dict['configuration']['detector']['readout_pattern'] = pattern.lower()
             obs_dict['configuration']['detector']['ngroup'] = groups
@@ -532,7 +532,7 @@ class Sequence():
 
         return exposure_time
 
-    def _extract_readout(self, scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=True, min_groups=4):
+    def _extract_readout(self, scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=True, min_groups=4, min_ints=1):
         ''' 
         Wrapper function to determine readout parameters for a given observation
 
@@ -576,7 +576,7 @@ class Sequence():
                 else:
                     raise ValueError('Chosen "scale_exposures" setting not recognised. Select int/float scaling factor or defined Scene.')
             
-            pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups)
+            pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
             exposure_time = determine_exposure_time(subarray, pattern, groups, integrations)
             #Notify user of the optimised readout parameters
             if verbose: print('--> Pattern: {}, Number of Groups: {}, Number of Integrations: {} = {}s'.format(pattern.upper(), groups, integrations, int(exposure_time+0.5)))
@@ -597,7 +597,7 @@ class Sequence():
                     raise ValueError('Chosen "scale_exposures" setting not recognised. Select int/float scaling factor or defined Scene.')
 
                 #"Re"-optimise readout patterns using the new exposure time 
-                pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups)
+                pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
                 exposure_time = determine_exposure_time(subarray, pattern, groups, integrations)
                 #Notify user of the optimised readout parameters
                 if verbose: print('---> Pattern: {}, Number of Groups: {}, Number of Integrations: {} = {}s'.format(pattern.upper(), groups, integrations, int(exposure_time+0.5)))
