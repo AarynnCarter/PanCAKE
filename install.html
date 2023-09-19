@@ -196,10 +196,9 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>To begin, it is strongly advised that you separate your PanCAKE installation within an <a class="reference external" href="https://www.anaconda.com/products/individual">Anaconda</a> environment. This is a flexible way to manage many Python environments at once to ensure packages don’t clash, and that the installation of a new package doesn’t break your entire Python installation.</p>
 <p>To initialise an Anaconda environment for PanCAKE use the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">pcake</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.7</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">pcake</span> <span class="n">python</span><span class="o">=</span><span class="mi">3</span>
 </pre></div>
 </div>
-<p>Note that Python 3.7 is being used specifically to avoid errors in dependency packages that arise with later versions of Python - this may change in the near future.</p>
 <p>With the environment created, enter it</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">pcake</span>
 </pre></div>
@@ -212,8 +211,8 @@
 <h2>Necessary Data Files<a class="headerlink" href="#necessary-data-files" title="Permalink to this headline">¶</a></h2>
 <p>PanCAKE makes use of the <a class="reference external" href="https://pypi.org/project/pandeia.engine/">Pandeia</a>, <a class="reference external" href="https://webbpsf.readthedocs.io/en/latest/">WebbPSF</a>, and <a class="reference external" href="https://synphot.readthedocs.io/en/latest/">synphot</a> packages that require their own separate data files. You may find that certain aspects of PanCAKE will work without some of these data files, but to access all of PanCAKE’s functionality, they must be downloaded.</p>
 <div class="line-block">
-<div class="line"><strong>Pandeia:</strong> <a class="reference external" href="https://stsci.app.box.com/v/pandeia-refdata-v2p0-jwst">https://stsci.app.box.com/v/pandeia-refdata-v2p0-jwst</a> (~4 GB)</div>
-<div class="line"><strong>WebbPSF:</strong> <a class="reference external" href="https://stsci.box.com/shared/static/t90gqazqs82d8nh25249oq1obbjfstq8.gz">webbpsf-data-1.1.1.tar.gz</a> (~100 MB, Direct Download Link)</div>
+<div class="line"><strong>Pandeia:</strong> <a class="reference external" href="https://stsci.app.box.com/v/pandeia-refdata-v3p0-jwst">https://stsci.app.box.com/v/pandeia-refdata-v3p0-jwst</a> (~4 GB)</div>
+<div class="line"><strong>WebbPSF:</strong> <a class="reference external" href="https://stsci.box.com/shared/static/qxpiaxsjwo15ml6m4pkhtk36c9jgj70k.gz">webbpsf-data-1.2.1.tar.gz</a> (~100 MB, Direct Download Link)</div>
 <div class="line"><strong>Synphot Throughputs:</strong> <a class="reference external" href="https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_everything_multi_v11_sed.tar">synphot1_throughput-master.tar</a> (~1 GB, Direct Download Link)</div>
 <div class="line"><strong>Synphot Spectra:</strong> <a class="reference external" href="https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar">synphot5_phoenix-models.tar</a> (~2 GB, Direct Download Link)</div>
 <div class="line"><strong>Synphot Calibration:</strong> <a class="reference external" href="https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hst_multi_calibration-spectra_multi_v5_synphot6.tar">synphot6_calibration-spectra.tar</a> (~4 GB, Direct Download Link, or manually add the alpha_lyr_stis file from <a class="reference external" href="https://archive.stsci.edu/hlsps/reference-atlases/cdbs/current_calspec/">here</a>)</div>

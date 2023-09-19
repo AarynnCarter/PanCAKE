@@ -465,7 +465,8 @@ div.rendered_html tbody tr:hover {
 <h1>Astrophysical Scene Construction<a class="headerlink" href="#Astrophysical-Scene-Construction" title="Permalink to this headline">¶</a></h1>
 <p>The first step in any PanCAKE simulation is to define the astrophysical scenes that we want to simulate observations for. Theoretically, Scenes can be as large as desired, or include any number of astrophysical sources. However, only objects within the simulated field of view will have an effect on the simulation results.</p>
 <p>In the <a class="reference external" href="https://aarynncarter.com/PanCAKE/notebooks/pancake_basic_tutorial.html">Basic Tutorial</a> we covered a simple example of this, however there exist a variety of different ways to construct and visualise these scenes further.</p>
-<div class="section" id="The-Basics">
+<p>Important - If you are running PanCAKE within a python script, you will need to place all imports and function calls within the following statement:</p>
+if __name__ == '__main__':<div class="section" id="The-Basics">
 <h2>The Basics<a class="headerlink" href="#The-Basics" title="Permalink to this headline">¶</a></h2>
 <p>The scenes we want to include in a simulation should be independently intialised using <code class="docutils literal notranslate"><span class="pre">pancake.scene.Scene()</span></code>. Ideally, a string descriptor of the scene should also be provided for future clarity in simulation FITS headers, although this is not mandatory. In this case we have created two scenes, one for our “Target” (for science observations) and one for our “Reference” (for PSF subtraction).</p>
 <div class="nbinput nblast docutils container">
@@ -579,7 +580,7 @@ Target // Adding Source: HIP 65426b
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_pancake_scene_construction_14_0.png" src="../_images/notebooks_pancake_scene_construction_14_0.png" />
+<img alt="../_images/notebooks_pancake_scene_construction_15_0.png" src="../_images/notebooks_pancake_scene_construction_15_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -595,7 +596,7 @@ Target // Adding Source: HIP 65426b
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_pancake_scene_construction_15_0.png" src="../_images/notebooks_pancake_scene_construction_15_0.png" />
+<img alt="../_images/notebooks_pancake_scene_construction_16_0.png" src="../_images/notebooks_pancake_scene_construction_16_0.png" />
 </div>
 </div>
 </div>
@@ -620,7 +621,7 @@ Target // Adding Source: HIP 65426b
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_pancake_scene_construction_18_0.png" src="../_images/notebooks_pancake_scene_construction_18_0.png" />
+<img alt="../_images/notebooks_pancake_scene_construction_19_0.png" src="../_images/notebooks_pancake_scene_construction_19_0.png" />
 </div>
 </div>
 </div>
@@ -641,7 +642,7 @@ Target // Adding Source: HIP 65426b
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_pancake_scene_construction_20_0.png" src="../_images/notebooks_pancake_scene_construction_20_0.png" />
+<img alt="../_images/notebooks_pancake_scene_construction_21_0.png" src="../_images/notebooks_pancake_scene_construction_21_0.png" />
 </div>
 </div>
 </div>

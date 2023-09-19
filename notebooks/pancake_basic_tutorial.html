@@ -450,9 +450,10 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Basic-Tutorial">
 <h1>Basic Tutorial<a class="headerlink" href="#Basic-Tutorial" title="Permalink to this headline">¶</a></h1>
 <p>All simulations with the PanCAKE package are performed through four primary stages: Astrophysical Scene Construction, Observational Sequence Construction, Simulation Execution, and Postprocessing. In this tutorial we will cover a basic implementation of each of these stages. For more advanced use cases, please refer to the relevant tabs in the contents (coming soon).</p>
-<p>To begin, like all other Python packages, we must import PanCAKE:</p>
+<p>Important - If you are running PanCAKE within a python script, you will need to place all imports and function calls within the following statement:</p>
+if __name__ == '__main__':<p>If you do not do this, you will encounter infinite recursion during steps that utilise multiprocessing. Now to begin, like all other Python packages, we must import PanCAKE:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -485,9 +486,11 @@ div.rendered_html tbody tr:hover {
 <div class="highlight"><pre>
 Target // Adding Source: HIP 65426
 WARNING: Couldn&#39;t determine magnitude system, assuming Vega magnitudes.
+Attempting to use SIMBAD Spectral Type: A2V
 WARNING: Spectral type &#39;a2v&#39; not compatible with Pandeia grid, using spectral type &#39;a1v&#39; instead.
 Reference // Adding Source: HIP 68245
 WARNING: Couldn&#39;t determine magnitude system, assuming Vega magnitudes.
+Attempting to use SIMBAD Spectral Type: B2IV
 WARNING: Spectral type &#39;b2iv&#39; not compatible with Pandeia grid, using spectral type &#39;b1v&#39; instead.
 </pre></div></div>
 </div>
@@ -497,7 +500,7 @@ WARNING: Spectral type &#39;b2iv&#39; not compatible with Pandeia grid, using sp
 <h2>Define Sequence<a class="headerlink" href="#Define-Sequence" title="Permalink to this headline">¶</a></h2>
 <p>With all the necessary scenes defined, we can move on to the Observational Sequence Construction. To do this we simply initialise a sequence, and then add observations of our scenes in the chronological order in which we would like them to occur. In this case, we will be performing an observation in the NIRCam F444W and MIRI F1550C filters for both the Target and Reference scenes:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
