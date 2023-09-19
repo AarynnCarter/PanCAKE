@@ -39,7 +39,7 @@ from pandeia.engine.calc_utils import build_empty_scene
 from pandeia.engine.custom_exceptions import EngineInputError, EngineOutputError, RangeError, DataError
 from pandeia.engine.instrument_factory import InstrumentFactory
 from pandeia.engine.strategy import StrategyFactory
-from pandeia.engine.pandeia_warnings import etc3d_warning_messages as warning_messages
+from pandeia.engine.pandeia_warnings import signal_warning_messages as warning_messages
 from pandeia.engine import debug_utils
 
 from pandeia.engine.psf_library import PSFLibrary

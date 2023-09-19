@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 from functools import partial
 import json
+import traceback
 
 from .io import read_coronagraph_transmission, determine_bar_offset
 import pyklip.klip 
