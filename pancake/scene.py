@@ -136,7 +136,7 @@ class Scene():
 
     def renormalize_source(self, *args, **kwargs):
         #I assure you it's pronounced 'zed'.
-        return renormalise_source(self, *args, **kwargs)
+        return self.renormalise_source(*args, **kwargs)
 
     def renormalise_source(self, source, norm_val=5, norm_unit='vegamag', norm_bandpass='2mass_ks'):
         ''' 
