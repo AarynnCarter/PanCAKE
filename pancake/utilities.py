@@ -235,7 +235,7 @@ def query_simbad(query_string, query_timeout_sec=5.0, default_spt='a0v', verbose
     if not isinstance(query_string, str):
         raise TypeError('Name of source must be a string type')
     try:
-        response = requests.get('http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oF?' + query_string, timeout=query_timeout_sec)
+        response = requests.get('https://cds.unistra.fr/cgi-bin/nph-sesame/-oF?' + query_string, timeout=query_timeout_sec)
     except (requests.exceptions.ConnectionError):
         raise ConnectionError('Could not access Simbad. Most likely because source name not recognised, but also check internet connection/Simbad website.')
 
