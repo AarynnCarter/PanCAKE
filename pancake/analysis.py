@@ -1119,7 +1119,7 @@ def companion_snrs(subtracted_hdu_file, filt, mask, companion_xy, mask_radius=7)
 
 	return companion_snrs
 
-def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, low_pass_filter=False, save_contrasts=True, regis_err='saved'):
+def contrast_curve(pancake_results, target, references=None, subtraction='ADI', filters='all', masks='all', target_rolls='default', target_primary_source='default', reference_primary_sources='default', reference_rolls='default', klip_annuli=1, klip_subsections=1, klip_numbasis=25, klip_movement=1, get_companion_snrs=True, clean_saved_files=False, outputdir='./RESULTS/', save_prefix='default', verbose=True, plot_contrast=True, plot_klip_throughput=False, low_pass_filter=False, save_contrasts=True, regis_err='saved', sub_only=False):
 	'''
 	Overarching function to compute contrast curves from output PanCAKE results. 
 
@@ -1175,6 +1175,8 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 		Toggle for saving computed contrasts to a file. 
 	regis_err : str
 		Error when registering the unsubtracted images to a common center
+	sub_only : bool
+		Only perform the subtraction, don't compute contrast curves. 
 
 	Returns
 	-------
@@ -1283,96 +1285,101 @@ def contrast_curve(pancake_results, target, references=None, subtraction='ADI', 
 			### Subtraction routine
 			if verbose:	print('--> Performing KLIP Subtraction')
 			parallelized.klip_dataset(processed['target_dataset'], outputdir=outputdir, fileprefix=true_save_prefix, annuli=klip_annuli, subsections=klip_subsections, numbasis=klip_numbasis, mode=subtraction, psf_library=processed['psflib'], movement=klip_movement, verbose=False)
-			#This function doesn't return anything. Instead, all information is saved to a FITS file.  
-			subtracted_hdu_file = outputdir + "{}-KLmodes-all.fits".format(true_save_prefix)
 
-			# Get some information on the sources in our scene. 
-			source_props = get_source_properties(pancake_results[target_obs[0]], primary_sources[0])
+			### Compute contrasts unless only doing subtraction. 
+			if sub_only:
+				print('Subtraction only requested, skipping contrast calculation.')
+			else:
+				#This function doesn't return anything. Instead, all information is saved to a FITS file.  
+				subtracted_hdu_file = outputdir + "{}-KLmodes-all.fits".format(true_save_prefix)
 
-			##### Now want to turn the image results into a contrast curve for this mask and filter combination
-			# Quickly grab the pixel scale for this filter 
-			pixel_scale = pancake_results[target_obs[0]].header['PIXSCALE'] 
-			# Also need the vegamag of the primary source in the target image for this specific filter
-			nsources = pancake_results[target_obs[0]].header['NSOURCES']
+				# Get some information on the sources in our scene. 
+				source_props = get_source_properties(pancake_results[target_obs[0]], primary_sources[0])
 
-			if verbose:	print('--> Extracting Contrast Curve')
-			all_contrasts = compute_contrast(subtracted_hdu_file, filt, mask, processed['offaxis_psf_stamp'], processed['offaxis_peak_flux'], target_dataset_throughput, psflib_throughput, primary_vegamag=source_props['target_primary_vegamag'], pixel_scale=pixel_scale, annuli=klip_annuli, subsections=klip_subsections, numbasis=klip_numbasis, subtraction=subtraction, movement=klip_movement, companion_xy=source_props['comp_xy'], outputdir=outputdir, plot_klip_throughput=plot_klip_throughput)
+				##### Now want to turn the image results into a contrast curve for this mask and filter combination
+				# Quickly grab the pixel scale for this filter 
+				pixel_scale = pancake_results[target_obs[0]].header['PIXSCALE'] 
+				# Also need the vegamag of the primary source in the target image for this specific filter
+				nsources = pancake_results[target_obs[0]].header['NSOURCES']
 
-			contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())] = all_contrasts
+				if verbose:	print('--> Extracting Contrast Curve')
+				all_contrasts = compute_contrast(subtracted_hdu_file, filt, mask, processed['offaxis_psf_stamp'], processed['offaxis_peak_flux'], target_dataset_throughput, psflib_throughput, primary_vegamag=source_props['target_primary_vegamag'], pixel_scale=pixel_scale, annuli=klip_annuli, subsections=klip_subsections, numbasis=klip_numbasis, subtraction=subtraction, movement=klip_movement, companion_xy=source_props['comp_xy'], outputdir=outputdir, plot_klip_throughput=plot_klip_throughput)
 
-			##### Now that we've done all this, it's also possible to grab the SNR for any companions in the image
-			if get_companion_snrs:
-				if isinstance(source_props['comp_xy'], type(None)):
-					if verbose:	print('WARNING: Unable to compute companion SNR as no companions were identified in target image.')
-				else:
-					if verbose:	print('--> Estimating Companion SNR')
-					snrs = companion_snrs(subtracted_hdu_file, filt, mask, source_props['comp_xy'])
-					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_snrs'] = snrs
-					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_contrast'] = source_props['comp_contrasts']
-					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_seps'] = source_props['comp_seps']
-					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_names'] = source_props['comp_names']
-					contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_vegamags'] = source_props['comp_vegamags']
+				contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())] = all_contrasts
 
-			# Save output contrasts to a file so things don't need to be calculated again.
-			if save_contrasts:
-				# Create file name
-				ccurve_save_file = subtracted_hdu_file.replace('.fits', '_CURVES.json')
-				# Create a function to convert numpy arrays to lists within the dictionary
-				def default(obj):
-					if isinstance(obj, np.ndarray):
-						return obj.tolist()
-					raise TypeError('Value in contrast curve dictionary not serializable by JSON.')
+				##### Now that we've done all this, it's also possible to grab the SNR for any companions in the image
+				if get_companion_snrs:
+					if isinstance(source_props['comp_xy'], type(None)):
+						if verbose:	print('WARNING: Unable to compute companion SNR as no companions were identified in target image.')
+					else:
+						if verbose:	print('--> Estimating Companion SNR')
+						snrs = companion_snrs(subtracted_hdu_file, filt, mask, source_props['comp_xy'])
+						contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_snrs'] = snrs
+						contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_contrast'] = source_props['comp_contrasts']
+						contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_seps'] = source_props['comp_seps']
+						contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_names'] = source_props['comp_names']
+						contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['companion_vegamags'] = source_props['comp_vegamags']
 
-				# Save file
-				with open(ccurve_save_file, 'w') as f:
-					json.dump(contrast_curve_dict[filt.upper()+'+'+mask.upper()], f, sort_keys=True, indent=4, default=default)
+				# Save output contrasts to a file so things don't need to be calculated again.
+				if save_contrasts:
+					# Create file name
+					ccurve_save_file = subtracted_hdu_file.replace('.fits', '_CURVES.json')
+					# Create a function to convert numpy arrays to lists within the dictionary
+					def default(obj):
+						if isinstance(obj, np.ndarray):
+							return obj.tolist()
+						raise TypeError('Value in contrast curve dictionary not serializable by JSON.')
 
-			# Default behaviour is to leave KLIP subtracted files, but if requested the files **for this run only** will be deleted.  
-			if clean_saved_files:
-				os.remove(subtracted_hdu_file)
+					# Save file
+					with open(ccurve_save_file, 'w') as f:
+						json.dump(contrast_curve_dict[filt.upper()+'+'+mask.upper()], f, sort_keys=True, indent=4, default=default)
 
-			# Plot contrast curve for this filter/mask combo if requested. 
-			if plot_contrast:
-				##### First make a plot for the straightforward contrast 
-				plot_save_file = subtracted_hdu_file.replace('.fits', '_CURVES.png')
-				plt.figure(figsize=(12,7))
-				ax = plt.gca()
-				separation = contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['separation_arcsec']
-				ax.plot(separation, all_contrasts['contrast'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Contrast')
-				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['contrast_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
-				# Also add companion magnitudes if necessary. 
-				if not isinstance(source_props['comp_seps'], type(None)) and not isinstance(source_props['comp_contrasts'], type(None)):
-					ax.scatter(source_props['comp_seps'], source_props['comp_contrasts'], c='w', edgecolors='k', linewidths=2, s=50)
-					for j, name in enumerate(source_props['comp_names']):
-						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_contrasts'][j]), xytext=(5, 5), textcoords='offset points')
-				ax.legend(frameon=False, fontsize=14)
-				ax.set_yscale('log')
-				ax.set_ylim([1e-7, 1e-2])
-				ax.set_ylabel("Contrast", fontsize=16)
-				ax.set_xlabel('Separation (")', fontsize=16)
-				ax.tick_params(which='both', direction='in', labelsize=14, axis='both', top=True, right=True)
-				ax.set_title('{} // {}+{}'.format(target, filt.upper(), mask.upper()), fontsize=18)
-				plt.savefig(plot_save_file, bbox_inches='tight', dpi=300)
+				# Default behaviour is to leave KLIP subtracted files, but if requested the files **for this run only** will be deleted.  
+				if clean_saved_files:
+					os.remove(subtracted_hdu_file)
 
-				##### Now make a plot for the absolute magnitude contrast limit reached. 
-				plot_save_file = subtracted_hdu_file.replace('.fits', '_MAGCURVES.png')
-				plt.figure(figsize=(12,7)) 
-				ax = plt.gca()
-				separation = contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['separation_arcsec']
-				ax.plot(separation, all_contrasts['appmag_sens'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
-				ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['appmag_sens_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
-				# Also add companion magnitudes if necessary. 
-				if not isinstance(source_props['comp_seps'], type(None)) and not isinstance(source_props['comp_vegamags'], type(None)):
-					ax.scatter(source_props['comp_seps'], source_props['comp_vegamags'], c='w', edgecolors='k', linewidths=2, s=50)
-					for j, name in enumerate(source_props['comp_names']):
-						ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_vegamags'][j]), xytext=(5, 5), textcoords='offset points')
-				ax.legend(frameon=False, fontsize=14)
-				ax.set_ylim([ax.get_ylim()[::-1][0], 0])
-				ax.set_ylabel("Apparent Magnitude", fontsize=16)
-				ax.set_xlabel('Separation (")', fontsize=16)
-				ax.tick_params(which='both', direction='in', labelsize=14, axis='both', top=True, right=True)
-				ax.set_title('{} // {}+{}'.format(target, filt.upper(), mask.upper()), fontsize=18)
-				plt.savefig(plot_save_file, bbox_inches='tight', dpi=300)
+				# Plot contrast curve for this filter/mask combo if requested. 
+				if plot_contrast:
+					##### First make a plot for the straightforward contrast 
+					plot_save_file = subtracted_hdu_file.replace('.fits', '_CURVES.png')
+					plt.figure(figsize=(12,7))
+					ax = plt.gca()
+					separation = contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['separation_arcsec']
+					ax.plot(separation, all_contrasts['contrast'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Contrast')
+					ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['contrast_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
+					# Also add companion magnitudes if necessary. 
+					if not isinstance(source_props['comp_seps'], type(None)) and not isinstance(source_props['comp_contrasts'], type(None)):
+						ax.scatter(source_props['comp_seps'], source_props['comp_contrasts'], c='w', edgecolors='k', linewidths=2, s=50)
+						for j, name in enumerate(source_props['comp_names']):
+							ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_contrasts'][j]), xytext=(5, 5), textcoords='offset points')
+					ax.legend(frameon=False, fontsize=14)
+					ax.set_yscale('log')
+					ax.set_ylim([1e-7, 1e-2])
+					ax.set_ylabel("Contrast", fontsize=16)
+					ax.set_xlabel('Separation (")', fontsize=16)
+					ax.tick_params(which='both', direction='in', labelsize=14, axis='both', top=True, right=True)
+					ax.set_title('{} // {}+{}'.format(target, filt.upper(), mask.upper()), fontsize=18)
+					plt.savefig(plot_save_file, bbox_inches='tight', dpi=300)
+
+					##### Now make a plot for the absolute magnitude contrast limit reached. 
+					plot_save_file = subtracted_hdu_file.replace('.fits', '_MAGCURVES.png')
+					plt.figure(figsize=(12,7)) 
+					ax = plt.gca()
+					separation = contrast_curve_dict['{}+{}'.format(filt.upper(), mask.upper())]['separation_arcsec']
+					ax.plot(separation, all_contrasts['appmag_sens'], color="#577B51", linewidth = 3, label = '5$\\sigma$ Sensitivity Limit')
+					ax.plot(all_contrasts['separation_arcsec_raw5sig'], all_contrasts['appmag_sens_raw5sig'], color="#A1BF9C", linewidth = 3, label = '5$\\sigma$ Standard Deviation', ls=':')
+					# Also add companion magnitudes if necessary. 
+					if not isinstance(source_props['comp_seps'], type(None)) and not isinstance(source_props['comp_vegamags'], type(None)):
+						ax.scatter(source_props['comp_seps'], source_props['comp_vegamags'], c='w', edgecolors='k', linewidths=2, s=50)
+						for j, name in enumerate(source_props['comp_names']):
+							ax.annotate(name, (source_props['comp_seps'][j], source_props['comp_vegamags'][j]), xytext=(5, 5), textcoords='offset points')
+					ax.legend(frameon=False, fontsize=14)
+					ax.set_ylim([ax.get_ylim()[::-1][0], 0])
+					ax.set_ylabel("Apparent Magnitude", fontsize=16)
+					ax.set_xlabel('Separation (")', fontsize=16)
+					ax.tick_params(which='both', direction='in', labelsize=14, axis='both', top=True, right=True)
+					ax.set_title('{} // {}+{}'.format(target, filt.upper(), mask.upper()), fontsize=18)
+					plt.savefig(plot_save_file, bbox_inches='tight', dpi=300)
 
 	return contrast_curve_dict
 
