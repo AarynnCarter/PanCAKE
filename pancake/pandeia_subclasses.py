@@ -8,13 +8,12 @@ import json
 import logging
 import multiprocessing as mp
 import os
-import pkg_resources
 import sys
 import warnings
 import astropy.units as units
 import astropy.io.fits as fits
 import scipy.integrate as integrate
-import webbpsf
+import stpsf
 from poppy import poppy_core
 from functools import wraps
 
@@ -59,7 +58,7 @@ cache_maxsize = 256     # Number of monochromatic PSFs stored in an LRU cache
 class CoronagraphyPSFLibrary(PSFLibrary, object):
     '''
     Subclass of the Pandeia PSFLibrary class, intended to allow PSFs to be generated on-the-fly
-    via webbpsf rather than using cached PSFs
+    via stpsf rather than using cached PSFs
     '''
     def __init__(self, wavelength_range, path=None, psf_key='all'):
         from .engine import options
@@ -78,7 +77,7 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
 
     def associate_offset_to_source(self, sources, instrument, aperture_name):
         '''
-        Added azimuth information for use with webbpsf. Pandeia currently does not calculate 
+        Added azimuth information for use with stpsf. Pandeia currently does not calculate
         the PA and assumes azimuthal symmetry resulting in incorrect calculations when using 
         the bar coronagraph. 
         '''
@@ -182,12 +181,12 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
             # At this point, splice in the cache wrapper code, since we're testing moving the lru_cache out of the class to see what happens
             # Include the on-the-fly override options in the hash key for the lru_cache
 
-            if isinstance(self._options.on_the_fly_webbpsf_opd, fits.HDUList):
-                opd = self._options.on_the_fly_webbpsf_opd[0]
+            if isinstance(self._options.on_the_fly_stpsf_opd, fits.HDUList):
+                opd = self._options.on_the_fly_stpsf_opd[0]
             else:
-                opd = self._options.on_the_fly_webbpsf_opd
+                opd = self._options.on_the_fly_stpsf_opd
 
-            otf_options = tuple(sorted(self._options.on_the_fly_webbpsf_options.items()) + [opd,])
+            otf_options = tuple(sorted(self._options.on_the_fly_stpsf_options.items()) + [opd,])
 
             # this may be needed in get_psf; extract it so we can avoid
             # passing in 'self', which isn't hashable for the cache lookup
@@ -267,7 +266,7 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
     @staticmethod
     def _pupil_throughput(ins):
         """
-        Determines pupil throughput given a webbpsf instrument object
+        Determines pupil throughput given a stpsf instrument object
         """
         optsys = ins.get_optical_system()
         ote_pupil = optsys[0].amplitude
@@ -288,22 +287,22 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
             source_offset_azimuth = 360*(np.pi+np.arctan2(offset_x, offset_y))/2/np.pi
             source_offset = [source_offset_radius, source_offset_azimuth]
         if instrument.upper() == 'NIRCAM':
-            ins = webbpsf.NIRCam()
+            ins = stpsf.NIRCam()
             ins.filter = instrument_config['filter']
             if CoronagraphyPSFLibrary.nircam_mode[aperture_name] == 'lw_imaging':
                 ins.detector = 'NRCA5'
                 ins.pixelscale = ins._pixelscale_long
         elif instrument.upper() == 'MIRI':
-            ins = webbpsf.MIRI()
+            ins = stpsf.MIRI()
             ins.filter = instrument_config['filter']
         else:
             raise ValueError('Only NIRCam and MIRI are supported instruments!')
         ins.image_mask = CoronagraphyPSFLibrary.image_mask[aperture_name]
         ins.pupil_mask = CoronagraphyPSFLibrary.pupil_mask[aperture_name]
-        for key in pancake_options.on_the_fly_webbpsf_options:
-            ins.options[key] = pancake_options.on_the_fly_webbpsf_options[key]
-        if pancake_options.on_the_fly_webbpsf_opd is not None:
-            ins.pupilopd = pancake_options.on_the_fly_webbpsf_opd
+        for key in pancake_options.on_the_fly_stpsf_options:
+            ins.options[key] = pancake_options.on_the_fly_stpsf_options[key]
+        if pancake_options.on_the_fly_stpsf_opd is not None:
+            ins.pupilopd = pancake_options.on_the_fly_stpsf_opd
         #get offset
         ins.options['source_offset_r'] = source_offset[0]
         ins.options['source_offset_theta'] = source_offset[1]
@@ -320,8 +319,8 @@ class CoronagraphyPSFLibrary(PSFLibrary, object):
         aperture_keys = ['mask210r','mask335r','mask430r','masklwb','maskswb','fqpm1065','fqpm1140','fqpm1550','lyot2300', 'mask210rsw','mask335rsw','mask430rsw','masklwbsw','maskswbsw', 'mask210rlw','mask335rlw','mask430rlw','masklwblw','maskswblw']
         assert aperture_name in aperture_keys, 'Aperture {} not recognized! Must be one of {}'.format(aperture_name, aperture_keys)
 
-        nc = webbpsf.NIRCam()
-        miri = webbpsf.MIRI()
+        nc = stpsf.NIRCam()
+        miri = stpsf.MIRI()
 
         aperture_dict = {
             'mask210r' : ['MASK210R','CIRCLYOT', 101, None, nc._pixelscale_short, 'sw_imaging'],

@@ -5,7 +5,7 @@ import numpy as np
 import scipy 
 from astropy.io import fits
 from astropy.table import Table
-from scipy.interpolate import interp1d, interp2d
+from scipy.interpolate import interp1d, RectBivariateSpline
 from scipy.stats import t
 import matplotlib.pyplot as plt
 from copy import deepcopy
@@ -100,10 +100,11 @@ def transmission_corrected(input_stamp, input_dx, input_dy, filt, mask, mode='mu
 	trans_dy = np.arange(-(trans_y-1)/2, (trans_y)/2) 
 
 	#Create interpolation for the tranmission map we are using 
-	trans_interp  = interp2d(trans_dx, trans_dy, transmission, kind='cubic')
+	trans_interp = RectBivariateSpline(trans_dx, trans_dy, transmission.T)
+	trans_interp_t = lambda xnew, ynew: trans_interp(xnew, ynew).T
 
 	#Use the interpolation to identify the transmission at each pixel in the input image. 
-	transmission_stamp = trans_interp(input_dx[0] + xoff, input_dy.transpose()[0]+ yoff)
+	transmission_stamp = trans_interp_t(input_dx[0] + xoff, input_dy.transpose()[0]+ yoff)
 
 	##### Apply the transmission, dependent on which mode has been selected
 	if mode == 'multiply':

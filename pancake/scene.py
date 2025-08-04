@@ -260,7 +260,7 @@ class Scene():
         ax.xaxis.set_major_formatter(tck.FormatStrFormatter('%g'))
         ax.xaxis.set_minor_locator(tck.FixedLocator([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30]))
         ax.xaxis.set_major_locator(tck.FixedLocator([0.6, 1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 28]))
-        ax.set_xlabel('Wavelength ($\mu$m)',fontsize=14)
+        ax.set_xlabel('Wavelength ($\\mu$m)',fontsize=14)
         ax.set_ylabel('Spectral Flux Density (mJy)',fontsize=14)
         ax.legend(numpoints=1,loc='best')
         plt.show()
