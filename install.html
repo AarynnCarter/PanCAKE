@@ -209,7 +209,7 @@
 </div>
 <div class="section" id="necessary-data-files">
 <h2>Necessary Data Files<a class="headerlink" href="#necessary-data-files" title="Permalink to this headline">¶</a></h2>
-<p>PanCAKE makes use of the <a class="reference external" href="https://pypi.org/project/pandeia.engine/">Pandeia</a>, <a class="reference external" href="https://webbpsf.readthedocs.io/en/latest/">WebbPSF</a>, and <a class="reference external" href="https://synphot.readthedocs.io/en/latest/">synphot</a> packages that require their own separate data files. You may find that certain aspects of PanCAKE will work without some of these data files, but to access all of PanCAKE’s functionality, they must be downloaded.</p>
+<p>PanCAKE makes use of the <a class="reference external" href="https://pypi.org/project/pandeia.engine/">Pandeia</a>, <a class="reference external" href="https://stpsf.readthedocs.io/en/latest/">STPSF</a>, and <a class="reference external" href="https://synphot.readthedocs.io/en/latest/">synphot</a> packages that require their own separate data files. You may find that certain aspects of PanCAKE will work without some of these data files, but to access all of PanCAKE’s functionality, they must be downloaded.</p>
 <div class="line-block">
 <div class="line"><strong>Pandeia:</strong> See installation instructions for required data <a class="reference external" href="https://outerspace.stsci.edu/display/PEN/Pandeia+Engine+Installation">HERE</a> </div>
 <div class="line"><strong>STPSF:</strong> See installation instructions for required data <a class="reference external" href="https://stpsf.readthedocs.io/en/latest/installation.html"> HERE</a></div>
@@ -218,7 +218,7 @@
 <p>Put these folders somewhere sensible on your hard drive, making sure you combine the Synphot files. Also</p>
 <p>Finally adjust your ~/.bashrc file to include the following lines (adjusted accordingly to where you saved the above):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">pandeia_refdata</span><span class="o">=</span><span class="s2">&quot;/path/to/pandeia/data/directory&quot;</span>
-<span class="n">export</span> <span class="n">WEBBPSF_PATH</span><span class="o">=</span><span class="s2">&quot;/path/to/webbpsf/data/directory&quot;</span>
+<span class="n">export</span> <span class="n">STPSF_PATH</span><span class="o">=</span><span class="s2">&quot;/path/to/stpsf/data/directory&quot;</span>
 <span class="n">export</span> <span class="n">PYSYN_CDBS</span><span class="o">=</span><span class="s2">&quot;/path/to/synphot/data/redcat/trds&quot;</span>
 </pre></div>
 </div>
