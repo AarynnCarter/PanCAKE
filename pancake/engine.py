@@ -15,7 +15,6 @@ from glob import glob
 import json
 import multiprocessing as mp
 import os
-import pkg_resources
 import sys
 import warnings
 import astropy.units as units
@@ -133,16 +132,11 @@ def calculate_all(raw_config):
 
 	"""
 	output = {'target': {}, 'reference': {}, 'contrast': {}}
-	pandeia_version = pkg_resources.get_distribution('pandeia.engine').version
-	if pandeia_version >= "1.3":
-		result = perform_calculation(deepcopy(raw_config))
-		output['target'] = result['sub_reports'][0]
-		output['reference'] = result['sub_reports'][1]
-		output['contrast'] = result['sub_reports'][2]
-	else:
-		output['target'] = calculate_target(raw_config)
-		output['reference'] = calculate_reference(raw_config)
-		output['contrast'] = calculate_contrast(raw_config)
+	result = perform_calculation(deepcopy(raw_config))
+	output['target'] = result['sub_reports'][0]
+	output['reference'] = result['sub_reports'][1]
+	output['contrast'] = result['sub_reports'][2]
+
 	return output
 
 def calculate_target(raw_config):
@@ -568,21 +562,3 @@ def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=T
 				}
 
 	return output
-
-
-# def get_template(filename):
-#     ''' Look up a template filename.
-
-#     Parameters
-#     ----------
-#     filename : str
-#         Path the template file
-#     '''
-#     return pkg_resources.resource_filename(templates.__name__,filename)
-
-# def list_templates():
-#     '''
-#     List all bundled template calculation files.
-#     '''
-#     templatewildcard = pkg_resources.resource_filename(templates.__name__, '*.json')
-#     return [os.path.basename(fname) for fname in glob(templatewildcard)]

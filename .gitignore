@@ -66,3 +66,6 @@ target/
 
 # System
 .DS_Store
+
+# Testing
+testing/
