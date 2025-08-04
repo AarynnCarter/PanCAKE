@@ -45,7 +45,7 @@ from pandeia.engine.etc3D import DetectorSignal
 PandeiaDetectorSignal = DetectorSignal
 
 try:
-	import webbpsf
+	import stpsf
 except ImportError:
 	pass
 
@@ -500,7 +500,7 @@ def calculate_contrast_curve(raw_config, target=None, reference=None, ta_error=T
 #         if not keep_options:
 #             ins = config['configuration']['instrument']['instrument'].lower()
 #             ote_name = 'OPD_RevW_ote_for_{}_predicted.fits.gz'.format(capitalized_instruments[ins])
-#             options.on_the_fly_webbpsf_opd = (ote_name, n)
+#             options.on_the_fly_stpsf_opd = (ote_name, n)
 		# Calculate target and reference
 		results = calculate_all(current_config)
 		target_slopes.append(results['target']['2d']['detector'])

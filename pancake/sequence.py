@@ -17,7 +17,7 @@ from astropy.io import fits
 import astropy.units as u
 from scipy.interpolate import interp1d
 
-import webbpsf
+import stpsf
 
 class Sequence():
     '''
@@ -247,7 +247,7 @@ class Sequence():
             Whether to evolve the wavefront error throughout the observation, requires RA and Dec
             for at least one source within the scenes being observed. 
         on_the_fly_PSFs : bool
-            Whehter to calculate PSF's on the fly using WebbPSF (more accurate) or use the precomputed
+            Whehter to calculate PSF's on the fly using STPSF (more accurate) or use the precomputed
             library (faster).
         wave_sampling : int
             If on_the_fly_PSFs == True, sets the number of wavelengths to be sampled in each filter
@@ -410,9 +410,9 @@ class Sequence():
                 if wavefront_evolution == True:
                     #Use the calculated OPD for this specific observation. 
                     if instrument == 'nircam':
-                        options.on_the_fly_webbpsf_opd = nircam_opds[observation_counter] 
+                        options.on_the_fly_stpsf_opd = nircam_opds[observation_counter]
                     elif instrument == 'miri':
-                        options.on_the_fly_webbpsf_opd = miri_opds[observation_counter]
+                        options.on_the_fly_stpsf_opd = miri_opds[observation_counter]
 
                 # Set background level
                 if background != 'default':
@@ -734,7 +734,7 @@ class Sequence():
                 skip_indices.append(len(pitch_angles)-1) 
 
         # Now that we know the pitch angle at specific times throughout our observation, we can load in the base OPD
-        # files from WebbPSF, evolve them, delete the ones we don't need, and return the specific OPD for each observation.
+        # files from STPSF, evolve them, delete the ones we don't need, and return the specific OPD for each observation.
         all_opd_estimates = ['predicted', 'requirements']
         if opd_estimate not in all_opd_estimates:
             raise ValueError('Chosen OPD estimate "{}" not recognised. Compatible options are : {}'.format(opd_estimate, ', '.join(all_opd_estimates)))
@@ -743,8 +743,8 @@ class Sequence():
         base_opd = 'JWST_OTE_OPD_cycle1_example_2022-07-30.fits'
 
         #Get Base OPD for NIRCam and MIRI (or just one if only one in sequence).
-        nircam_opd_file = os.path.join(webbpsf.utils.get_webbpsf_data_path(), base_opd.format('NIRCam'))
-        miri_opd_file = os.path.join(webbpsf.utils.get_webbpsf_data_path(), base_opd.format('MIRI'))
+        nircam_opd_file = os.path.join(stpsf.utils.get_stpsf_data_path(), base_opd.format('NIRCam'))
+        miri_opd_file = os.path.join(stpsf.utils.get_stpsf_data_path(), base_opd.format('MIRI'))
 
         nircam_opd_hdu = OPDFile_to_HDUList(nircam_opd_file, slice_to_use=opd_realisation)
         miri_opd_hdu = OPDFile_to_HDUList(miri_opd_file, slice_to_use=opd_realisation)
@@ -760,7 +760,7 @@ class Sequence():
             del nircam_opd_hdul[index]
             del miri_opd_hdul[index]
 
-        #Now need to restructure as a list of HDULists for integration with WebbPSF
+        #Now need to restructure as a list of HDULists for integration with STPSF
         nircam_opd_lhdul = [fits.HDUList([hdu]) for hdu in nircam_opd_hdul]
         miri_opd_lhdul = [fits.HDUList([hdu]) for hdu in miri_opd_hdul]
 

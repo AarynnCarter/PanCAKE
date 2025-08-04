@@ -26,8 +26,8 @@ from scipy.interpolate import interp1d
 from astropy.io import fits
 import astropy.units as u
 
-import webbpsf
-from webbpsf.opds import OTE_Linear_Model_WSS
+import stpsf
+from stpsf.opds import OTE_Linear_Model_WSS
 
 # Default OPD info
 opd_default = ('JWST_OTE_OPD_cycle1_example_2022-07-30.fits', 0)
@@ -36,7 +36,7 @@ opd_default = ('JWST_OTE_OPD_cycle1_example_2022-07-30.fits', 0)
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 if not on_rtd:
     # .fits or .fits.gz?
-    opd_dir = webbpsf.utils.get_webbpsf_data_path()
+    opd_dir = stpsf.utils.get_stpsf_data_path()
     opd_file = opd_default[0]
     opd_fullpath = os.path.join(opd_dir, opd_file)
     if not os.path.exists(opd_fullpath):
@@ -54,14 +54,14 @@ if not on_rtd:
 
 def OPDFile_to_HDUList(file, slice_to_use=0):
     """
-    Make a picklable HDUList for ingesting into multiproccessor WebbPSF
+    Make a picklable HDUList for ingesting into multiproccessor STPSF
     helper function.
     """
 
     try:
         hdul = fits.open(file)
     except FileNotFoundError:
-        opd_dir = webbpsf.utils.get_webbpsf_data_path()
+        opd_dir = stpsf.utils.get_stpsf_data_path()
         hdul = fits.open(os.path.join(opd_dir, file))
     ndim = len(hdul[0].data.shape)
 

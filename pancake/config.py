@@ -19,7 +19,7 @@ class EngineConfiguration(object):
                               'rn_correlation': True}
         self.default_effects = {'background': True, 'ipc': True, 'saturation': True}
         self.default_params = {'wave_sampling': None, 'on_the_fly_PSFs': False,
-                               'on_the_fly_webbpsf_options': {}, 'on_the_fly_webbpsf_opd': None,
+                               'on_the_fly_stpsf_options': {}, 'on_the_fly_stpsf_opd': None,
                                'on_the_fly_oversample': 3, 'pandeia_fixed_seed': False, 
                                'cache': 'ram', 'noise': self.default_noise, 
                                'effects': self.default_effects, 'verbose': False, 'cache_path': None}
@@ -173,7 +173,7 @@ class EngineConfiguration(object):
     @property
     def on_the_fly_PSFs(self):
         '''
-        Avoid Pandeia's precomputed PSFs and recompute in WebbPSF as needed?
+        Avoid Pandeia's precomputed PSFs and recompute in STPSF as needed?
         '''
         return self._on_the_fly_PSFs
     
@@ -182,33 +182,33 @@ class EngineConfiguration(object):
         self._on_the_fly_PSFs = value
         
     @property
-    def on_the_fly_webbpsf_options(self):
+    def on_the_fly_stpsf_options(self):
         '''
         A dictionary of extra options for configuring the PSF 
         calculation ad hoc. Note some options are overridden 
         in get_psf_on_the_fly().
         
-        See WebbPSF documentation for more details.
+        See STPSF documentation for more details.
         '''
-        return self._on_the_fly_webbpsf_options
+        return self._on_the_fly_stpsf_options
     
-    @on_the_fly_webbpsf_options.setter
-    def on_the_fly_webbpsf_options(self, value):
-        self._on_the_fly_webbpsf_options = value
+    @on_the_fly_stpsf_options.setter
+    def on_the_fly_stpsf_options(self, value):
+        self._on_the_fly_stpsf_options = value
         
     @property
-    def on_the_fly_webbpsf_opd(self):
+    def on_the_fly_stpsf_opd(self):
         '''
         Allow overriding the default OPD selection when 
         computing PSFs on the fly.
         
-        See the WebbPSF documentation.
+        See the STPSF documentation.
         '''
-        return self._on_the_fly_webbpsf_opd
+        return self._on_the_fly_stpsf_opd
     
-    @on_the_fly_webbpsf_opd.setter
-    def on_the_fly_webbpsf_opd(self, value):
-        self._on_the_fly_webbpsf_opd = value
+    @on_the_fly_stpsf_opd.setter
+    def on_the_fly_stpsf_opd(self, value):
+        self._on_the_fly_stpsf_opd = value
         
     @property
     def on_the_fly_oversample(self):
@@ -217,7 +217,7 @@ class EngineConfiguration(object):
         calculation ad hoc. Note some options are overridden 
         in get_psf_on_the_fly().
         
-        See WebbPSF documentation for more details.
+        See STPSF documentation for more details.
         '''
         return self._on_the_fly_oversample
     
