@@ -8,7 +8,6 @@ import json
 import logging
 import multiprocessing as mp
 import os
-import pkg_resources
 import sys
 import warnings
 import astropy.units as units

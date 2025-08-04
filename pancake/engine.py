@@ -237,7 +237,7 @@ def perform_calculation(calcfile):
 	options.current_config = deepcopy(config)
 
 	with warnings.catch_warnings():
-		warnings.filterwarnings('ignore', category = np.VisibleDeprecationWarning) # Suppress float-indexing warnings
+		warnings.filterwarnings('ignore', category = np.exceptions.VisibleDeprecationWarning) # Suppress float-indexing warnings
 		results = pandeia_calculation(config)
 
 	# Reset the fixed seed state set by the pandeia engine
