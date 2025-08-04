@@ -20,7 +20,7 @@ if python_major >= 3:
               'scikit-image>=0.14', 'astropy>=2', 'photutils>=0.5', 'cython>=0.29', 
               'scipy>=1', 'poppy>0.7', 'pyklip>2.2', 'synphot>1'],
 else:
-    required=['numpy>=1.15','matplotlib>=2.2','pandeia.engine>=1.2', 'webbpsf<0.7',
+    required=['numpy>=1.15','matplotlib>=2.2','pandeia.engine>=1.3', 'webbpsf<0.7',
               'scikit-image>=0.14', 'pysynphot>=0.9', 'astropy<3', 'photutils>=0.4',
               'functools32>=3', 'cython>=0.29', 'scipy>=1', 'poppy<0.7'],
 
