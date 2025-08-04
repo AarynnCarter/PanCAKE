@@ -776,12 +776,12 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
             pattern, groups, integrations = best_pattern, best_ngroup, best_nint
 
     elif instrument == 'miri':
-        #MIRI optimisation is relatively straightforward, always use FAST readout pattern, so we just need to find the largest number of 
+        #MIRI optimisation is relatively straightforward, always use FASTR1 readout pattern, so we just need to find the largest number of
         #groups that a) doesn't saturate the detector, and b) is within th margin around the submitted time. 
 
         obs_dict['configuration']['detector']['ngroup'] = 2   #If it saturates in 5 groups, tough to observe
         obs_dict['configuration']['detector']['nint'] = 1
-        obs_dict['configuration']['detector']['readout_pattern'] = 'fast'  
+        obs_dict['configuration']['detector']['readout_pattern'] = 'fastr1'
 
         data = calculate_target(obs_dict)
         sat_frac = data['scalar']['fraction_saturation']
@@ -790,7 +790,7 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
         if sat_frac > 1:
             #There is saturation, use fastest possible readout pattern and warn user.
             print('WARNING: {:.1f}% saturation detected with the shortest possible readout settings. {} pixels affected.'.format(100*sat_frac, sat_pix))
-            pattern, groups, integrations = 'fast', 2, 1
+            pattern, groups, integrations = 'fastr1', 2, 1
         else:
             #No saturation, optimise readout parameters. 
             max_groups = int(np.floor((max_sat/sat_frac)*2))
@@ -835,7 +835,7 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
                 raise RuntimeError('Unable to identify optimal readout parameters. Increase "optimise_margin" or manually define readout.')
 
             #Otherwise, the optimisation was succesful 
-            pattern, groups, integrations = 'fast', best_ngroup, best_nint
+            pattern, groups, integrations = 'fastr1', best_ngroup, best_nint
     else:
         raise ValueError('Instrument {} is not supported, please select NIRCam or MIRI'.format(instrument))
 

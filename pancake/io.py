@@ -231,8 +231,8 @@ def determine_exposure_time(subarray, pattern, groups, integrations):
 	if pattern in miri_readout_patterns:
 		#Must be MIRI
 		nframe =  miri_config_dict['readout_pattern_config'][pattern]['nframe']
-		subarray_frame_time = miri_config_dict['subarray_config']['default'][subarray]['tframe'] 
-		exposure_time = subarray_frame_time * nframe * groups * integrations 
+		subarray_frame_time = miri_config_dict['subarray_config']['default'][subarray]['tframe']
+		exposure_time = subarray_frame_time * nframe * groups * integrations + subarray_frame_time * (integrations-1)
 	elif pattern in nircam_readout_patterns:
 		#Must be NIRCam
 		subarray_frame_time = nircam_config_dict['subarray_config']['default'][subarray]['tframe'] 
