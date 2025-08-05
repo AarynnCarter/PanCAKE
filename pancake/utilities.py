@@ -630,7 +630,7 @@ def convert_spt_to_pandeia(raw_spectral_type):
     
     return pandeia_spectral_type
 
-def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, min_groups=4, min_ints=1):
+def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, min_groups=4, min_ints=1, lock_ints=None):
     '''
     Function to estimate optimal readout parameters for a given observation based
     on an input exposure time. 
@@ -647,6 +647,10 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
         Minimum allowable fraction of saturation
     max_sat : float
         Maximum allowable fraction of saturation
+    min_groups : int
+        Minimum number of groups to use in the readout
+    min_ints : int
+        Minimum number of integrations to use in the readout
 
     Returns
     -------
@@ -729,32 +733,42 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
 
                     #Now follow a similar methodology as with MIRI
                     best_ngroup = None
+
                     #Start at highest possible number of groups and work our way down until one fits within the margin. 
-                    for ngroup in reversed(range(min_groups,max_groups+1)):
-                        integration_time = subarray_frame_time * ((nframe + nskip)*(ngroup-1) + nframe)
-                        min_int = int(np.ceil( (t_exp-t_margin) / integration_time))
-                        max_int = int(np.floor( (t_exp+t_margin) / integration_time))
-
-                        # May want to override minimum number of integrations
-                        if min_ints == 1:
+                    for ngi, ngroup in enumerate(reversed(range(min_groups,max_groups+1))):
+                        integration_time = subarray_frame_time * ((nframe + nskip) * (ngroup - 1) + nframe)
+                        if not lock_ints:
                             min_int = int(np.ceil( (t_exp-t_margin) / integration_time))
-                        else:
-                            min_int = min_ints
+                            max_int = int(np.floor( (t_exp+t_margin) / integration_time))
 
-                        #Range of possible ints for this number of groups, if one or more match find which one is closest 
-                        best_nint = None
-                        best_diff = np.inf
+                            # May want to override minimum number of integrations
+                            if min_ints == 1:
+                                min_int = int(np.ceil( (t_exp-t_margin) / integration_time))
+                            else:
+                                min_int = min_ints
+                            #Range of possible ints for this number of groups, if one or more match find which one is closest
+                            best_nint = None
+                            best_diff = np.inf
+                        else:
+                            min_int = lock_ints
+                            max_int = lock_ints
+                            if ngi == 0:
+                                # Only need to do this once, as we are locking the number of integrations across all groups
+                                # and we don't want the loop to keep resetting these values.
+                                best_nint = None
+                                best_diff = np.inf
+
                         for nint in range(min_int, max_int+1):
                             t = nint*integration_time
                             diff = abs(t_exp - t)
-                            if (diff <= abs(t_exp-t_margin)) and diff < best_diff:
+                            if (diff <= t_margin) and diff < best_diff:
                                 #Found a pattern that fits within our range
                                 best_pattern = pattern
                                 best_ngroup = ngroup
                                 best_nint = nint
                                 best_diff = diff
 
-                        if best_nint != None:
+                        if best_nint != None and lock_ints == None:
                             #Have found optimised readout parameters for this pattern within the user defined range, exit optimisation loop. 
                             break
                         else:
@@ -800,31 +814,41 @@ def optimise_readout(obs_dict, t_exp, optimise_margin, min_sat=1e-6, max_sat=1, 
                 max_groups = cosmic_ray_groups
 
             best_ngroup = None
-            #Start at highest possible number of groups and work our way down until one fits within the margin. 
-            for ngroup in reversed(range(1,max_groups+1)):
-                min_int = int(np.ceil( (t_exp-t_margin) / (subarray_frame_time*ngroup)))
-                max_int = int(np.floor( (t_exp+t_margin) / (subarray_frame_time*ngroup)))
-                
-                # May want to override minimum number of integrations
-                if min_ints == 1:
-                    min_int = int(np.ceil( (t_exp-t_margin) / (subarray_frame_time*ngroup)))
-                else:
-                    min_int = min_ints
 
-                #Range of possible ints for this number of groups, if one or more match find which one is closest 
-                best_nint = None
-                best_diff = np.inf
+            #Start at highest possible number of groups and work our way down until one fits within the margin. 
+            for ngi, ngroup in enumerate(reversed(range(min_groups,max_groups+1))):
+                if not lock_ints:
+                    min_int = int(np.ceil( (t_exp-t_margin) / (subarray_frame_time*ngroup)))
+                    max_int = int(np.floor( (t_exp+t_margin) / (subarray_frame_time*ngroup)))
+                    # May want to override minimum number of integrations
+                    if min_ints == 1:
+                        min_int = int(np.ceil((t_exp - t_margin) / (subarray_frame_time * ngroup)))
+                    else:
+                        min_int = min_ints
+                    # Range of possible ints for this number of groups, if one or more match find which one is closest
+                    best_nint = None
+                    best_diff = np.inf
+                else:
+                    min_int = lock_ints
+                    max_int = lock_ints
+                    if ngi == 0:
+                        # Only need to do this once, as we are locking the number of integrations across all groups
+                        # and we don't want the loop to keep resetting these values.
+                        best_nint = None
+                        best_diff = np.inf
+
                 for nint in range(min_int, max_int+1):
                     t = subarray_frame_time*ngroup*nint
                     diff = abs(t_exp - t)
-                    if (diff <= abs(t_exp-t_margin)) and diff < best_diff:
+                    if (diff <= t_margin) and diff < best_diff:
                         #Found a pattern that fits within our range
                         best_ngroup = ngroup
                         best_nint = nint
                         best_diff = diff
 
-                if best_nint != None:
-                    #Have found an optimised readout pattern within the user defined range, exit optimisation loop. 
+                if best_nint != None and lock_ints == None:
+                    #Have found an optimised readout pattern within the user defined range, exit optimisation loop.
+                    #But, if locking integrations, then search every number of groups for the best number of groups
                     break
                 else:
                     #Need to keep searching

@@ -27,7 +27,25 @@ class Sequence():
     def __init__(self, **kwargs):
         self.observation_sequence = []
  
-    def add_observation(self, scene, exposures, mode='coronagraphy', nircam_mask='default', nircam_subarray='default', miri_subarray='default', telescope='jwst', optimise_margin=0.05, optimize_margin=None, max_sat=0.95, rolls=None, nircam_sgd=None, miri_sgd=None, scale_exposures=None, verbose=True, min_groups=4, min_ints=1):
+    def add_observation(self,
+                        scene,
+                        exposures,
+                        mode='coronagraphy',
+                        nircam_mask='default',
+                        nircam_subarray='default',
+                        miri_subarray='default',
+                        telescope='jwst',
+                        optimise_margin=0.05,
+                        optimize_margin=None,
+                        max_sat=0.95,
+                        rolls=None,
+                        nircam_sgd=None,
+                        miri_sgd=None,
+                        scale_exposures=None,
+                        verbose=True,
+                        min_groups=4,
+                        min_ints=1,
+                        lock_integrations_when_scaling=False):
         '''
         Add observation does the heavy lifting, with a wide variety of input options.
 
@@ -65,6 +83,13 @@ class Sequence():
             Scene to scale the provided t_exp in order to reach ~the same number of photons
         verbose : bool
             Boolean toggle for terminal printing.
+        min_groups : int
+            Minimum number of groups to use in the readout pattern
+        min_ints : int
+            Minimum number of integrations to use in the readout pattern
+        lock_integrations_when_scaling : bool
+            If True, will only vary the number of integrations when scaling the exposure time. The number of
+            groups will be fixed to the scaled value.
         '''
 
         #First copy scene so that the user provided scene isn't modified
@@ -104,7 +129,10 @@ class Sequence():
 
             #Extract readout information from exposure settings
             if optimize_margin != None: optimise_margin = optimize_margin #Check for US spelling
-            pattern, groups, integrations = self._extract_readout(scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=verbose, min_groups=min_groups, min_ints=min_ints)
+            pattern, groups, integrations = self._extract_readout(scene, exposure, subarray, obs_dict, optimise_margin,
+                                                                  scale_exposures, max_sat, verbose=verbose,
+                                                                  min_groups=min_groups, min_ints=min_ints,
+                                                                  lock_integrations_when_scaling=lock_integrations_when_scaling)
 
             obs_dict['configuration']['detector']['readout_pattern'] = pattern.lower()
             obs_dict['configuration']['detector']['ngroup'] = groups
@@ -532,7 +560,7 @@ class Sequence():
 
         return exposure_time
 
-    def _extract_readout(self, scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=True, min_groups=4, min_ints=1):
+    def _extract_readout(self, scene, exposure, subarray, obs_dict, optimise_margin, scale_exposures, max_sat, verbose=True, min_groups=4, min_ints=1, lock_integrations_when_scaling=False):
         ''' 
         Wrapper function to determine readout parameters for a given observation
 
@@ -564,6 +592,8 @@ class Sequence():
             if verbose: print('Optimising Readout // {} // Exposure: {}, {} seconds'.format(obs_dict['scene_name'], exposure[0].upper(), str(exposure[2])))
             exposure_time = exposure[2]
             if scale_exposures != None:
+                # Store base exposure time variables for the provided exposure time
+                base_pattern, base_groups, base_ints = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
                 if isinstance(scale_exposures, (int, float)):
                     #Scale exposure time by a numeric value. 
                     if verbose: print('--> Scaling provided exposure times by {}'.format(scale_exposures))
@@ -575,8 +605,12 @@ class Sequence():
                     exposure_time = self._relative_exposure_time(scene, filt, master_scene, master_exposure_time=exposure_time)
                 else:
                     raise ValueError('Chosen "scale_exposures" setting not recognised. Select int/float scaling factor or defined Scene.')
-            
-            pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
+
+            # If we aren't locking the number of integrations when scaling, we need to set the base integrations to None
+            if not lock_integrations_when_scaling:
+                base_ints = None
+
+            pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints, lock_ints=base_ints)
             exposure_time = determine_exposure_time(subarray, pattern, groups, integrations)
             #Notify user of the optimised readout parameters
             if verbose: print('--> Pattern: {}, Number of Groups: {}, Number of Integrations: {} = {}s'.format(pattern.upper(), groups, integrations, int(exposure_time+0.5)))
@@ -584,6 +618,8 @@ class Sequence():
             #Parameters have been specified explicitly
             if scale_exposures != None:
                 exposure_time = determine_exposure_time(subarray, exposure[1].lower(), exposure[2], exposure[3])
+                # Store base exposure time variables for the provided exposure time
+                base_pattern, base_groups, base_ints = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
                 if isinstance(scale_exposures, (int, float)):
                     #Scale readout parameters by a numeric value
                     if verbose: print('--> Scaling provided exposure times by {}'.format(scale_exposures))
@@ -596,8 +632,12 @@ class Sequence():
                 else:
                     raise ValueError('Chosen "scale_exposures" setting not recognised. Select int/float scaling factor or defined Scene.')
 
+                # If we aren't locking the number of integrations when scaling, we need to set the base integrations to None
+                if not lock_integrations_when_scaling:
+                    base_ints = None
+
                 #"Re"-optimise readout patterns using the new exposure time 
-                pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
+                pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints, lock_ints=base_ints)
                 exposure_time = determine_exposure_time(subarray, pattern, groups, integrations)
                 #Notify user of the optimised readout parameters
                 if verbose: print('---> Pattern: {}, Number of Groups: {}, Number of Integrations: {} = {}s'.format(pattern.upper(), groups, integrations, int(exposure_time+0.5)))
