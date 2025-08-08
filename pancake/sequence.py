@@ -557,6 +557,7 @@ class Sequence():
 
         flux_ratio = 100**((magnitude-master_magnitude)/5)
         exposure_time = flux_ratio * master_exposure_time
+        print('--> Scaling exposure time by a factor of {:.2f} to reach the same number of photons as the master scene.'.format(flux_ratio))
 
         return exposure_time
 
@@ -591,26 +592,33 @@ class Sequence():
             #Need to optimise the exposure readouts
             if verbose: print('Optimising Readout // {} // Exposure: {}, {} seconds'.format(obs_dict['scene_name'], exposure[0].upper(), str(exposure[2])))
             exposure_time = exposure[2]
+            lock_ints = None #Initialise the lock_ints variable to None, will be set later if needed.
             if scale_exposures != None:
                 # Store base exposure time variables for the provided exposure time
-                base_pattern, base_groups, base_ints = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
                 if isinstance(scale_exposures, (int, float)):
                     #Scale exposure time by a numeric value. 
                     if verbose: print('--> Scaling provided exposure times by {}'.format(scale_exposures))
                     exposure_time *= scale_exposures
+                    if lock_integrations_when_scaling:
+                        print('--> WARNING: Locking the number of integrations is only possible when scaling by a Scene, not a numeric value.')
                 elif isinstance(scale_exposures, Scene):
                     #Scale exposure time to match flux of another scene. 
                     if verbose: print('--> Scaling provided exposure times by relative flux of: "{}"'.format(scale_exposures.scene_name))
                     master_scene = scale_exposures
+                    if lock_integrations_when_scaling:
+                        # Calculate the base readout parameters for the master scene before adjusting the exposure time
+                        # the only thing different should be the scene. 
+                        base_obs_dict = deepcopy(obs_dict)
+                        base_obs_dict['scene'] = master_scene.pandeia_scene
+                        base_pattern, base_groups, base_ints = optimise_readout(base_obs_dict, exposure_time, optimise_margin,
+                                                                                max_sat=max_sat, min_groups=min_groups,
+                                                                                min_ints=min_ints)
+                        lock_ints = base_ints
                     exposure_time = self._relative_exposure_time(scene, filt, master_scene, master_exposure_time=exposure_time)
                 else:
                     raise ValueError('Chosen "scale_exposures" setting not recognised. Select int/float scaling factor or defined Scene.')
 
-            # If we aren't locking the number of integrations when scaling, we need to set the base integrations to None
-            if not lock_integrations_when_scaling:
-                base_ints = None
-
-            pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints, lock_ints=base_ints)
+            pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints, lock_ints=lock_ints)
             exposure_time = determine_exposure_time(subarray, pattern, groups, integrations)
             #Notify user of the optimised readout parameters
             if verbose: print('--> Pattern: {}, Number of Groups: {}, Number of Integrations: {} = {}s'.format(pattern.upper(), groups, integrations, int(exposure_time+0.5)))
@@ -618,26 +626,32 @@ class Sequence():
             #Parameters have been specified explicitly
             if scale_exposures != None:
                 exposure_time = determine_exposure_time(subarray, exposure[1].lower(), exposure[2], exposure[3])
-                # Store base exposure time variables for the provided exposure time
-                base_pattern, base_groups, base_ints = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints)
+                lock_ints = None
                 if isinstance(scale_exposures, (int, float)):
                     #Scale readout parameters by a numeric value
                     if verbose: print('--> Scaling provided exposure times by {}'.format(scale_exposures))
                     exposure_time *= scale_exposures
+                    if lock_integrations_when_scaling:
+                        print('--> WARNING: Locking the number of integrations is only possible when scaling by a Scene, not a numeric value.')
                 elif isinstance(scale_exposures, Scene):
                     #Scale readout to match the flux of another scene. 
                     if verbose: print('--> Scaling provided exposure times by relative flux of: "{}"'.format(scale_exposures.scene_name))
                     master_scene = scale_exposures
+                    if lock_integrations_when_scaling:
+                        # Calculate the base readout parameters for the master scene before adjusting the exposure time
+                        # the only thing different should be the scene.
+                        base_obs_dict = deepcopy(obs_dict)
+                        base_obs_dict['scene'] = master_scene.pandeia_scene
+                        base_pattern, base_groups, base_ints = optimise_readout(base_obs_dict, exposure_time, optimise_margin,
+                                                                                max_sat=max_sat, min_groups=min_groups,
+                                                                                min_ints=min_ints)
+                        lock_ints = base_ints
                     exposure_time = self._relative_exposure_time(scene, filt, master_scene, master_exposure_time=exposure_time)
                 else:
                     raise ValueError('Chosen "scale_exposures" setting not recognised. Select int/float scaling factor or defined Scene.')
 
-                # If we aren't locking the number of integrations when scaling, we need to set the base integrations to None
-                if not lock_integrations_when_scaling:
-                    base_ints = None
-
                 #"Re"-optimise readout patterns using the new exposure time 
-                pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints, lock_ints=base_ints)
+                pattern, groups, integrations = optimise_readout(obs_dict, exposure_time, optimise_margin, max_sat=max_sat, min_groups=min_groups, min_ints=min_ints, lock_ints=lock_ints)
                 exposure_time = determine_exposure_time(subarray, pattern, groups, integrations)
                 #Notify user of the optimised readout parameters
                 if verbose: print('---> Pattern: {}, Number of Groups: {}, Number of Integrations: {} = {}s'.format(pattern.upper(), groups, integrations, int(exposure_time+0.5)))
